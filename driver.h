@@ -54,7 +54,7 @@ void spin_flywheel(double speed, int time)
     // initialize pid variables
     double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
 
-    static boolean reset = true;
+    static bool reset = true;
     static double error = actual_avg - speed; 
     static double integral = 0;
     static double last_error = speed;
@@ -103,10 +103,10 @@ int change_speed()
 void flywheel_control(int speed_index, int time)
 {
     int speeds[] = {380, 400, 440};
-    static boolean on = false;
+    static bool on = false;
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) on = !on;
     if(on)
-        spin_flywheel(speed[speed_index], time);
+        spin_flywheel(speeds[speed_index], time);
     else
         spin_flywheel(0, 0);
 }
@@ -140,29 +140,21 @@ Auton auton_selector(std::vector<Auton> autons)
         {
             if(timer % 50 == 0 && timer % 100 != 0) 
                 glb::con.print(0, 0, "Select: %s         ", autons.at(selected).get_name());
-            if(timer % 100 == 0) 
-                glb::con.print(1, 0, "Color: %s         ", isRed ? "Red      " : "Blue       ");
 
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT) && selected > 0)
                 selected--;
 
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) && selected < autons.size()-1)
                 selected++;
-
-            if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP) || glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
-                isRed = !isRed;
         }
         else
         {
             pros::delay(50);
             glb::con.clear();
             pros::delay(50);
-            glb::con.print(0, 0, "Selected Items:         "); 
+            glb::con.print(0, 0, "Selected:         "); 
             pros::delay(50);
-            //glb::con.print(0, 0, "Selected           ");   
             glb::con.print(1, 0, "Auton: %s         ", autons.at(selected).get_name());   
-            pros::delay(50);
-            glb::con.print(2, 0, "Color: %s         ", isRed ? "Red" : "Blue");
             pros::delay(1500);
             glb::con.clear();
             return autons.at(selected);

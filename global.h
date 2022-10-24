@@ -17,7 +17,7 @@ namespace glb
     #define P_FLY_L 16
     #define P_FLY_R 17
 
-    #define P_IMU 1;
+    #define P_IMU 1
     
     // objects =============================
     pros::Controller con(pros::E_CONTROLLER_MASTER);

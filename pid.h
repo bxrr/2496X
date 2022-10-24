@@ -21,8 +21,8 @@ namespace pid
         double straight_kI = 0;
 
         // initialize drive pid variables
-        double start_pos = glb::pos();
-        double error = distance - (glb::pos() - start_pos);
+        double start_pos = glb::chas.pos();
+        double error = distance - (glb::chas.pos() - start_pos);
         double last_error;
         double integral = 0;
 
@@ -76,7 +76,7 @@ namespace pid
         // initialize pid variables
         glb::imu.set_heading(180);
         double start_pos = glb::imu.get_heading();
-        double error = degrees - (glb::imu.get_heading() - start_pos());
+        double error = degrees - (glb::imu.get_heading() - start_pos);
         double last_error;
         double integral = 0;
 
@@ -84,7 +84,7 @@ namespace pid
         {
             // calculate pid variables
             last_error = error;
-            error = degrees - (glb::imu.get_heading() - start_pos()
+            error = degrees - (glb::imu.get_heading() - start_pos);
             integral += error / 1000;
             double derivative = error - last_error;
 
@@ -141,14 +141,14 @@ namespace pid
             // calculate average speed
             if(count < 10)
             {
-                double temp_avg +=  0.1 * ((glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2);
+                temp_avg +=  0.1 * ((glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2);
                 count++;
             }
             else
             {
                 count = 0;
                 temp_avg = 0;
-                avg_speed = temp_avg;
+                actual_avg = temp_avg;
             }
 
             // calculate pid variables

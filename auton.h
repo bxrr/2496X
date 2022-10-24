@@ -18,7 +18,7 @@ void test_fly()
     flywheel(500);
 }
 
-void test_drive
+void test_drive()
 {
     drive(800);
     turn(50);
