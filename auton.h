@@ -15,14 +15,14 @@ using namespace glb;
 
 void test_fly()
 {
-    flywheel(500);
+    flywheel(390, 10000);
 }
 
 void test_drive()
 {
     drive(800);
     turn(50);
-    turn_to(0);
+    turn_to(-40);
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR

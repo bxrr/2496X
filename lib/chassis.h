@@ -17,9 +17,9 @@ public:
     pros::motor_gearset_e gearset=pros::E_MOTOR_GEARSET_06, bool reverse_spin=false)
     {
         for(int port : left_motor_ports)
-            left_motors.push_back(pros::Motor(abs(port), gearset, port < 0 ? !reverse_spin : reverse_spin));
+            left_motors.push_back(pros::Motor(abs(port), gearset, port < 0 ? reverse_spin : !reverse_spin));
         for(int port : right_motor_ports)
-            right_motors.push_back(pros::Motor(abs(port), gearset, port < 0 ? reverse_spin : !reverse_spin));
+            right_motors.push_back(pros::Motor(abs(port), gearset, port < 0 ? !reverse_spin : reverse_spin));
     }
 
     void spin_left(double speed)

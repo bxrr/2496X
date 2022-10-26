@@ -3,6 +3,9 @@
 
 #include "main.h"
 #include "global.h"
+#include <vector>
+#include <numeric>
+#include <stdio.h>
 
 
 namespace pid
@@ -51,12 +54,12 @@ namespace pid
             glb::chas.spin_right(speed + correction);
 
             // print stuff
-            if(time % 50 == 0)
+            if(time % 60 == 0)
                 con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
-            pros::delay(1);
-            time++;
+            pros::delay(20);
+            time += 20;
         }
 
         // stop chassis at end of loop
@@ -64,7 +67,7 @@ namespace pid
         global_heading += init_heading - glb::imu.get_heading();
     }
 
-    void turn(double degrees, int timeout=5000)
+    void turn(double degrees, int timeout=10000)
     {
         int time = 0;
 
@@ -96,12 +99,12 @@ namespace pid
             glb::chas.spin_right(-speed);
 
             // print stuff
-            if(time % 50 == 0)
+            if(time % 60 == 0)
                 con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
-            pros::delay(1);
-            time++;
+            pros::delay(20);
+            time += 20;
         }
 
         // stop chassis at end of loop
@@ -122,55 +125,59 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 1.0;
-        double kI = 1.0;
-        double kD = 3.0;
+        double kP = 0.5;
+        double kI = 3;
+        double kD = 0.0;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
         double error = actual_avg - speed; 
         double integral = 0;
         double last_error;
+        double base_speed = speed / 600 * 110;
 
         // count for average speed over 10 iterations
-        int count = 0;
-        double temp_avg = 0;
+        double window[25];
+        int cur_index = 0;
 
         while(time < timeout)
         {
             // calculate average speed
-            if(count < 10)
+            actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
+
+            if(cur_index >= sizeof(window) / sizeof(window[0]))
+                cur_index = 0;
+            window[cur_index] = actual_avg;
+            double window_sum = 0;
+            int n_terms = 0;
+            for(int i = 0; i < sizeof(window) / sizeof(window[0]); i++)
             {
-                temp_avg +=  0.1 * ((glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2);
-                count++;
+                n_terms += window[i] == 0 ? 0 : 1;
+                window_sum += window[i];
             }
-            else
-            {
-                count = 0;
-                temp_avg = 0;
-                actual_avg = temp_avg;
-            }
+            last_error = error;
+            error = speed - window_sum / n_terms;
+            cur_index++;
 
             // calculate pid variables
-            last_error = error;
-            error = speed - actual_avg;
-            integral += error / 1000;
-            double derivative = error - last_error;
-
-            double volt_speed = error * kP + integral * kI + derivative * kD;
-            if(volt_speed < 0) volt_speed = 0;
+            integral += error / 100;
+            double derivative = 100 * (error - last_error);
 
             // apply speeds
+            double volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
+            if(derivative <= -2.4 && error >= 5)
+                volt_speed = 127;
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
+            printf("[%lf, %lf], ", speed - error, derivative);
 
             // print stuff
-            if(time % 50 == 0)
-                con.print(0, 0, "rpm: %.2lf         ", actual_avg);
+            if(time % 60 == 0)
+                con.print(0, 0, "rpm: %.2lf | %.2lf        ", (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2, volt_speed);
 
             // update time
-            pros::delay(1);
-            time++;
+            pros::delay(10);
+            time += 10;
         }
 
         // stop flywheel after loop
@@ -230,7 +237,7 @@ namespace pid
     //         flywheelR = volt_speed;
 
     //         // print stuff
-    //         if(time % 50 == 0)
+    //         if(time % 60 == 0)
     //             con.print(0, 0, "rpm: %.2lf         ", actual_avg);
 
     //         // update time

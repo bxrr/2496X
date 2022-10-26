@@ -35,7 +35,7 @@ void opcontrol()
 		if(con.get_digital(E_CONTROLLER_DIGITAL_LEFT))
 			calibrate_robot();
 		
-		delay(1);
-		time++;
+		delay(10);
+		time += 10;
 	}
 }
