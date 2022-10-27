@@ -4,6 +4,7 @@
 #include "main.h"
 #include "global.h"
 #include "lib/auton_obj.h"
+#include "pid.h"
 #include <string>
 #include <vector>
 
@@ -44,52 +45,24 @@ void tank_drive()
     }
 }
 
-void spin_flywheel(double speed, int time)
+void flywheel_control()
 {
-    // constants
-    double kP = 1.0;
-    double kI = 1.0;
-    double kD = 3.0;
+    static int speed_index = 0;
+    static bool fly_on = false;
+    std::vector<int> speeds = {390, 500};
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
+        fly_on = !fly_on;
 
-    // initialize pid variables
-    double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
-
-    static bool reset = true;
-    static double error = actual_avg - speed; 
-    static double integral = 0;
-    static double last_error = speed;
-    static double last_time = time;
-
-    if(reset)
+    if(fly_on)
     {
-        error = actual_avg - speed;
-        integral = 0;
-        last_error = speed;
-        last_time = time;
-        reset = false;
-    }
-
-    if(speed == 0)
-    {
-        reset = true;
-        glb::flywheelL = 0;
-        glb::flywheelR = 0;
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && speed_index < speeds.size()) speed_index++;
+        else if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) && speed_index > 0) speed_index--;
+        pid::flywheel_target = speeds[speed_index];
     }
     else
     {
-        // calculate pid variables
-        last_error = error;
-        error = actual_avg - speed;
-        integral += error * (time - last_time) / 1000;
-        last_time = time;
-        double derivative = error - last_error;
-
-        double volt_speed = -error * kP - integral * kI + derivative * kD;
-
-        // apply speeds
-        glb::flywheelL = volt_speed;
-        glb::flywheelR = volt_speed;
-    }  
+        pid::flywheel_target = 0;
+    }
 }
 
 int change_speed()
@@ -98,17 +71,6 @@ int change_speed()
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && num < 2) num++;
     else if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) && num > 0) num--;
     return num;
-}
-
-void flywheel_control(int speed_index, int time)
-{
-    int speeds[] = {380, 400, 440};
-    static bool on = false;
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) on = !on;
-    if(on)
-        spin_flywheel(speeds[speed_index], time);
-    else
-        spin_flywheel(0, 0);
 }
 
 void print_info(int time)
@@ -120,7 +82,6 @@ void print_info(int time)
         con.print(1, 0, "%.2f : %.2f", imu.get_heading(), chas.pos());
     if(time % 150 == 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
-
 }
 
 void calibrate_robot()

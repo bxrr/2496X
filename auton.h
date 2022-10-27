@@ -13,10 +13,14 @@ using namespace pid;
 using namespace glb;
 
 
-void test_fly()
+void fly390()
 {
-    flywheel(390, 10000);
+    spin_flywheel();
+    flywheel_target = 390;
+    pros::delay(10000);
+    flywheel_target = 0;
 }
+
 
 void test_drive()
 {
@@ -28,8 +32,9 @@ void test_drive()
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
-    Auton("test fly", test_fly),
-    Auton("test drive", test_drive)
+    Auton("test fly", fly390),
+    Auton("test drive", test_drive),
+
 };
 
 

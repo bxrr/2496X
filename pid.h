@@ -6,11 +6,17 @@
 #include <vector>
 #include <numeric>
 #include <stdio.h>
+#include <cmath>
 
 
 namespace pid
 {
     double global_heading = 0;
+
+    // flywheel
+    double flywheel_target = 0;
+    bool flywheel_recover = false;
+    int flywheel_recover_start = 0;
 
     void drive(double distance, int timeout=5000)
     {
@@ -55,7 +61,7 @@ namespace pid
 
             // print stuff
             if(time % 60 == 0)
-                con.print(0, 0, "err: %.2lf         ", error);
+                glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
             pros::delay(20);
@@ -63,7 +69,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        chas.stop();
+        glb::chas.stop();
         global_heading += init_heading - glb::imu.get_heading();
     }
 
@@ -100,7 +106,7 @@ namespace pid
 
             // print stuff
             if(time % 60 == 0)
-                con.print(0, 0, "err: %.2lf         ", error);
+                glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
             pros::delay(20);
@@ -108,7 +114,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        chas.stop();
+        glb::chas.stop();
         global_heading += start_pos - glb::imu.get_heading();
     }
 
@@ -119,41 +125,44 @@ namespace pid
         turn(degree, timeout);
     }
 
-    void flywheel(double speed, int timeout=5000)
+    void spin_flywheel()
     {
-        double init_heading = glb::imu.get_heading();
         int time = 0;
 
         // constants
-        double kP = 0.5;
-        double kI = 3;
-        double kD = 0.0;
+        // double kP = 0.4; using exponential function for kP instead of constant
+        auto f_kP = [](double x, double s) { return ((abs(x) / x) * s * pow(abs(x) / s, 1.7)); }; // = f_kP(x) = |x| / x * speed * (x/speed)^1.7
+        double kI = 0.3;
+        double kD = 0;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
-        double error = actual_avg - speed; 
+        double error = 0; 
         double integral = 0;
         double last_error;
-        double base_speed = speed / 600 * 110;
+        double base_speed = 0;
 
-        // count for average speed over 10 iterations
-        double window[25];
+        // count for average speed over n iterations
+        double window[20];
+        int win_size = sizeof(window) / sizeof(window[0]);
+        auto f_w = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
         int cur_index = 0;
 
-        while(time < timeout)
+        while(true)
         {
+            double speed = flywheel_target;
+
             // calculate average speed
             actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
-
-            if(cur_index >= sizeof(window) / sizeof(window[0]))
-                cur_index = 0;
+            if(cur_index >= win_size)
+                    cur_index = 0;
             window[cur_index] = actual_avg;
             double window_sum = 0;
             int n_terms = 0;
-            for(int i = 0; i < sizeof(window) / sizeof(window[0]); i++)
+            for(int i = 0; i < win_size; i++)
             {
-                n_terms += window[i] == 0 ? 0 : 1;
-                window_sum += window[i];
+                n_terms += f_w(i, win_size);
+                window_sum += window[i] * f_w(i, win_size);
             }
             last_error = error;
             error = speed - window_sum / n_terms;
@@ -164,91 +173,37 @@ namespace pid
             double derivative = 100 * (error - last_error);
 
             // apply speeds
-            double volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
-            if(derivative <= -2.4 && error >= 5)
-                volt_speed = 127;
+            double volt_speed = base_speed + f_kP(error, speed) + integral * kI + derivative * kD;
+            if(volt_speed < 0 || speed == 0) volt_speed = 0; // check that voltage is not negative and target speed != 0
+            else // check for steep drop in rpm and error is at least 5 below ideal for recovery
+            {
+                if(derivative > 100 && !flywheel_recover)
+                {
+                    flywheel_recover = true;
+                    flywheel_recover_start = time;
+                }
+                if(flywheel_recover)
+                {
+                    if(time - flywheel_recover_start >= 1500)
+                        flywheel_recover = false;
+                    else   
+                        volt_speed= 127;
+                }
+            }
+
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
-            printf("[%lf, %lf], ", speed - error, derivative);
+            printf("[%lf, %lf], ", speed - error, f_kP(error, speed));
 
             // print stuff
             if(time % 60 == 0)
-                con.print(0, 0, "rpm: %.2lf | %.2lf        ", (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2, volt_speed);
-
+                glb::con.print(0, 0, "rpm: %.2lf", (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2);
+            
             // update time
             pros::delay(10);
             time += 10;
         }
-
-        // stop flywheel after loop
-        flywheelL = 0;
-        flywheelR = 0;
-
-        global_heading += init_heading - glb::imu.get_heading();
     }
-
-    // double flywheel(double speed, void(*index)(), void(*stop_index)(), int timeout=5000)
-    // {
-    //     int time = 0;
-
-    //     // constants
-    //     double kP = 1.0;
-    //     double kI = 0;
-    //     double kD = 0;
-
-    //     // initialize pid variables
-    //     double actual_avg = (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity()) / 2;
-    //     double error = speed - actual_avg; 
-    //     double integral = 0;
-    //     double last_error;
-
-    //     // count for average speed over 10 iterations
-    //     int count = 0;
-    //     double temp_avg = 0;
-
-    //     while(time < timeout)
-    //     {
-    //         // calculate average speed
-    //         if(count < 10)
-    //         {
-    //             double temp_avg +=  0.1 * ((flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity()) / 2);
-    //             count++;
-    //         }
-    //         else
-    //         {
-    //             count = 0;
-    //             temp_avg = 0;
-    //             avg_speed = temp_avg;
-
-    //             // index if within 5 of ideal rpm after avg_speed is updated
-    //             if(abs(actual_avg - speed) <= 5) *index();
-    //             else *stop_index();
-    //         }
-
-    //         // calculate pid variables
-    //         last_error = error;
-    //         error = speed - actual_avg;
-    //         integral += error;
-
-    //         double volt_speed = error * kP + integral * kI + derivative * kD;
-
-    //         // apply speeds
-    //         flywheelL = volt_speed;
-    //         flywheelR = volt_speed;
-
-    //         // print stuff
-    //         if(time % 60 == 0)
-    //             con.print(0, 0, "rpm: %.2lf         ", actual_avg);
-
-    //         // update time
-    //         pros::delay(1);
-    //         time++;
-    //     }
-
-    //     // stop flywheel after loop
-    //     flywheelL = 0;
-    //     flywheelR = 0;
-    // }
 }
 
 #endif

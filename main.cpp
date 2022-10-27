@@ -2,6 +2,7 @@
 #include "global.h"
 #include "driver.h"
 #include "auton.h"
+#include "pid.h"
 #include "lib/auton_obj.h"
 
 using namespace glb;
@@ -14,6 +15,9 @@ void initialize()
 	con.clear();
 	static Auton temp = auton_selector(autons);
 	auton = &temp;
+
+	// tasks
+	Task fw_ctrl(pid::spin_flywheel);
 }
 
 void autonomous()
@@ -28,7 +32,7 @@ void opcontrol()
 	while(true)
 	{
 		arcade_drive();
-		flywheel_control(change_speed(), time);
+		flywheel_control();
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))
 			autonomous();
