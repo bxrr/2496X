@@ -15,7 +15,6 @@ using namespace glb;
 
 void fly390()
 {
-    spin_flywheel();
     flywheel_target = 390;
     pros::delay(10000);
     flywheel_target = 0;

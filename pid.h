@@ -130,8 +130,7 @@ namespace pid
         int time = 0;
 
         // constants
-        // double kP = 0.4; using exponential function for kP instead of constant
-        auto f_kP = [](double x, double s) { return ((abs(x) / x) * s * pow(abs(x) / s, 1.7)); }; // = f_kP(x) = |x| / x * speed * (x/speed)^1.7
+        double kP = 0.4;
         double kI = 0.3;
         double kD = 0;
 
@@ -143,9 +142,11 @@ namespace pid
         double base_speed = 0;
 
         // count for average speed over n iterations
-        double window[20];
-        int win_size = sizeof(window) / sizeof(window[0]);
         auto f_w = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
+
+        double window[50];
+        int win_size = sizeof(window) / sizeof(window[0]);
+        for(int i = 0; i < win_size; i++) window[i] = 0;
         int cur_index = 0;
 
         while(true)
@@ -154,8 +155,10 @@ namespace pid
 
             // calculate average speed
             actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
+
+            // window layer 1
             if(cur_index >= win_size)
-                    cur_index = 0;
+                cur_index = 0;
             window[cur_index] = actual_avg;
             double window_sum = 0;
             int n_terms = 0;
@@ -164,36 +167,22 @@ namespace pid
                 n_terms += f_w(i, win_size);
                 window_sum += window[i] * f_w(i, win_size);
             }
-            last_error = error;
-            error = speed - window_sum / n_terms;
             cur_index++;
+            double win_avg = window_sum / n_terms;
 
             // calculate pid variables
+            last_error = error;
+            error = speed - win_avg;
             integral += error / 100;
             double derivative = 100 * (error - last_error);
 
             // apply speeds
-            double volt_speed = base_speed + f_kP(error, speed) + integral * kI + derivative * kD;
+            double volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
             if(volt_speed < 0 || speed == 0) volt_speed = 0; // check that voltage is not negative and target speed != 0
-            else // check for steep drop in rpm and error is at least 5 below ideal for recovery
-            {
-                if(derivative > 100 && !flywheel_recover)
-                {
-                    flywheel_recover = true;
-                    flywheel_recover_start = time;
-                }
-                if(flywheel_recover)
-                {
-                    if(time - flywheel_recover_start >= 1500)
-                        flywheel_recover = false;
-                    else   
-                        volt_speed= 127;
-                }
-            }
 
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
-            printf("[%lf, %lf], ", speed - error, f_kP(error, speed));
+            printf("[%lf, %lf], ", win_avg, integral);
 
             // print stuff
             if(time % 60 == 0)
