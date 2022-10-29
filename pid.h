@@ -17,6 +17,7 @@ namespace pid
     double flywheel_target = 0;
     bool flywheel_recover = false;
     int flywheel_recover_start = 0;
+    bool indexing = false;
 
     void drive(double distance, int timeout=5000)
     {
@@ -44,8 +45,13 @@ namespace pid
             // calculate drive pid variables
             last_error = error;
             error = distance - (glb::chas.pos() - start_pos);
-            integral += error / 1000;
-            double derivative = error - last_error;
+            integral += error / 100;
+            double derivative = 100 * (error - last_error);
+
+            // if(abs(error) < 15 && abs(glb::chas.speed()) < 15)
+            // {
+            //     break;
+            // }
 
             double speed = error * kP + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
@@ -64,8 +70,8 @@ namespace pid
                 glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
-            pros::delay(20);
-            time += 20;
+            pros::delay(10);
+            time += 10;
         }
 
         // stop chassis at end of loop
@@ -73,7 +79,7 @@ namespace pid
         global_heading += init_heading - glb::imu.get_heading();
     }
 
-    void turn(double degrees, int timeout=10000)
+    void turn(double degrees, int timeout=5000)
     {
         int time = 0;
 
@@ -97,6 +103,11 @@ namespace pid
             integral += error / 1000;
             double derivative = error - last_error;
 
+            // if(abs(error) < 0.2 && abs(glb::chas_left.speed()) < 15)
+            // {
+            //     break;
+            // }
+
             double speed = error * kP + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
@@ -109,8 +120,8 @@ namespace pid
                 glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
-            pros::delay(20);
-            time += 20;
+            pros::delay(10);
+            time += 10;
         }
 
         // stop chassis at end of loop
@@ -176,6 +187,9 @@ namespace pid
             integral += error / 100;
             double derivative = 100 * (error - last_error);
 
+            if(indexing)
+                error = 600 - win_avg;
+
             // apply speeds
             double volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
             if(volt_speed < 0 || speed == 0) volt_speed = 0; // check that voltage is not negative and target speed != 0
@@ -186,7 +200,7 @@ namespace pid
 
             // print stuff
             if(time % 60 == 0)
-                glb::con.print(0, 0, "rpm: %.2lf", (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2);
+                glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
             
             // update time
             pros::delay(10);

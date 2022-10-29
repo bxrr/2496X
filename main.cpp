@@ -33,6 +33,7 @@ void opcontrol()
 	{
 		arcade_drive();
 		flywheel_control();
+		intake_control();
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))
 			autonomous();

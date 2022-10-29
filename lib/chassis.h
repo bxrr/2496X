@@ -78,6 +78,31 @@ public:
         return (left_pos() + right_pos()) / 2;
     }
 
+    double left_speed()
+    {
+        double sum = 0;
+        for(pros::Motor motor : left_motors)
+        {
+            sum += motor.get_actual_velocity();
+        }
+        return sum / left_motors.size();
+    }
+
+    double right_speed()
+    {
+        double sum = 0;
+        for(pros::Motor motor : right_motors)
+        {
+            sum += motor.get_actual_velocity();
+        }
+        return sum / right_motors.size();
+    }
+
+    double speed()
+    {
+        return (left_speed() + right_speed()) / 2;
+    }
+
     double temp()
     {
         double sum = 0;

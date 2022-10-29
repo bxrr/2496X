@@ -65,6 +65,28 @@ void flywheel_control()
     }
 }
 
+void intake_control()
+{
+    if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
+    {
+        intakeL.move(127);
+        intakeR.move(127);
+        pid::indexing = false;
+    }
+    else if(con.get_digital(E_CONTROLLER_DIGITAL_R1))
+    {
+        intakeL.move(-127);
+        intakeR.move(-127);
+        pid::indexing = true;
+    }
+    else
+    {
+        pid::indexing = false;
+        intakeL.move(0);
+        intakeR.move(0);
+    }
+}
+
 int change_speed()
 {
     static int num = 0;
