@@ -49,7 +49,7 @@ void flywheel_control()
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {390, 500};
+    std::vector<int> speeds = {360, 500};
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
         fly_on = !fly_on;
 
@@ -71,17 +71,14 @@ void intake_control()
     {
         intakeL.move(127);
         intakeR.move(127);
-        pid::indexing = false;
     }
     else if(con.get_digital(E_CONTROLLER_DIGITAL_R1))
     {
         intakeL.move(-127);
         intakeR.move(-127);
-        pid::indexing = true;
     }
     else
     {
-        pid::indexing = false;
         intakeL.move(0);
         intakeR.move(0);
     }

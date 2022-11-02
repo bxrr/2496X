@@ -23,6 +23,7 @@ void initialize()
 void autonomous()
 {
 	(*auton).run();
+	pid::recover = true;
 }
 
 void opcontrol() 

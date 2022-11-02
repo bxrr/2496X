@@ -15,9 +15,13 @@ namespace pid
 
     // flywheel
     double flywheel_target = 0;
-    bool flywheel_recover = false;
-    int flywheel_recover_start = 0;
-    bool indexing = false;
+    bool recover = false;
+
+    double d_k(double error, double max_speed=127)
+    {
+        double offset = 200;
+        return abs(error) / error * (error < offset) ? max_speed * sin(M_PI  * abs(error) / (2 * offset)) : max_speed;
+    }
 
     void drive(double distance, int timeout=5000)
     {
@@ -53,7 +57,7 @@ namespace pid
             //     break;
             // }
 
-            double speed = error * kP + integral * kI + derivative * kD;
+            double speed = d_k(error) * kP + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // calculate correction pid variables
@@ -84,7 +88,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 2.0;
+        double kP = 1.0;
         double kI = 0;
         double kD = 0;
 
@@ -94,6 +98,8 @@ namespace pid
         double error = degrees - (glb::imu.get_heading() - start_pos);
         double last_error;
         double integral = 0;
+
+        auto f_k = [](double x) { return (127 * pow(x / 180, 0.6)); };
 
         while(time < timeout)
         {
@@ -108,7 +114,7 @@ namespace pid
             //     break;
             // }
 
-            double speed = error * kP + integral * kI + derivative * kD;
+            double speed = kP * f_k(error) + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // apply speed
@@ -141,7 +147,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.4;
+        double kP = 0.5;
         double kI = 0.3;
         double kD = 0;
 
@@ -151,13 +157,14 @@ namespace pid
         double integral = 0;
         double last_error;
         double base_speed = 0;
+        double derivative;
 
         // count for average speed over n iterations
         auto f_w = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
 
         double window[50];
+        memset(window, 0, sizeof(window)); // 0 initialize window;
         int win_size = sizeof(window) / sizeof(window[0]);
-        for(int i = 0; i < win_size; i++) window[i] = 0;
         int cur_index = 0;
 
         while(true)
@@ -182,18 +189,27 @@ namespace pid
             double win_avg = window_sum / n_terms;
 
             // calculate pid variables
+            double volt_speed = 0;
+            if(glb::intakeL.get_actual_velocity() < -10 && glb::intakeR.get_actual_velocity() < -10 && speed != 0 && recover)
+                speed += 65;
+
             last_error = error;
             error = speed - win_avg;
             integral += error / 100;
-            double derivative = 100 * (error - last_error);
-
-            if(indexing)
-                error = 600 - win_avg;
+            derivative = 100 * (error - last_error);
+            volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
 
             // apply speeds
-            double volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
-            if(volt_speed < 0 || speed == 0) volt_speed = 0; // check that voltage is not negative and target speed != 0
-
+            if(volt_speed < 0) volt_speed = 0; 
+            if(speed == 0)
+            {
+                volt_speed = 0;
+                memset(window, 0, sizeof(window));
+                error = 0;
+                last_error = 0;
+                integral = 0;
+                derivative = 0;
+            }
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
             printf("[%lf, %lf], ", win_avg, integral);
