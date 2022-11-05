@@ -19,6 +19,27 @@ void none()
     return;
 }
 
+void mload_side()
+{
+    recover = true;
+    flywheel_target = 455;
+    chas.spin_dist(30, 127, 100);
+    intake_dist(450);
+    delay(350);
+    drive(-100);
+    turn_to(-5);
+    delay(200);
+    index(2, 500, 5000);
+    flywheel_target = 430;
+    turn_to(-120);
+    intake_vel();
+    drive(2800);
+    turn_to(-50);
+    intake_vel(0);
+    index(3);
+    flywheel_target = 0;
+}
+
 void test_drive()
 {
     drive(200);
@@ -126,6 +147,7 @@ void skills()
 std::vector<Auton> autons
 {
     Auton("none", none),
+    Auton("m_load_side", mload_side),
     Auton("test drive", test_drive),
     Auton("test turn", test_turn),
     Auton("longshot", longshot),

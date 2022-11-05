@@ -16,17 +16,18 @@ namespace pid
     // flywheel
     double flywheel_target = 0;
     bool recover = false;
+    double actual_avg = 0;
 
     void drive(double distance, int timeout=5000)
     {
         int time = 0;
 
         // constants
-        double kP = 0.15;
-        double kI = .3;
+        double kP = 0.14;
+        double kI = 0.3;
         double kD = 0;
 
-        double straight_kI = 1;
+        double straight_kI = 1.5;
 
         //IMU wrapping
         glb::imu.set_heading(180);
@@ -51,7 +52,7 @@ namespace pid
 
             double derivative = 100 * (error - last_error);
 
-            if(abs(error) < 5 && abs(glb::chas.speed()) < 15)
+            if(abs(error) < 5 && abs(glb::chas.speed()) < 5)
             {
                 break;
             }
@@ -80,16 +81,16 @@ namespace pid
         // stop chassis at end of loop
         glb::chas.stop();
 
-        global_heading += init_heading - glb::imu.get_heading();
+        global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void turn(double degrees, int timeout=5000)
+    void turn(double degrees, int timeout=3000)
     {
         int time = 0;
 
         // constants
-        double kP = 1.0;
-        double kI = 0.3;
+        double kP = 1.1;
+        double kI = 6;
         double kD = 0;
 
         // initialize pid variables
@@ -99,8 +100,6 @@ namespace pid
         double last_error;
         double integral = 0;
 
-        auto f_k = [](double x) { return (127 * pow(x / 180, 0.6)); };
-
         while(time < timeout)
         {
             // calculate pid variables
@@ -109,12 +108,12 @@ namespace pid
             if(abs(error) < 15) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
-            // if(abs(error) < 0.2 && abs(glb::chas_left.speed()) < 15)
-            // {
-            //     break;
-            // }
+            if(abs(error) < 0.15 && abs(glb::chas.left_speed()) < 5)
+            {
+                break;
+            }
 
-            double speed = kP * f_k(error) + integral * kI + derivative * kD;
+            double speed = kP * error + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // apply speed
@@ -122,7 +121,7 @@ namespace pid
             glb::chas.spin_right(-speed);
 
             // print stuff
-            if(time % 60 == 0)
+            if(time % 50 == 0)
                 glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
@@ -132,7 +131,7 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
-        global_heading += start_pos - glb::imu.get_heading();
+        global_heading += glb::imu.get_heading() - start_pos;
     }
 
     void turn_to(double degree_to, int timeout=5000)
@@ -152,7 +151,7 @@ namespace pid
         double kD = 0.0;
 
         // initialize pid variables
-        double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
+        actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
         double error = 0; 
         double integral = 0;
         double last_error;
@@ -191,13 +190,13 @@ namespace pid
             // calculate pid variables
             double volt_speed = 0;
             if(glb::intakeR.get_actual_velocity() > 300 && speed != 0 && recover)
-                speed += 300;
+                speed += 250;
 
             last_error = error;
             error = speed - win_avg;
             integral += error / 100;
             derivative = 100 * (error - last_error);
-            kP = error > speed ? 1.0 : 0.5;
+            kP = error > speed ? 1.3 : 0.5;
             volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
 
             // apply speeds

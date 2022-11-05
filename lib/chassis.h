@@ -42,7 +42,10 @@ public:
 
     void stop()
     {
-        spin(0);
+        for(pros::Motor motor : right_motors)
+            motor.brake();
+        for(pros::Motor motor : left_motors)
+            motor.brake();
     }
 
     void reset()
@@ -114,7 +117,7 @@ public:
         return sum / (left_motors.size() + right_motors.size());
     }
 
-    void spin_dist(double distance, double speed=127, int timeout=5000)
+    void spin_dist(double distance, double speed=127, int timeout=3000)
     {
         int time = 0;
         double start_pos = pos();
