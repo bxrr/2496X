@@ -22,11 +22,14 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.4;
-        double kI = 0;
-        double kD = 0.1;
+        double kP = 0.15;
+        double kI = .3;
+        double kD = 0;
 
-        double straight_kI = 0;
+        double straight_kI = 1;
+
+        //IMU wrapping
+        glb::imu.set_heading(180);
 
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
@@ -43,29 +46,31 @@ namespace pid
             // calculate drive pid variables
             last_error = error;
             error = distance - (glb::chas.pos() - start_pos);
-            integral += error / 100;
+
+            if(abs(error)<100) integral += error / 100;
+
             double derivative = 100 * (error - last_error);
 
-            // if(abs(error) < 15 && abs(glb::chas.speed()) < 15)
-            // {
-            //     break;
-            // }
+            if(abs(error) < 5 && abs(glb::chas.speed()) < 15)
+            {
+                break;
+            }
 
             double speed = error * kP + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // calculate correction pid variables
-            straight_i += (glb::imu.get_heading() - init_heading) / 1000;
+            straight_i += (glb::imu.get_heading() - init_heading) / 100;
 
             double correction = straight_i * straight_kI;
 
             // apply speed
-            glb::chas.spin_left(speed);
-            glb::chas.spin_right(speed);
+            glb::chas.spin_left(speed - correction);
+            glb::chas.spin_right(speed + correction);
 
             // print stuff
             if(time % 50 == 0)
-                glb::con.print(0, 0, "err: %.2lf         ", error);
+                glb::con.print(0, 0, "err: %.2lf         ", init_heading-glb::imu.get_heading());
 
             // update time
             pros::delay(10);
@@ -74,6 +79,7 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
+
         global_heading += init_heading - glb::imu.get_heading();
     }
 
@@ -83,11 +89,11 @@ namespace pid
 
         // constants
         double kP = 1.0;
-        double kI = 0;
+        double kI = 0.3;
         double kD = 0;
 
         // initialize pid variables
-        glb::imu.set_heading(180);
+        glb::imu.set_heading(degrees > 0 ? 30 : 330);
         double start_pos = glb::imu.get_heading();
         double error = degrees - (glb::imu.get_heading() - start_pos);
         double last_error;
@@ -100,8 +106,8 @@ namespace pid
             // calculate pid variables
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            integral += error / 1000;
-            double derivative = error - last_error;
+            if(abs(error) < 15) integral += error / 100;
+            double derivative = (error - last_error) * 100;
 
             // if(abs(error) < 0.2 && abs(glb::chas_left.speed()) < 15)
             // {

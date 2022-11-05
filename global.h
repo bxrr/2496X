@@ -19,7 +19,7 @@ namespace glb
     #define P_INTAKE_L 9
     #define P_INTAKE_R 10
 
-    #define P_IMU 1
+    #define P_IMU 20
     
     // objects =============================
     pros::Controller con(pros::E_CONTROLLER_MASTER);
