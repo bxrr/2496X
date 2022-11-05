@@ -17,20 +17,14 @@ namespace pid
     double flywheel_target = 0;
     bool recover = false;
 
-    double d_k(double error, double max_speed=127)
-    {
-        double offset = 200;
-        return abs(error) / error * (error < offset) ? max_speed * sin(M_PI  * abs(error) / (2 * offset)) : max_speed;
-    }
-
     void drive(double distance, int timeout=5000)
     {
         int time = 0;
 
         // constants
-        double kP = 1.0;
+        double kP = 0.4;
         double kI = 0;
-        double kD = 0;
+        double kD = 0.1;
 
         double straight_kI = 0;
 
@@ -57,7 +51,7 @@ namespace pid
             //     break;
             // }
 
-            double speed = d_k(error) * kP + integral * kI + derivative * kD;
+            double speed = error * kP + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // calculate correction pid variables
@@ -66,11 +60,11 @@ namespace pid
             double correction = straight_i * straight_kI;
 
             // apply speed
-            glb::chas.spin_left(speed - correction);
-            glb::chas.spin_right(speed + correction);
+            glb::chas.spin_left(speed);
+            glb::chas.spin_right(speed);
 
             // print stuff
-            if(time % 60 == 0)
+            if(time % 50 == 0)
                 glb::con.print(0, 0, "err: %.2lf         ", error);
 
             // update time
@@ -149,7 +143,7 @@ namespace pid
         // constants
         double kP = 0.5;
         double kI = 0.3;
-        double kD = 0;
+        double kD = 0.0;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -190,13 +184,14 @@ namespace pid
 
             // calculate pid variables
             double volt_speed = 0;
-            if(glb::intakeL.get_actual_velocity() < -10 && glb::intakeR.get_actual_velocity() < -10 && speed != 0 && recover)
-                speed += 65;
+            if(glb::intakeR.get_actual_velocity() > 300 && speed != 0 && recover)
+                speed += 300;
 
             last_error = error;
             error = speed - win_avg;
             integral += error / 100;
             derivative = 100 * (error - last_error);
+            kP = error > speed ? 1.0 : 0.5;
             volt_speed = base_speed + error * kP + integral * kI + derivative * kD;
 
             // apply speeds
@@ -212,10 +207,10 @@ namespace pid
             }
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
-            printf("[%lf, %lf], ", win_avg, integral);
+            if(speed != 0) printf("[%lf, %lf], ", win_avg, glb::intakeR.get_actual_velocity());
 
             // print stuff
-            if(time % 60 == 0)
+            if(time % 100 == 0 && speed != 0)
                 glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
             
             // update time

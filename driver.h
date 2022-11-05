@@ -49,7 +49,7 @@ void flywheel_control()
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {360, 500};
+    std::vector<int> speeds = {360, 530};
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y))
         fly_on = !fly_on;
 
@@ -67,12 +67,12 @@ void flywheel_control()
 
 void intake_control()
 {
-    if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
+    if(con.get_digital(E_CONTROLLER_DIGITAL_L2))
     {
         intakeL.move(127);
         intakeR.move(127);
     }
-    else if(con.get_digital(E_CONTROLLER_DIGITAL_R1))
+    else if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
     {
         intakeL.move(-127);
         intakeR.move(-127);
@@ -95,10 +95,10 @@ int change_speed()
 void print_info(int time)
 {
 
-    if(time % 50 == 0 && time % 100 != 0 && time % 150 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 100)
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 100)
         con.print(0, 0, "Chassis Temp: %.1lf         ", chas.temp());
-    if(time % 100 == 0 && time % 150 != 0) 
-        con.print(1, 0, "%.2f : %.2f", imu.get_heading(), chas.pos());
+    if(time % 500 == 0 && time % 150 != 0) 
+        con.print(1, 0, "%.2f", intakeL.get_actual_velocity() + intakeR.get_actual_velocity());
     if(time % 150 == 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }

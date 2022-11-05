@@ -14,6 +14,7 @@ void initialize()
 	lcd::initialize();
 	con.clear();
 	static Auton temp = auton_selector(autons);
+	if(temp.get_name().compare("none")) pid::recover = true;
 	auton = &temp;
 
 	// tasks
@@ -35,6 +36,7 @@ void opcontrol()
 		arcade_drive();
 		flywheel_control();
 		intake_control();
+		print_info(time);
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))
 			autonomous();
