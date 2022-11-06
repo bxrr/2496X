@@ -25,42 +25,44 @@ void solo_awp()
     chas.spin_dist(30, 127, 100);
     intake_dist(450);
     delay(350);
-    drive(-150);
-    turn_to(-9.5);
+    drive(-115);
+    turn_to(-7.7);
     delay(200);
     index(2, 500, 5000);
 
-    fw_spin(450);
-    turn_to(-131.5);
+    fw_spin(430);
+    turn_to(-126.5);
     intake_vel();
-    drive(2560);
-    turn_to(-35);
+    drive(1185);
+    turn_to(-34);
     intake_vel(0);
     delay(200);
     index(3, 500, 7000);
     fw_stop();
-    turn_to(-136);
+    turn_to(-137.2);
     intake_vel()
 
-    drive(4500);
+    drive(1950);
     intake_vel(0);
-    turn_to(-90);
+    arc_turn(43.2, 510, 1000);
     fw_spin(455);
-    chas.spin_dist(40, 127, 100);
     intake_dist(450);
     delay(350);
 
     // possibly shoot 3 more discs
-    drive(-200);
-    turn_to(-79);
+    drive(-70);
+    turn_to(-81.4);
     index(3, 500, 7000);
     fw_stop();
 }
 
 void test_drive()
 {
-    drive_ft(-2);
-    drive_ft(8);
+    drive_ft(2);
+    drive_ft(-4);
+    delay(500);
+    drive(70);
+    drive(-115);
 }
 
 void test_turn()
@@ -85,6 +87,11 @@ void test_all()
     turn_to(0);
 }
 
+void test_arc()
+{
+    arc_turn(90, 500);
+}
+
 void skills()
 {
     fw_recover(true);
@@ -100,6 +107,7 @@ std::vector<Auton> autons
     Auton("solo awp", solo_awp),
     Auton("test drive", test_drive),
     Auton("test turn", test_turn),
+    Auton("test arc", test_arc),
     Auton("test all", test_all),
     Auton("skills", skills),
 };
