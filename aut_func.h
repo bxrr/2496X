@@ -28,7 +28,7 @@ namespace auf
 
     void index(int num_discs, int delay_ms=-1, int timeout=-1)
     {
-        if(delay_ms < 0) delay_ms = pid::flywheel_target * 5;
+        if(delay_ms < 0) delay_ms = pid::fw_target();
         if(timeout < 0) timeout = num_discs * (delay_ms + 1000);
 
         int time = 0;
@@ -36,7 +36,7 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::flywheel_target - pid::actual_avg) < 5 && t_since_shot >= delay_ms)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 5 && t_since_shot >= delay_ms)
             {
                 intake_dist(-310);
                 discs_shot++;

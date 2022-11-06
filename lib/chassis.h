@@ -43,9 +43,9 @@ public:
     void stop()
     {
         for(pros::Motor motor : right_motors)
-            motor.brake();
+            motor.move_velocity(0);
         for(pros::Motor motor : left_motors)
-            motor.brake();
+            motor.move_velocity(0);
     }
 
     void reset()

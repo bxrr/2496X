@@ -19,138 +19,88 @@ void none()
     return;
 }
 
-void mload_side()
+void solo_awp()
 {
-    recover = true;
-    flywheel_target = 455;
+    fw_spin(455);
     chas.spin_dist(30, 127, 100);
     intake_dist(450);
     delay(350);
-    drive(-100);
-    turn_to(-5);
+    drive(-150);
+    turn_to(-9.5);
     delay(200);
     index(2, 500, 5000);
-    flywheel_target = 430;
-    turn_to(-120);
+
+    fw_spin(450);
+    turn_to(-131.5);
     intake_vel();
-    drive(2800);
-    turn_to(-50);
+    drive(2560);
+    turn_to(-35);
     intake_vel(0);
-    index(3);
-    flywheel_target = 0;
+    delay(200);
+    index(3, 500, 7000);
+    fw_stop();
+    turn_to(-136);
+    intake_vel()
+
+    drive(4500);
+    intake_vel(0);
+    turn_to(-90);
+    fw_spin(455);
+    chas.spin_dist(40, 127, 100);
+    intake_dist(450);
+    delay(350);
+
+    // possibly shoot 3 more discs
+    drive(-200);
+    turn_to(-79);
+    index(3, 500, 7000);
+    fw_stop();
 }
 
 void test_drive()
 {
-    drive(200);
-    drive(-500);
-    drive(1000);
-    drive(-2500);
+    drive_ft(-2);
+    drive_ft(8);
 }
 
 void test_turn()
 {
     turn(90);
+    delay(500);
     turn_to(-90);
+    delay(500);
     turn_to(0);
+    delay(500);
     turn_to(45);
+    delay(500);
     turn_to(15);
 }
 
-void longshot()
+void test_all()
 {
-    flywheel_target = 530;
-    delay(2500);
-    for(int i = 0; i < 3; i++)
-    {
-        intake_dist(-310);
-        delay(2000);
-    }
-    flywheel_target = 0;
+    drive(200);
+    turn_to(-9.5);
+    turn_to(-135);
+    drive(3000);
+    turn_to(0);
 }
 
 void skills()
 {
-    pid::recover = true;
-    flywheel_target = 390;
-    for(int i = 0; i < 8; i++)
-    {
-        delay(800);
-        intake_dist(-310);
-    }
-    flywheel_target = 0;
-
-    // drive(1400);
-    // turn_to(-90);
-    // chas.spin_dist(50);
-    // intake_dist(500);
-
-    // turn_to(90);
-    // intake_vel(127);
-    // drive(700);
-    // intake_vel(0);
-    // turn_to(0);
-    // drive(600);
-    // intake_dist(500);
-
-    // turn_to(-90);
-    // flywheel_target = 390;
-    // drive(-1500);
-    // intake_dist(-1100);
-    // delay(600);
-    
-    // drive(1500);
-    // turn_to(-135);
-    // intake_vel(127);
-    // drive(1800);
-    // intake_vel(0);
-    // turn_to(-45);
-    // intake_dist(-1100);
-    // delay(600);
-
-    // turn_to(-135);
-    // drive(700);
-    // turn_to(90);
-    // drive(600);
-    // turn_to(180);
-    // for(int i = 0; i < 11; i++)
-    // {
-    //     delay(800);
-    //     intake_dist(-310);
-    // }
-
-    // drive(1400);
-    // turn_to(-90);
-    // chas.spin_dist(50);
-    // intake_dist(500);
-
-    // turn_to(90);
-    // intake_vel(127);
-    // drive(700);
-    // intake_vel(0);
-    // turn_to(0);
-    // drive(600);
-    // intake_dist(500);
-
-    // turn_to(-90);
-    // flywheel_target = 390;
-    // drive(-1500);
-    // intake_dist(-1100);
-    // delay(600);
-    // drive(1400);
-    // turn_to(135);
-    // drive(180);
-    // //endgame
+    fw_recover(true);
+    fw_spin(390);
+    index(9);
+    fw_stop();
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
     Auton("none", none),
-    Auton("m_load_side", mload_side),
+    Auton("solo awp", solo_awp),
     Auton("test drive", test_drive),
     Auton("test turn", test_turn),
-    Auton("longshot", longshot),
+    Auton("test all", test_all),
     Auton("skills", skills),
 };
 

@@ -14,11 +14,11 @@ void initialize()
 	lcd::initialize();
 	con.clear();
 	static Auton temp = auton_selector(autons);
-	if(temp.get_name().compare("none")) pid::recover = true;
+	if(temp.get_name() == compare("none")) pid::fw_recover(true);
 	auton = &temp;
 
 	// tasks
-	Task fw_ctrl(pid::spin_flywheel);
+	Task fw_ctrl(pid::fly_pid);
 }
 
 void autonomous()

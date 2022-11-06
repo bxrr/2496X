@@ -95,10 +95,10 @@ int change_speed()
 void print_info(int time)
 {
 
-    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 100)
-        con.print(0, 0, "Chassis Temp: %.1lf         ", chas.temp());
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 200)
+        con.print(0, 0, "Chas Temp: %.1lf         ", chas.temp());
     if(time % 500 == 0 && time % 150 != 0) 
-        con.print(1, 0, "%.2f", imu.get_heading());
+        con.print(1, 0, "imu: %.2f, fwr: %d         ", imu.get_heading(), pid::recover);
     if(time % 150 == 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }
