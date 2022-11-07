@@ -86,14 +86,16 @@ namespace pid
         drive(conv(ft), timeout);
     }
 
-    void turn(double degrees, int timeout=3000)
+    void turn(double degrees, int timeout=5000)
     {
         int time = 0;
 
         // constants
-        double kP = 1.1;
-        double kI = 6;
+        double kP = 0.9;
+        double kI = 20.0;
         double kD = 0;
+
+        auto f_k = [](double error) { return error / abs(error) * 30 * log(0.25 * (abs(error) + 4)) + 5; };
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -107,17 +109,17 @@ namespace pid
             // calculate pid 
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < 15) integral += error / 100;
+            if(abs(error) < 8) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 0.13 && abs(glb::chas.left_speed()) < 10)
+            if(abs(error) < 0.11 && abs(glb::chas.left_speed()) < 10)
             {
                 break;
             }
 
             // calculate speed
-            double speed = kP * error + integral * kI + derivative * kD;
+            double speed = kP * f_k(error) + integral * kI + derivative * kD;
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             glb::chas.spin_left(speed);
@@ -147,7 +149,7 @@ namespace pid
     void arc_turn(double degrees, double radius_enc, int timeout=5000, bool left_outer=true)
     {
         // define wheelbase information (set manually before usage of function)
-        double wheelbase_in = 16; // in inches
+        double wheelbase_in = 12.5; // in inches
         auto enc_conv = [](double in) { return (500 * in) / (2 * M_PI * 3.25); };
         double wheelbase_enc = enc_conv(wheelbase_in);
 
@@ -155,7 +157,7 @@ namespace pid
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
         double init_heading = glb::imu.get_heading();
 
-        // initial variables
+        // initial variablespros m
         double right_start = glb::chas.right_pos();
         double left_start = glb::chas.left_pos();
 
@@ -187,11 +189,11 @@ namespace pid
         double last_deg_err;
 
         // define constants and time;
-        double kP = 0.14;
-        double kI = 0.3;
+        double kP = 0.05;
+        double kI = 0.0;
         double kD = 0;
 
-        double diff_kP = 0.2;
+        double diff_kP = 0.00;
         double diff_kI = 0;
         double diff_kD = 0;
 
@@ -292,8 +294,8 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.5;
-        double kI = 0.3;
+        double kP = 0.4;
+        double kI = 0.25;
         double kD = 0.0;
 
         // initialize pid variables
@@ -303,7 +305,7 @@ namespace pid
         double last_error;
         double base_speed = 0;
         double derivative;
-        auto f_fullspeed = [](double target, double error) { return error > (-29 / 210) * (target - 390) + 39; }; // y-39 = (10-39)/(600-390) * (x-390)
+        auto f_fullspeed = [](double target, double error) { return error > -0.12 * (target - 350) + 50; };
 
         // count for average speed over n iterations
         auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
@@ -337,8 +339,18 @@ namespace pid
             }
             cur_index++;
             double win_avg = window_sum / n_terms;
+            
+            // calculate pid variables
+            double volt_speed = 0;
+            last_error = error;
+            error = speed - win_avg;
+            integral += error / 100;
+            derivative = (error - last_error) * 100;
 
-            // run flywheel recovery by adding 250 to target speed after 100 ms since start of indexing
+            // if error > than value given by the linear function f_fullspeed defined above, then run the flywheel at full speed
+            volt_speed = f_fullspeed(fw_target(), error) ? 127 : base_speed + error * kP + integral * kI + derivative * kD;
+
+            // run flywheel recovery by changing speed to max
             if(glb::intakeR.get_actual_velocity() > 100 && speed != 0 && recover)
             {
                 if(recover_start == false)
@@ -348,28 +360,13 @@ namespace pid
                 }
                 else if(recover_start_time + 100 <= time)
                 {
-                    speed += 250;
+                    volt_speed = 127;
                 }
             }
             else
             {
                 recover_start = false;
             }
-            
-            // calculate pid variables
-            double volt_speed = 0;
-            last_error = error;
-            error = speed - win_avg;
-            integral += error / 100;
-            derivative = (error - last_error) * 100;
-
-            // jack up kP in the case when speed is egregiously above target: e>15 kP=10, 5<e<15 kP=4, else 0.5 
-            if(actual_avg > speed + 15) kP = 10.0;
-            else if(actual_avg > speed + 5) kP = 4.0;
-            else kP = 0.5;
-
-            // if error > than value given by the linear function f_fullspeed defined above, then run the flywheel at full speed
-            volt_speed = f_fullspeed(fw_target(), error) ? 127 : base_speed + error * kP + integral * kI + derivative * kD;
 
             // apply speeds
             if(volt_speed < 0) volt_speed = 0; 
@@ -384,6 +381,7 @@ namespace pid
                 integral = 0;
                 derivative = 0;
             }
+
             glb::flywheelL = volt_speed;
             glb::flywheelR = volt_speed;
 

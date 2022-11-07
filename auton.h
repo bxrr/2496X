@@ -22,20 +22,21 @@ void none()
 void solo_awp()
 {
     fw_recover(true);
-    fw_spin(455);
+    fw_spin(500);
     chas.spin_dist(30, 127, 100);
-    intake_dist(450);
-    delay(350);
-    drive(-115);
-    turn_to(-7.7);
+    intake_dist(220);
+    delay(250);
+    drive(-200, 1000);
+    turn_to(-5.5, 1500);
     delay(200);
-    index(2, 300, 5000);
+    index(2, 500, 2000);
 
     fw_spin(430);
-    turn_to(-126.5);
+    delay(200);
+    turn_to(-135);
     intake_vel();
-    drive(1185);
-    turn_to(-34);
+    drive(2700);
+    turn_to(-29);
     intake_vel(0);
     delay(200);
     index(3, 300, 7000);
@@ -59,23 +60,15 @@ void solo_awp()
 
 void test_drive()
 {
-    drive_ft(2);
-    drive_ft(-4);
-    delay(500);
-    drive(70);
-    drive(-115);
+    drive(500);
 }
 
 void test_turn()
 {
     turn(90);
-    delay(500);
     turn_to(-90);
-    delay(500);
     turn_to(0);
-    delay(500);
     turn_to(45);
-    delay(500);
     turn_to(15);
 }
 
@@ -90,7 +83,7 @@ void test_all()
 
 void test_arc()
 {
-    arc_turn(90, 500);
+    arc_turn(90, 1000);
 }
 
 void skills()

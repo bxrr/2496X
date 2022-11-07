@@ -49,7 +49,7 @@ void flywheel_control()
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {340, 530};
+    std::vector<int> speeds = {350, 530};
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         fly_on = !fly_on;
 
