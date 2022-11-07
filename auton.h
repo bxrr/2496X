@@ -41,7 +41,7 @@ void solo_awp()
     index(3, 300, 7000);
     fw_stop();
     turn_to(-137.2);
-    intake_vel()
+    intake_vel();
 
     drive(1950);
     intake_vel(0);

@@ -14,12 +14,6 @@ namespace pid
     // chassis movement
     double global_heading = 0;
 
-    void drive_ft(double ft, timeout=5000)
-    {
-        double conv = [](double ft) { return (500 * 12 * conv) / (2 * M_PI * 3.25); }; // 7200 = 600 * 12
-        drive(conv(ft), timeout);
-    }
-
     void drive(double distance, int timeout=5000)
     {
         int time = 0;
@@ -86,6 +80,12 @@ namespace pid
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
+    void drive_ft(double ft, int timeout=5000)
+    {
+        auto conv = [](double ft) { return (500 * 12 * ft) / (2 * M_PI * 3.25); }; // 7200 = 600 * 12
+        drive(conv(ft), timeout);
+    }
+
     void turn(double degrees, int timeout=3000)
     {
         int time = 0;
@@ -148,12 +148,12 @@ namespace pid
     {
         // define wheelbase information (set manually before usage of function)
         double wheelbase_in = 16; // in inches
-        double enc_conv = [](double in) { return (500 * in) / (2 * M_PI * 3.25); };
+        auto enc_conv = [](double in) { return (500 * in) / (2 * M_PI * 3.25); };
         double wheelbase_enc = enc_conv(wheelbase_in);
 
         // reset imu
-        imu.set_heading(degrees > 0 ? 30 : 330);
-        double init_heading = imu.get_heading();
+        glb::imu.set_heading(degrees > 0 ? 30 : 330);
+        double init_heading = glb::imu.get_heading();
 
         // initial variables
         double right_start = glb::chas.right_pos();
@@ -182,7 +182,7 @@ namespace pid
 
         // degree difference from ideal degree based on current inner distance using imu PID variables
         double ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
-        double deg_err = ideal_deg - (init_heading - imu.get_heading());
+        double deg_err = ideal_deg - (init_heading - glb::imu.get_heading());
         double deg_i = 0;
         double last_deg_err;
 
@@ -226,7 +226,7 @@ namespace pid
             // update degree difference variables
             ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
             last_deg_err = deg_err;
-            deg_err = ideal_deg - (init_heading - imu.get_heading()); // deg_err > 0 means not turning fast enough. deg_err < 0 means turning too fast
+            deg_err = ideal_deg - (init_heading - glb::imu.get_heading()); // deg_err > 0 means not turning fast enough. deg_err < 0 means turning too fast
             deg_i += deg_err / 100;
             double deg_d = (deg_err - last_deg_err) * 100;
 
@@ -237,7 +237,7 @@ namespace pid
             // }
 
             // calculate speeds
-            double f_ms = [](double speed) { return abs(speed) > 127 ? abs(speed) / speed) * 127 : speed; }; // lambda function checking that speed does not exceed 127
+            auto f_ms = [](double speed) { return abs(speed) > 127 ? abs(speed) / speed * 127 : speed; }; // lambda function checking that speed does not exceed 127
             double rspeed = kP * inner_error + inner_i * kI + inner_d * kD; rspeed = f_ms(rspeed);
             double lspeed = kP * outer_error + outer_i * kI + outer_d * kD; lspeed = f_ms(rspeed);
             double dist_correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
@@ -254,7 +254,7 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
-        global_heading += glb::imu.get_heading() - start_pos;
+        global_heading += glb::imu.get_heading() - init_heading;
     }
 
     // flywheel ============================================================
@@ -303,10 +303,10 @@ namespace pid
         double last_error;
         double base_speed = 0;
         double derivative;
-        bool f_fullspeed = [](double target, double error) { return error > (-29 / 210) * (target - 390) + 39; } // y-39 = (10-39)/(600-390) * (x-390)
+        auto f_fullspeed = [](double target, double error) { return error > (-29 / 210) * (target - 390) + 39; }; // y-39 = (10-39)/(600-390) * (x-390)
 
         // count for average speed over n iterations
-        double f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
+        auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
 
         double window[50];
         memset(window, 0, sizeof(window)); // 0 initialize window;
@@ -369,7 +369,7 @@ namespace pid
             else kP = 0.5;
 
             // if error > than value given by the linear function f_fullspeed defined above, then run the flywheel at full speed
-            volt_speed = f_fullspeed(target, error) ? 127 : base_speed + error * kP + integral * kI + derivative * kD;
+            volt_speed = f_fullspeed(fw_target(), error) ? 127 : base_speed + error * kP + integral * kI + derivative * kD;
 
             // apply speeds
             if(volt_speed < 0) volt_speed = 0; 
