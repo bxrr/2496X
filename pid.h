@@ -180,6 +180,12 @@ namespace pid
         double outer_diff_i = 0;
         double last_outer_diff;
 
+        // degree difference from ideal degree based on current inner distance using imu PID variables
+        double ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
+        double deg_err = ideal_deg - (init_heading - imu.get_heading());
+        double deg_i = 0;
+        double last_deg_err;
+
         // define constants and time;
         double kP = 0.14;
         double kI = 0.3;
@@ -188,6 +194,10 @@ namespace pid
         double diff_kP = 0.2;
         double diff_kI = 0;
         double diff_kD = 0;
+
+        double imu_kP = 0.5;
+        double imu_kI = 0;
+        double imu_kD = 0;
 
         int time = 0;
 
@@ -213,6 +223,13 @@ namespace pid
             outer_diff_i += outer_diff_err / 100;
             double outer_diff_d = (outer_diff_err - last_outer_diff) * 100;
 
+            // update degree difference variables
+            ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
+            last_deg_err = deg_err;
+            deg_err = ideal_deg - (init_heading - imu.get_heading()); // deg_err > 0 means not turning fast enough. deg_err < 0 means turning too fast
+            deg_i += deg_err / 100;
+            double deg_d = (deg_err - last_deg_err) * 100;
+
             // check for exit condition
             // if(abs(inner_error) < 5 && abs(glb::chas.left_speed()) < 10)
             // {
@@ -223,11 +240,12 @@ namespace pid
             double f_ms = [](double speed) { return abs(speed) > 127 ? abs(speed) / speed) * 127 : speed; }; // lambda function checking that speed does not exceed 127
             double rspeed = kP * inner_error + inner_i * kI + inner_d * kD; rspeed = f_ms(rspeed);
             double lspeed = kP * outer_error + outer_i * kI + outer_d * kD; lspeed = f_ms(rspeed);
-            double correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
+            double dist_correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
+            double imu_correction = imu_kP * deg_err + imu_kI * deg_i + imu_kD * deg_d;
 
             // apply speed
-            glb::chas.spin_left(lspeed - correction);
-            glb::chas.spin_right(rspeed + correction);
+            glb::chas.spin_left(lspeed - dist_correction + imu_correction);
+            glb::chas.spin_right(rspeed + dist_correction - imu_correction);
 
             // update time
             pros::delay(10);

@@ -21,6 +21,7 @@ void none()
 
 void solo_awp()
 {
+    fw_recover(true);
     fw_spin(455);
     chas.spin_dist(30, 127, 100);
     intake_dist(450);
@@ -28,7 +29,7 @@ void solo_awp()
     drive(-115);
     turn_to(-7.7);
     delay(200);
-    index(2, 500, 5000);
+    index(2, 300, 5000);
 
     fw_spin(430);
     turn_to(-126.5);
@@ -37,7 +38,7 @@ void solo_awp()
     turn_to(-34);
     intake_vel(0);
     delay(200);
-    index(3, 500, 7000);
+    index(3, 300, 7000);
     fw_stop();
     turn_to(-137.2);
     intake_vel()
@@ -52,7 +53,7 @@ void solo_awp()
     // possibly shoot 3 more discs
     drive(-70);
     turn_to(-81.4);
-    index(3, 500, 7000);
+    index(3, 300, 7000);
     fw_stop();
 }
 
