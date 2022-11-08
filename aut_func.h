@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "global.h"
+#include "pid.h"
 
 namespace auf
 {
@@ -38,7 +39,7 @@ namespace auf
         {
             if(abs(pid::fw_target() - pid::fw_speed()) < 5 && t_since_shot >= delay_ms)
             {
-                intake_dist(-310);
+                intake_dist(-490);
                 discs_shot++;
                 t_since_shot = 0;
             }

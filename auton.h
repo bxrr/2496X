@@ -22,14 +22,14 @@ void none()
 void solo_awp()
 {
     fw_recover(true);
-    fw_spin(500);
+    fw_spin(465);
     chas.spin_dist(30, 127, 100);
-    intake_dist(220);
+    intake_dist(420);
     delay(250);
     drive(-200, 1000);
     turn_to(-5.5, 1500);
     delay(200);
-    index(2, 500, 2000);
+    index(2, 900, 2000);
 
     fw_spin(430);
     delay(200);
@@ -39,14 +39,16 @@ void solo_awp()
     turn_to(-29);
     intake_vel(0);
     delay(200);
-    index(3, 300, 7000);
+    index(3, 700, 7000);
+    delay(200);
     fw_stop();
     turn_to(-137.2);
     intake_vel();
 
-    drive(1950);
+    drive(3500);
     intake_vel(0);
     arc_turn(43.2, 510, 1000);
+    chas.spin_dist(600);
     fw_spin(455);
     intake_dist(450);
     delay(350);
