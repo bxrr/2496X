@@ -37,9 +37,9 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 5 && t_since_shot >= delay_ms)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms)
             {
-                intake_dist(-490);
+                intake_dist(-600);
                 discs_shot++;
                 t_since_shot = 0;
             }

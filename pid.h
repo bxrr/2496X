@@ -80,13 +80,33 @@ namespace pid
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void drive_ft(double ft, int timeout=5000)
+    void drive_const(double distance, int speed=127, int timeout=5000)
     {
-        auto conv = [](double ft) { return (500 * 12 * ft) / (2 * M_PI * 3.25); }; // 7200 = 600 * 12
-        drive(conv(ft), timeout);
+        int time = 0;
+        double start_pos = glb::chas.pos();
+        double target = start_pos + distance;
+        double s = distance / fabs(distance) * abs(speed);
+        
+        double straight_kI = 1.5;
+        double straight_i = 0;
+        glb::imu.set_heading(180);
+        double init_heading = glb::imu.get_heading();
+
+        while((distance < 0 ? glb::chas.pos() > target : glb::chas.pos() < target) && time < timeout)
+        {
+            straight_i += (glb::imu.get_heading() - init_heading) / 100;
+            double correction = straight_i * straight_kI;
+            glb::chas.spin_left(s - correction);
+            glb::chas.spin_right(s + correction);
+            pros::delay(10);
+            time += 10;
+        }
+        glb::chas.stop();
+
+        global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void turn(double degrees, int timeout=5000)
+    void turn(double degrees, int timeout=3000)
     {
         int time = 0;
 
@@ -139,7 +159,7 @@ namespace pid
         global_heading += glb::imu.get_heading() - start_pos;
     }
 
-    void turn_to(double degree_to, int timeout=5000)
+    void turn_to(double degree_to, int timeout=3000)
     {
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
@@ -189,7 +209,7 @@ namespace pid
         double last_deg_err;
 
         // define constants and time;
-        double kP = 0.05;
+        double kP = 0.14;
         double kI = 0.0;
         double kD = 0;
 
@@ -197,7 +217,7 @@ namespace pid
         double diff_kI = 0;
         double diff_kD = 0;
 
-        double imu_kP = 0.5;
+        double imu_kP = 0.2;
         double imu_kI = 0;
         double imu_kD = 0;
 
@@ -261,7 +281,7 @@ namespace pid
 
     // flywheel ============================================================
     double flywheel_target = 0;
-    bool recover = false;
+    bool recover = true;
     double actual_avg = 0;
 
     void fw_spin(double speed)
