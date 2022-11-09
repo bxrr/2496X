@@ -209,7 +209,7 @@ namespace pid
         double last_deg_err;
 
         // define constants and time;
-        double kP = 0.14;
+        double kP = 0.1;
         double kI = 0.0;
         double kD = 0;
 
@@ -217,7 +217,7 @@ namespace pid
         double diff_kI = 0;
         double diff_kD = 0;
 
-        double imu_kP = 0.2;
+        double imu_kP = 0.5;
         double imu_kI = 0;
         double imu_kD = 0;
 

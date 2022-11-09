@@ -26,31 +26,43 @@ void solo_awp()
     intake_dist(420);
     delay(250);
     drive(-200, 1000);
-    turn_to(-5.5, 1500);
-    delay(200);
-    index(2, 1000, 3000);
+    turn_to(-5.2, 1500);
+    delay(400);
+    index(2, 700, 4000);
 
-    fw_spin(440);
+    fw_spin(427);
     delay(200);
-    turn_to(-135, 1800);
+    turn_to(-128, 2600);
+
+    // knock over discs
+    drive(1400, 1800);
+
+    // start intake
     intake_vel();
-    drive_const(2100, 70);
-    drive(600, 1800);
+
+    // intake discs
+    drive_const(1000, 65);
+    // drive_const(500, 127);
+    drive(300, 1800);
+
     turn_to(-30, 1800);
     intake_vel(0);
     delay(200);
-    index(3, 1000, 4000);
-    delay(200);
+    index(3, 700, 4000);
+    delay(700);
     fw_stop();
     turn_to(-137.2, 1800);
     intake_vel();
 
     drive_const(2800, 127, 3000);
-    drive_const(500, 90, 600);
+    drive(1350, 1800);
     intake_vel(0);
-    arc_turn(48, 510, 1500);
-    drive_const(300, 127, 1000);
+
+    turn_to(-90, 1800);
+    
+    drive_const(150, 50, 1000);
     intake_dist(1000);
+    delay(2000);
 }
 
 void test_drive()
