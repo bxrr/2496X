@@ -101,11 +101,24 @@ void skills()
     fw_stop();
 }
 
+void shooterize()
+{
+    fw_spin(460);
+    drive_const(30, 127, 100);
+    intake_dist(420);
+    delay(250);
+    drive(-200, 1000);
+    turn_to(-5.2, 1500);
+    delay(400);
+    index(2, 700, 4000);
+}
+
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
     Auton("none", none),
     Auton("solo awp", solo_awp),
+    Auton("shooterize", shooterize),
     Auton("test drive", test_drive),
     Auton("test turn", test_turn),
     Auton("test arc", test_arc),
