@@ -14,6 +14,9 @@ using namespace pid;
 using namespace glb;
 using namespace auf;
 
+
+#define ROLLER_DIST 420
+
 void none()
 {
     return;
@@ -23,77 +26,128 @@ void solo_awp()
 {
     fw_spin(490);
     drive_const(30, 127, 100);
-    intake_dist(420);
+    intake_dist(ROLLER_DIST);
     delay(250);
     drive(-200, 1000);
-    turn_to(-5.2, 1500);
-    delay(300);
-    index(2, 1300, 4000);
-    delay(400);
+    turn_to(-5.2, 1000);
+    delay(100);
+    index(2, 800, 4000);
+    delay(250);
 
     fw_spin(250);
-    delay(200);
-    turn_to(-128, 2200);
-
-    // knock over discs
+    turn_to(-128, 1600);
 
     // start intake
     intake_vel();
     intakeP.set(true);
 
     // intake discs
-    
-    drive_const(1900, 127);
+    drive_const(1550, 127);
     intakeP.set(false);
-    drive(800, 1200);
+    drive(1150, 1500);
 
     fw_spin(460);
-    turn_to(-30.5, 1800);
+    turn_to(-30.5, 1500);
     intake_vel(0);
     delay(100);
-    index(3, 1200, 4000);
-    delay(700);
+    index(3, 800, 4000);
+    delay(250);
     fw_stop();
-    turn_to(-137.2, 1800);
+    turn_to(-137.2, 1500);
     intake_vel();
 
-    drive_const(2800, 127, 3000);
-    drive(1350, 1800);
+    drive(3950, 2200);
     intake_vel(0);
 
-    turn_to(-90, 1800);
+    turn_to(-90, 1100);
     
-    drive_const(150, 50, 1000);
-    intake_dist(1000);
-    delay(2000);
+    chas.spin(50);
+    delay(200);
+    intake_dist(ROLLER_DIST);
+    delay(350);
+    chas.stop();
+}
+
+void ml_half_awp()
+{
+    fw_spin(490);
+    drive_const(30, 127, 100);
+    intake_dist(ROLLER_DIST);
+    delay(250);
+    drive(-200, 1000);
+    turn_to(-5.2, 1000);
+    delay(100);
+    index(2, 800, 4000);
+    intakeP.set(true);
+    delay(250);
+
+    turn_to(165, 1500);
+    drive(150, 1000);
+    intake_vel();
+    intakeP.set(false);
+    turn_to(-5, 1600);
+    index(3, 800, 4000);
+    delay(250);
+
+    turn_to(-128, 1600);
+
+    intake_vel();
+    intakeP.set(true);
+
+    drive(1550, 1500);
+    intakeP.set(false);
+    delay(1000);
+    turn_to(-30, 1200);
+    index(3, 800, 4000);
+    delay(200);
+    fw_stop();
+}
+
+void nml_half_awp()
+{
+    fw_spin(490);
+    drive(1000, 1500);
+    turn_to(95.2, 1500);
+    index(2, 800, 4000);
+    delay(250);
+    
+    fw_spin(250);
+    turn_to(90, 1000);
+    drive_const(150, 40, 500);
+    intake_dist(ROLLER_DIST);
+
+    drive(-200);
+    intakeP.set(true);
+    turn_to(-90);
+    intake_vel();
+    drive(150, 1000);
+    intakeP.set(false);
+    delay(1000);
+
+    fw_spin(480);
+    drive(-150, 1000);
+    turn_to(-84.8);
+    index(3, 800, 4000);
+    delay(250);
+    
+    fw_spin(250);
+    turn_to(-135);
+    intake_vel();
+    drive(2880, 3000);
+    fw_spin(450);
+    turn_to(135);
+    intake_vel(0);
+    delay(100);
+    index(3, 800, 4000);
+    delay(250);
+    fw_stop();
 }
 
 void test_drive()
 {
-    drive_const(1000);
-}
-
-void test_turn()
-{
-    turn(90);
-    turn_to(-90);
-    turn_to(0);
-    turn_to(45);
-    turn_to(15);
-}
-
-void test_all()
-{
-    drive(200);
-    turn_to(-9.5);
-    turn_to(-135);
-    drive(3000);
-    turn_to(0);
-}
-
-void test_arc()
-{
-    arc_turn(90, 1000);
+    drive(2800);
+    drive(-1000);
+    drive(-500);
 }
 
 void skills()
@@ -104,28 +158,14 @@ void skills()
     fw_stop();
 }
 
-void shooterize()
-{
-    fw_spin(460);
-    drive_const(30, 127, 100);
-    intake_dist(420);
-    delay(250);
-    drive(-200, 1000);
-    turn_to(-5.2, 1500);
-    delay(400);
-    index(2, 700, 4000);
-}
-
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
     Auton("none", none),
     Auton("solo awp", solo_awp),
-    Auton("shooterize", shooterize),
+    Auton("ml half awp", ml_half_awp),
+    Auton("nml half awp", nml_half_awp),
     Auton("test drive", test_drive),
-    Auton("test turn", test_turn),
-    Auton("test arc", test_arc),
-    Auton("test all", test_all),
     Auton("skills", skills),
 };
 

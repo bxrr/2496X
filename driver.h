@@ -146,8 +146,8 @@ Auton auton_selector(std::vector<Auton> autons)
             return autons.at(selected);
         }
 
-        pros::delay(1);
-        timer++;
+        pros::delay(10);
+        timer += 10;
     }
 }
 

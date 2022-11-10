@@ -101,9 +101,11 @@ namespace pid
             pros::delay(10);
             time += 10;
         }
+        glb::chas.changeBrake(Chassis::brakeTypes::HOLD);
         glb::chas.stop();
 
         global_heading += glb::imu.get_heading() - init_heading;
+        glb::chas.changeBrake(Chassis::brakeTypes::COAST);
     }
 
     void turn(double degrees, int timeout=3000)
@@ -155,8 +157,11 @@ namespace pid
         }
 
         // stop chassis at end of loop
+        glb::chas.changeBrake(Chassis::brakeTypes::HOLD);
         glb::chas.stop();
+        
         global_heading += glb::imu.get_heading() - start_pos;
+        glb::chas.changeBrake(Chassis::brakeTypes::COAST);
     }
 
     void turn_to(double degree_to, int timeout=3000)
