@@ -19,14 +19,11 @@ public:
         set(init_status);
     }
 
-
     void set(bool extend)
     {
             piston.set_value(extend);
             status = extend;
-        
     } 
-    
 
     void toggle()
     {

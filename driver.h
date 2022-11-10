@@ -45,24 +45,25 @@ void tank_drive()
     }
 }
 
-void flywheel_control()
+int flywheel_control()
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {350, 530};
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
+    std::vector<int> speeds = {355, 250, 385, 500};
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
         fly_on = !fly_on;
 
     if(fly_on)
     {
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && speed_index < speeds.size()) speed_index++;
-        else if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) && speed_index > 0) speed_index--;
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) && speed_index > 0) speed_index--;
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2) && speed_index < speeds.size()) speed_index++;
         pid::flywheel_target = speeds[speed_index];
     }
     else
     {
         pid::flywheel_target = 0;
     }
+    return speeds[speed_index];
 }
 
 void intake_control()
@@ -81,6 +82,11 @@ void intake_control()
     {
         intakeL.move(0);
         intakeR.move(0);
+    }
+    
+    if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X))
+    {
+        intakeP.toggle();
     }
 }
 

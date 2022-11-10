@@ -14,7 +14,6 @@ void initialize()
 	lcd::initialize();
 	con.clear();
 	static Auton temp = auton_selector(autons);
-	if(temp.get_name() == "none") pid::fw_recover(true);
 	auton = &temp;
 
 	// tasks

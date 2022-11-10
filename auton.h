@@ -21,34 +21,37 @@ void none()
 
 void solo_awp()
 {
-    fw_spin(460);
+    fw_spin(490);
     drive_const(30, 127, 100);
     intake_dist(420);
     delay(250);
     drive(-200, 1000);
     turn_to(-5.2, 1500);
+    delay(300);
+    index(2, 1300, 4000);
     delay(400);
-    index(2, 700, 4000);
 
-    fw_spin(427);
+    fw_spin(250);
     delay(200);
-    turn_to(-128, 2600);
+    turn_to(-128, 2200);
 
     // knock over discs
-    drive(1400, 1800);
 
     // start intake
     intake_vel();
+    intakeP.set(true);
 
     // intake discs
-    drive_const(1000, 65);
-    // drive_const(500, 127);
-    drive(300, 1800);
+    
+    drive_const(1900, 127);
+    intakeP.set(false);
+    drive(800, 1200);
 
-    turn_to(-30, 1800);
+    fw_spin(460);
+    turn_to(-30.5, 1800);
     intake_vel(0);
-    delay(200);
-    index(3, 700, 4000);
+    delay(100);
+    index(3, 1200, 4000);
     delay(700);
     fw_stop();
     turn_to(-137.2, 1800);

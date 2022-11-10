@@ -18,6 +18,7 @@ namespace glb
     #define P_FLY_R 17
     #define P_INTAKE_L 9
     #define P_INTAKE_R 10
+    #define P_INTAKE_P 'A'
 
     #define P_IMU 20
     
@@ -28,6 +29,8 @@ namespace glb
     pros::Motor flywheelR(P_FLY_R, pros::E_MOTOR_GEARSET_06, false);
     pros::Motor intakeL(P_INTAKE_L, pros::E_MOTOR_GEARSET_06, true);
     pros::Motor intakeR(P_INTAKE_R, pros::E_MOTOR_GEARSET_06, false);
+
+    Piston intakeP(P_INTAKE_P);
 
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
