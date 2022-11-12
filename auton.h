@@ -24,48 +24,46 @@ void none()
 
 void solo_awp()
 {
-    fw_spin(490);
-    drive_const(30, 127, 100);
-    intake_dist(ROLLER_DIST);
-    delay(250);
+    drive_const(30, 50, 100);
+    int color = auto_roller();
+    fw_spin(495);
     drive(-200, 1000);
-    turn_to(-5.2, 1000);
+    turn_to(-5, 1000);
     delay(100);
-    index(2, 800, 4000);
+    index(2, 500, 4000);
     delay(250);
 
-    fw_spin(250);
-    turn_to(-128, 1600);
+    fw_spin(400);
+    turn_to(-129, 2500);
 
     // start intake
     intake_vel();
     intakeP.set(true);
 
     // intake discs
-    drive_const(1550, 127);
+    drive_const(1000, 127);
     intakeP.set(false);
-    drive(1150, 1500);
+    drive_const(1000, 60);
+    drive(1000, 2200);
 
     fw_spin(460);
-    turn_to(-30.5, 1500);
+    turn_to(-32, 1500);
     intake_vel(0);
     delay(100);
-    index(3, 800, 4000);
+    index(3, 500, 4000);
     delay(250);
     fw_stop();
-    turn_to(-137.2, 1500);
+    turn_to(-137.2, 1300);
     intake_vel();
 
-    drive(3950, 2200);
+    drive(3950, 1800);
     intake_vel(0);
 
-    turn_to(-90, 1100);
+    turn_to(-90, 1000);
     
-    chas.spin(50);
-    delay(200);
-    intake_dist(ROLLER_DIST);
-    delay(350);
-    chas.stop();
+    chas.spin(70);
+    delay(500);
+    auto_roller(color);
 }
 
 void ml_half_awp()
@@ -150,6 +148,10 @@ void test_drive()
     drive(-500);
 }
 
+void test_roller()
+{
+    auto_roller();
+}
 void skills()
 {
     fw_recover(true);
@@ -166,6 +168,7 @@ std::vector<Auton> autons
     Auton("ml half awp", ml_half_awp),
     Auton("nml half awp", nml_half_awp),
     Auton("test drive", test_drive),
+    Auton("test roller", test_roller),
     Auton("skills", skills),
 };
 

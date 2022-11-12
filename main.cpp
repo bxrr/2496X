@@ -29,18 +29,23 @@ void autonomous()
 void opcontrol() 
 {
 	int time = 0;
+	bool chassis_on = true;
 
 	while(true)
 	{
-		arcade_drive();
-		flywheel_control();
+		if(chassis_on)
+			arcade_drive();
 		intake_control();
+		flywheel_control(time);
+		angle_control();
 		print_info(time);
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))
 			autonomous();
 		if(con.get_digital(E_CONTROLLER_DIGITAL_LEFT))
 			calibrate_robot();
+		if(con.get_digital(E_CONTROLLER_DIGITAL_RIGHT))
+			chassis_on = !chassis_on;
 		
 		delay(10);
 		time += 10;

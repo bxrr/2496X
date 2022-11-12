@@ -414,7 +414,7 @@ namespace pid
             if(speed != 0) printf("[%lf, %lf], ", win_avg, glb::intakeR.get_actual_velocity());
 
             // print stuff
-            if(time % 100 == 0 && speed != 0)
+            if(time % 100 == 0 && speed != 0 && time % 1600 != 0)
                 glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
             
             // update time

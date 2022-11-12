@@ -11,6 +11,7 @@
 using namespace glb;
 using namespace pros;
 
+bool low_goal = false;
 
 void arcade_drive()
 {
@@ -45,25 +46,54 @@ void tank_drive()
     }
 }
 
-int flywheel_control()
+int flywheel_control(int time)
 {
-    static int speed_index = 0;
-    static bool fly_on = false;
-    std::vector<int> speeds = {355, 250, 385, 500};
+    static int speed_index = 1;
+    static bool fly_on = true;
+    static bool fly_idle = false;
+    static std::string pattern = "";
+    std::vector<int> speeds = {355, 250, 410, 500};
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
         fly_on = !fly_on;
 
     if(fly_on)
     {
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) && speed_index > 0) speed_index--;
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2) && speed_index < speeds.size()) speed_index++;
-        pid::flywheel_target = speeds[speed_index];
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
+        {
+            if (speed_index == 1)
+                speed_index = (low_goal) ? 2 : 0;
+            else
+                speed_index = 1;
+            if (speed_index == 0)
+                pattern = ". .";
+            else if (speed_index == 2)
+                pattern = ". -";
+            else 
+                pattern = ".";
+
+        }
+        // if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2) && speed_index < speeds.size()) speed_index++;
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) 
+        {
+            low_goal = !low_goal;
+            if (speed_index != 1)
+            {
+                speed_index = low_goal ? 2 : 0;
+            }
+        }
+        if (time%1600 == 0 && time % 500 != 0 && time%50 != 0 && time%150 != 0)
+            con.rumble(pattern.c_str());
+        if (speed_index == 1)
+            pid::fw_stop();
+        else
+            pid::fw_spin(speeds[speed_index]);
     }
     else
     {
-        pid::flywheel_target = 0;
+        pid::fw_stop();
     }
-    return speeds[speed_index];
+
+    return speed_index;
 }
 
 void intake_control()
@@ -90,6 +120,14 @@ void intake_control()
     }
 }
 
+void angle_control()
+{
+    if(low_goal)
+        angleP.set(true);
+    else
+        angleP.set(false);
+}
+
 int change_speed()
 {
     static int num = 0;
@@ -101,11 +139,11 @@ int change_speed()
 void print_info(int time)
 {
 
-    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 200)
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 200)
         con.print(0, 0, "Chas Temp: %.1lf         ", chas.temp());
-    if(time % 500 == 0 && time % 150 != 0) 
+    if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0) 
         con.print(1, 0, "imu: %.2f, fwr: %d         ", imu.get_heading(), pid::recover);
-    if(time % 150 == 0)
+    if(time % 150 == 0 && time % 1600 != 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }
 

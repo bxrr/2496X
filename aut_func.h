@@ -4,6 +4,8 @@
 #include "main.h"
 #include "global.h"
 #include "pid.h"
+#include "lib/chassis.h"
+
 
 namespace auf
 {
@@ -12,6 +14,54 @@ namespace auf
         glb::intakeL = -speed;
         glb::intakeR = -speed;
     }
+    
+    //red  340 < hue || hue < 20
+    //blue 200 < hue && hue < 260
+    int auto_roller(int color = 0, double chas_speed = 40, int timeout = 2000)
+    {
+        bool isRed;
+        double hue = optical.get_hue();
+        optical.set_led_pwm(100);
+        if (color == 1)
+            isRed = true;
+        else if (color == 2)
+            isRed = false;
+        else
+        {
+            if(340 < hue || hue < 20)
+                isRed = true;
+            else
+                isRed = false;
+        }
+        int time = 0;
+        bool targetColor;
+        // while (!(200 < hue && hue < 260) || !(340 < hue || hue < 20))
+        //     pros::delay(2);
+
+        while (time < timeout)
+        {
+            chas.spin(chas_speed);
+            hue = optical.get_hue();
+            if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
+                targetColor = true;
+            else
+                targetColor = false;
+            if (targetColor == false)
+            {
+                intake_vel(0);
+                break;
+            }
+            else
+                intake_vel(-100);
+
+            pros::delay(1);
+            time++;
+        }
+        chas.stop();
+        optical.set_led_pwm(0);
+        return isRed ? 1 : 2;
+    }
+
 
     void intake_dist(double distance, double speed=600)
     {
@@ -31,7 +81,6 @@ namespace auf
     {
         if(delay_ms < 0) delay_ms = pid::fw_target();
         if(timeout < 0) timeout = num_discs * (delay_ms + 1000);
-
         int time = 0;
         int discs_shot = 0;
         int t_since_shot = 0;
@@ -39,14 +88,19 @@ namespace auf
         {
             if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms)
             {
-                intake_dist(-610);
+                intake_dist(-600);
                 discs_shot++;
                 t_since_shot = 0;
             }
-
-            pros::delay(10);
+            pros::delay(1);
             t_since_shot++;
-            time += 10;
+            time++;
+        }
+
+        if(discs_shot < num_discs)
+        {
+            intake_dist(-1800);
+            pros::delay(400);
         }
     }
 }
