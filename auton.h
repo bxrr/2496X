@@ -46,6 +46,10 @@ void solo_awp()
     drive_const(1000, 60);
     drive(1000, 2200);
 
+    intake_vel(0);
+    delay(500);
+    intake_vel();
+
     fw_spin(460);
     turn_to(-32, 1500);
     intake_vel(0);
@@ -61,8 +65,8 @@ void solo_awp()
 
     turn_to(-90, 1000);
     
-    chas.spin(70);
-    delay(500);
+    chas.spin(50);
+    delay(400);
     auto_roller(color);
 }
 
