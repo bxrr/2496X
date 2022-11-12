@@ -27,11 +27,11 @@ void solo_awp()
     drive_const(30, 50, 100);
     int color = auto_roller();
     fw_spin(495);
-    drive(-200, 1000);
-    turn_to(-5, 1000);
-    delay(100);
-    index(2, 500, 4000);
-    delay(250);
+    drive(-200, 800);
+    turn_to(-4.9, 900);
+    delay(50);
+    index(2, 500, 2500);
+    delay(150);
 
     fw_spin(400);
     turn_to(-129, 2500);
@@ -41,32 +41,27 @@ void solo_awp()
     intakeP.set(true);
 
     // intake discs
-    drive_const(1000, 127);
+    drive(1600, 1600);
     intakeP.set(false);
-    drive_const(1000, 60);
-    drive(1000, 2200);
+    drive(300, 600);
 
+    fw_spin(455);
+    turn_to(-21, 1500);
     intake_vel(0);
-    delay(500);
-    intake_vel();
-
-    fw_spin(460);
-    turn_to(-32, 1500);
-    intake_vel(0);
-    delay(100);
+    delay(50);
     index(3, 500, 4000);
-    delay(250);
+    delay(150);
     fw_stop();
     turn_to(-137.2, 1300);
     intake_vel();
 
-    drive(3950, 1800);
+    drive(5020, 1800);
     intake_vel(0);
 
-    turn_to(-90, 1000);
+    turn_to(-90, 700);
     
-    chas.spin(50);
-    delay(400);
+    drive_const(400);
+    delay(50);
     auto_roller(color);
 }
 
