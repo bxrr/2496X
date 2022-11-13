@@ -11,9 +11,6 @@
 using namespace glb;
 using namespace pros;
 
-bool low_goal = false;
-bool isRed = true;
-
 void arcade_drive()
 {
     double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
@@ -140,7 +137,7 @@ int change_speed()
 void print_info(int time)
 {
 
-    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (flywheelL.get_actual_velocity() + flywheelR.get_actual_velocity())/2 <= 200)
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (pid::fw::win_avg)/2 <= 200)
         con.print(0, 0, "Chas Temp: %.1lf         ", chas.temp());
     if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0) 
         con.print(1, 0, "imu: %.2f, fwr: %d         ", imu.get_heading(), pid::recover);
@@ -163,18 +160,10 @@ Auton auton_selector(std::vector<Auton> autons)
     {
         if(!glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_A))
         {
-            if(timer % 50 == 0 && timer % 100 != 0) 
-                glb::con.print(0, 0, "Select: %s         ", autons.at(selected).get_name());
-            if(timer% 100 == 0) 
-                glb::con.print(1, 0, "Color: %s         ", isRed ?"Red" : "Blue");
-
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT) && selected > 0)
                 selected--;
-
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) && selected < autons.size()-1)
                 selected++;
-            if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
-                isRed = !isRed;
         }
         else
         {

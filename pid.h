@@ -7,6 +7,7 @@
 #include <numeric>
 #include <stdio.h>
 #include <cmath>
+#include <cstring>
 
 
 namespace pid
@@ -317,34 +318,35 @@ namespace pid
         double actual_avg = 0;
         double derivative = 0;
 
+        int time = 0;
+
+        // constants
+        double kP = 1.0;
+        double kI = 0.1;
+        double kD = 0.0;
+        double kF = 0.2116666667;
+
+        // initialize pid variables
+        actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
+        double error = 0; 
+        double integral = 0;
+        double last_error;
+        double base_speed = 0;
+
+        // count for average speed over n iterations
+        auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
+
+        double window[25];
+        memset(window, 0, sizeof(window)); // 0 initialize window;
+        int win_size = sizeof(window) / sizeof(window[0]);
+        double win_avg = 0;
+
+        // recovery delay
+        int recover_start_time = 0;
+        bool recover_start = false;
+
         void fw_pid()
         {
-            int time = 0;
-
-            // constants
-            double kP = 1.0;
-            double kI = 0.1;
-            double kD = 0.0;
-
-            // initialize pid variables
-            actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
-            double error = 0; 
-            double integral = 0;
-            double last_error;
-            double base_speed = 0;
-
-            // count for average speed over n iterations
-            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
-
-            double window[50];
-            memset(window, 0, sizeof(window)); // 0 initialize window;
-            int win_size = sizeof(window) / sizeof(window[0]);
-            int cur_index = 0;
-
-            // recovery delay
-            int recover_start_time = 0;
-            bool recover_start = false;
-
             while(true) // defined as a task; always running
             {
                 double speed = flywheel_target;
@@ -352,10 +354,12 @@ namespace pid
                 // calculate average speed
                 actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
 
-                // calculate average of last 50 values along an exponential function of x^2 based on f_window defined above
-                if(cur_index >= win_size)
-                    cur_index = 0;
-                window[cur_index] = actual_avg;
+                // calculate average of last 50 values along an exponential function defined as f_window above
+                // shift array left by one value
+                memmove(window, window+1, sizeof(window[0]) * win_size-1);
+                // make last element new value
+                window[win_size-1] = actual_avg;
+                
                 double window_sum = 0;
                 int n_terms = 0;
                 for(int i = 0; i < win_size; i++)
@@ -364,18 +368,9 @@ namespace pid
                     window_sum += window[i] * f_window(i, win_size);
                 }
                 cur_index++;
-                double win_avg = window_sum / n_terms;
-                
-                // calculate pid variables
-                double volt_speed = 0;
-                last_error = error;
-                error = speed - win_avg;
-                integral += error / 100;
-                derivative = (error - last_error) * 100;
+                win_avg = window_sum / n_terms;
 
-                volt_speed = error * kP + integral * kI + derivative * kD;
-
-                // run flywheel recovery by changing speed to max
+                // flywheel recovery adds 150 to target speed
                 if(glb::intakeR.get_actual_velocity() > 100 && speed != 0 && recover)
                 {
                     if(recover_start == false)
@@ -385,13 +380,22 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        volt_speed = 127;
+                        speed += 150;
                     }
                 }
                 else
                 {
                     recover_start = false;
                 }
+                
+                // calculate pid variables
+                double volt_speed = 0;
+                last_error = error;
+                error = speed - win_avg;
+                integral += error / 100;
+                derivative = (error - last_error) * 100;
+
+                volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
 
                 // apply speeds
                 if(volt_speed < 0) volt_speed = 0; 

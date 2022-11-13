@@ -132,19 +132,10 @@ public:
         stop();
     }
 
-    enum brakeTypes {COAST, HOLD};
-    void changeBrake(brakeTypes bT)
+    void changeBrake(auto bT=pros::E_MOTOR_BRAKE_COAST)
     {
-        if(bT == COAST)
-        {
-            for(pros::Motor motor : left_motors) motor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-            for(pros::Motor motor : right_motors) motor.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-        }
-        else if(bT == HOLD)
-        {
-            for(pros::Motor motor : left_motors) motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-            for(pros::Motor motor : right_motors) motor.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-        }
+        for(pros::Motor motor : left_motors) motor.set_brake_mode(bT);
+        for(pros::Motor motor : right_motors) motor.set_brake_mode(bT);
     }
 };
 

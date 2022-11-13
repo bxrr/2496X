@@ -17,7 +17,7 @@ void initialize()
 	auton = &temp;
 
 	// tasks
-	Task fw_ctrl(pid::fw_pid);
+	Task fw_ctrl(pid::fw::fw_pid);
 }
 
 void autonomous()
