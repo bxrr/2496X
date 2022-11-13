@@ -4,6 +4,7 @@
 #include "main.h"
 #include "global.h"
 #include "pid.h"
+#include "driver.h"
 #include "lib/chassis.h"
 
 
@@ -19,21 +20,10 @@ namespace auf
     //blue 200 < hue && hue < 260
     int auto_roller(int color = 0, double chas_speed = 40, int timeout = 2000)
     {
-        bool isRed;
         double hue = optical.get_hue();
         optical.set_led_pwm(100);
-        if (color == 1)
-            isRed = true;
-        else if (color == 2)
-            isRed = false;
-        else
-        {
-            if(340 < hue || hue < 20)
-                isRed = true;
-            else
-                isRed = false;
-        }
         int time = 0;
+        bool stage = false;
         bool targetColor;
         // while (!(200 < hue && hue < 260) || !(340 < hue || hue < 20))
         //     pros::delay(2);
@@ -42,17 +32,40 @@ namespace auf
         {
             chas.spin(chas_speed);
             hue = optical.get_hue();
-            if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
-                targetColor = true;
-            else
-                targetColor = false;
-            if (targetColor == false)
+            if (!stage)
+            {
+                intake_vel(-80);
+                if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
+                    stage = true;
+            }
+            // if (stage == 1)
+            // {
+            //     intake_vel(-100);
+            //     if(((190 < hue && hue < 260) && isRed) || ((340 < hue || hue < 20) && !isRed))
+            //         stage = 2;
+            // }
+            // if (stage == 2)
+            // {
+            //     intake_vel(-100);
+            //     if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
+            //         stage = 3;
+            // }
+            if (stage)
             {
                 intake_vel(0);
                 break;
             }
-            else
-                intake_vel(-100);
+            // if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
+            //     targetColor = true;
+            // else
+            //     targetColor = false;
+            // if (targetColor == false)
+            // {
+            //     intake_vel(0);
+            //     break;
+            // }
+            // else
+            //     intake_vel(-100);
 
             pros::delay(1);
             time++;

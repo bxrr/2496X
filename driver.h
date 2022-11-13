@@ -12,6 +12,7 @@ using namespace glb;
 using namespace pros;
 
 bool low_goal = false;
+bool isRed = true;
 
 void arcade_drive()
 {
@@ -164,12 +165,16 @@ Auton auton_selector(std::vector<Auton> autons)
         {
             if(timer % 50 == 0 && timer % 100 != 0) 
                 glb::con.print(0, 0, "Select: %s         ", autons.at(selected).get_name());
+            if(timer% 100 == 0) 
+                glb::con.print(1, 0, "Color: %s         ", isRed ?"Red" : "Blue");
 
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT) && selected > 0)
                 selected--;
 
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) && selected < autons.size()-1)
                 selected++;
+            if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_UP))
+                isRed = !isRed;
         }
         else
         {
