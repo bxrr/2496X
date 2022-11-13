@@ -22,15 +22,23 @@ void none()
     return;
 }
 
+void test_flywheel()
+{
+    fw_spin(495);
+    index(3, 600, 4000);
+}
+
 void solo_awp()
 {
-    drive_const(30, 50, 100);
-    int color = auto_roller();
-    fw_spin(495);
+    chas.spin(50);
+    delay(200);
+    intake_dist(-300);
+    delay(400);
+    fw_spin(485);
     drive(-200, 800);
     turn_to(-4.9, 900);
     delay(50);
-    index(2, 500, 2500);
+    index(2, 600, 8000);
     delay(150);
 
     fw_spin(400);
@@ -45,24 +53,13 @@ void solo_awp()
     intakeP.set(false);
     drive(300, 600);
 
-    fw_spin(455);
-    turn_to(-21, 1500);
+    fw_spin(450);
+    turn_to(-21.2, 1500);
     intake_vel(0);
     delay(50);
     index(3, 500, 4000);
     delay(150);
     fw_stop();
-    turn_to(-137.2, 1300);
-    intake_vel();
-
-    drive(5020, 1800);
-    intake_vel(0);
-
-    turn_to(-90, 700);
-    
-    drive_const(400);
-    delay(50);
-    auto_roller(color);
 }
 
 void ml_half_awp()

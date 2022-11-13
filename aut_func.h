@@ -15,66 +15,6 @@ namespace auf
         glb::intakeL = -speed;
         glb::intakeR = -speed;
     }
-    
-    //red  340 < hue || hue < 20
-    //blue 200 < hue && hue < 260
-    int auto_roller(int color = 0, double chas_speed = 40, int timeout = 2000)
-    {
-        double hue = optical.get_hue();
-        optical.set_led_pwm(100);
-        int time = 0;
-        bool stage = false;
-        bool targetColor;
-        // while (!(200 < hue && hue < 260) || !(340 < hue || hue < 20))
-        //     pros::delay(2);
-
-        while (time < timeout)
-        {
-            chas.spin(chas_speed);
-            hue = optical.get_hue();
-            if (!stage)
-            {
-                intake_vel(-80);
-                if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
-                    stage = true;
-            }
-            // if (stage == 1)
-            // {
-            //     intake_vel(-100);
-            //     if(((190 < hue && hue < 260) && isRed) || ((340 < hue || hue < 20) && !isRed))
-            //         stage = 2;
-            // }
-            // if (stage == 2)
-            // {
-            //     intake_vel(-100);
-            //     if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
-            //         stage = 3;
-            // }
-            if (stage)
-            {
-                intake_vel(0);
-                break;
-            }
-            // if(((190 < hue && hue < 260) && !isRed) || ((340 < hue || hue < 20) && isRed))
-            //     targetColor = true;
-            // else
-            //     targetColor = false;
-            // if (targetColor == false)
-            // {
-            //     intake_vel(0);
-            //     break;
-            // }
-            // else
-            //     intake_vel(-100);
-
-            pros::delay(1);
-            time++;
-        }
-        chas.stop();
-        optical.set_led_pwm(0);
-        return isRed ? 1 : 2;
-    }
-
 
     void intake_dist(double distance, double speed=600)
     {
@@ -99,7 +39,7 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms && abs(pid::fw::derivative) < 3)
             {
                 intake_dist(-600);
                 discs_shot++;
