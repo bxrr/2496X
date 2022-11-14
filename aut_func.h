@@ -37,17 +37,24 @@ namespace auf
         int time = 0;
         int discs_shot = 0;
         int t_since_shot = 0;
+        bool reset = false;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms && abs(pid::fw::derivative) / 100 < 2.5)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 2.5 && t_since_shot >= delay_ms)
             {
                 intake_dist(-600);
                 discs_shot++;
+                reset = false;
                 t_since_shot = 0;
             }
-            pros::delay(1);
-            t_since_shot++;
-            time++;
+            if(t_since_shot >= 200 && t_since_shot <= delay_ms && reset == false)
+            {
+                reset = true;
+                intake_dist(320);
+            }
+            pros::delay(10);
+            t_since_shot += 10;
+            time += 10;
         }
 
         if(discs_shot < num_discs)

@@ -131,12 +131,6 @@ public:
         }
         stop();
     }
-
-    void changeBrake(auto bT=pros::E_MOTOR_BRAKE_COAST)
-    {
-        for(pros::Motor motor : left_motors) motor.set_brake_mode(bT);
-        for(pros::Motor motor : right_motors) motor.set_brake_mode(bT);
-    }
 };
 
 #endif

@@ -23,7 +23,7 @@ void initialize()
 void autonomous()
 {
 	(*auton).run();
-	pid::recover = true;
+	pid::fw_recover(true);
 }
 
 void opcontrol() 
@@ -36,8 +36,8 @@ void opcontrol()
 		if(chassis_on)
 			arcade_drive();
 		intake_control();
-		flywheel_control(time);
 		angle_control();
+		flywheel_control();
 		print_info(time);
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))

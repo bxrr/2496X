@@ -26,9 +26,6 @@ namespace pid
 
         double straight_kI = 1.5;
 
-        //IMU wrapping
-        glb::imu.set_heading(180);
-
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
         double error = distance - (glb::chas.pos() - start_pos);
@@ -36,8 +33,15 @@ namespace pid
         double integral = 0;
 
         // initialize straight pid variables
-        double init_heading = glb::imu.get_heading(); 
+        glb::imu.set_heading(180);
+        double init_heading = glb::imu.get_heading();
         double straight_i = 0;
+
+        // variables for exiting if within 5 error for 100ms
+        bool within_err = false;
+        int within_err_time = 0;
+
+        double slew = 0.05;
 
         while(time < timeout)
         {
@@ -50,9 +54,22 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 5 && abs(glb::chas.speed()) < 10)
+            if(abs(error) < 7)
             {
-                break;
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 100 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
             }
 
             // calculate correction pid variables and speed
@@ -62,9 +79,12 @@ namespace pid
             straight_i += (glb::imu.get_heading() - init_heading) / 100;
             double correction = straight_i * straight_kI;
 
+            slew += slew <= 1 ? 0.05 : 0;
+            slew = slew > 1 ? 1 : slew;
+
             // apply speed
-            glb::chas.spin_left(speed - correction);
-            glb::chas.spin_right(speed + correction);
+            glb::chas.spin_left(slew * (speed - correction));
+            glb::chas.spin_right(slew * (speed + correction));
 
             // print stuff
             if(time % 50 == 0)
@@ -77,7 +97,6 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
-
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
@@ -102,11 +121,9 @@ namespace pid
             pros::delay(10);
             time += 10;
         }
-        glb::chas.changeBrake(Chassis::brakeTypes::HOLD);
-        glb::chas.stop();
 
+        glb::chas.stop();
         global_heading += glb::imu.get_heading() - init_heading;
-        glb::chas.changeBrake(Chassis::brakeTypes::COAST);
     }
 
     void turn(double degrees, int timeout=3000)
@@ -127,6 +144,10 @@ namespace pid
         double last_error;
         double integral = 0;
 
+        // variables for exiting if within 0.1 error for 100ms
+        bool within_err = false;
+        int within_err_time = 0;
+
         while(time < timeout)
         {
             // calculate pid 
@@ -136,9 +157,22 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 0.11 && abs(glb::chas.left_speed()) < 10)
+            if(abs(error) <= 0.1)
             {
-                break;
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 100 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
             }
 
             // calculate speed
@@ -158,11 +192,8 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        glb::chas.changeBrake(Chassis::brakeTypes::HOLD);
         glb::chas.stop();
-        
         global_heading += glb::imu.get_heading() - start_pos;
-        glb::chas.changeBrake(Chassis::brakeTypes::COAST);
     }
 
     void turn_to(double degree_to, int timeout=3000)
@@ -286,37 +317,10 @@ namespace pid
     }
 
     // flywheel ============================================================
-    void fw_spin(double speed)
-    {
-        fw::flywheel_target = speed;
-    }
-
-    void fw_recover(bool on=true)
-    {
-        fw::recover = on;
-    }
-
-    double fw_speed()
-    {
-        return fw::actual_avg;
-    }
-
-    void fw_stop()
-    {
-        fw_spin(0);
-    }
-
-    double fw_target()
-    {
-        return fw::flywheel_target;
-    }
-
     namespace fw
     {
         double flywheel_target = 0;
         bool recover = true;
-        double actual_avg = 0;
-        double derivative = 0;
 
         int time = 0;
 
@@ -327,26 +331,27 @@ namespace pid
         double kF = 0.2116666667;
 
         // initialize pid variables
-        actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
+        double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
         double error = 0; 
         double integral = 0;
         double last_error;
+        double derivative = 0;
         double base_speed = 0;
-
-        // count for average speed over n iterations
-        auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
-
-        double window[25];
-        memset(window, 0, sizeof(window)); // 0 initialize window;
-        int win_size = sizeof(window) / sizeof(window[0]);
-        double win_avg = 0;
-
-        // recovery delay
-        int recover_start_time = 0;
-        bool recover_start = false;
 
         void fw_pid()
         {
+            // count for average speed over n iterations
+            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
+
+            double window[25];
+            memset(window, 0, sizeof(window)); // 0 initialize window;
+            int win_size = sizeof(window) / sizeof(window[0]);
+            double win_avg = 0;
+
+            // recovery delay
+            int recover_start_time = 0;
+            bool recover_start = false;
+
             while(true) // defined as a task; always running
             {
                 double speed = flywheel_target;
@@ -354,10 +359,8 @@ namespace pid
                 // calculate average speed
                 actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
 
-                // calculate average of last 50 values along an exponential function defined as f_window above
-                // shift array left by one value
+                // calculate average of last n window of values weighted by an exponential function defined as f_window above
                 memmove(window, window+1, sizeof(window[0]) * win_size-1);
-                // make last element new value
                 window[win_size-1] = actual_avg;
                 
                 double window_sum = 0;
@@ -367,7 +370,6 @@ namespace pid
                     n_terms += f_window(i, win_size);
                     window_sum += window[i] * f_window(i, win_size);
                 }
-                cur_index++;
                 win_avg = window_sum / n_terms;
 
                 // flywheel recovery adds 150 to target speed
@@ -426,6 +428,31 @@ namespace pid
                 time += 10;
             }
         }
+    }
+
+    void fw_spin(double speed)
+    {
+        fw::flywheel_target = speed;
+    }
+
+    void fw_recover(bool on=true)
+    {
+        fw::recover = on;
+    }
+
+    double fw_speed()
+    {
+        return fw::actual_avg;
+    }
+
+    void fw_stop()
+    {
+        fw_spin(0);
+    }
+
+    double fw_target()
+    {
+        return fw::flywheel_target;
     }
 }
 
