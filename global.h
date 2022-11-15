@@ -22,8 +22,6 @@ namespace glb
     #define P_ANGLE_P 'B'
 
     #define P_IMU 20
-    #define P_OPTICAL 19
-    
     // objects =============================
     pros::Controller con(pros::E_CONTROLLER_MASTER);
     pros::Imu imu(P_IMU);
@@ -34,8 +32,6 @@ namespace glb
 
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P);
-    pros::Optical optical(P_OPTICAL);
-
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
 }

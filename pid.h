@@ -20,11 +20,11 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.14;
-        double kI = 0.32;
-        double kD = 0;
+        double kP = 0.17;
+        double kI = 3.0;
+        double kD = 0.0;
 
-        double straight_kI = 1.5;
+        double straight_kI = 2.0;
 
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
@@ -49,7 +49,7 @@ namespace pid
             last_error = error;
             error = distance - (glb::chas.pos() - start_pos);
 
-            if(abs(error)<100) integral += error / 100;
+            if(abs(error)<50) integral += error / 100;
 
             double derivative = (error - last_error) * 100;
 
@@ -88,7 +88,7 @@ namespace pid
 
             // print stuff
             if(time % 50 == 0)
-                glb::con.print(0, 0, "err: %.2lf c: %.2lf        ", init_heading-glb::imu.get_heading(), correction);
+                glb::con.print(0, 0, "err: %.2lf c: %.2lf        ", error, within_err_time);
 
             // update time
             pros::delay(10);
@@ -107,7 +107,7 @@ namespace pid
         double target = start_pos + distance;
         double s = distance / fabs(distance) * abs(speed);
         
-        double straight_kI = 1.5;
+        double straight_kI = 0.8;
         double straight_i = 0;
         glb::imu.set_heading(180);
         double init_heading = glb::imu.get_heading();
@@ -325,10 +325,10 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 1.0;
-        double kI = 0.1;
-        double kD = 0.0;
-        double kF = 0.2116666667;
+        double kP = 0.5;
+        double kI = 0.08;
+        double kD = 0.00;
+        double kF = 0.175;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -382,7 +382,7 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        speed += 150;
+                        speed += 100;
                     }
                 }
                 else
@@ -400,7 +400,7 @@ namespace pid
                 volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
 
                 // apply speeds
-                if(volt_speed < 0) volt_speed = 0; 
+                if(volt_speed <= 0) volt_speed = 1; 
 
                 // if target speed is set to 0, reset all variables
                 if(speed == 0)

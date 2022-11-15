@@ -46,9 +46,9 @@ void tank_drive()
 int flywheel_control()
 {
     static int speed_index = 0;
-    static bool fly_on = true;
+    static bool fly_on = false;
     static bool fly_idle = false;
-    std::vector<int> speeds = {355, 390};
+    std::vector<int> speeds = {340, 370};
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         fly_on = !fly_on;
 
@@ -133,8 +133,12 @@ Auton auton_selector(std::vector<Auton> autons)
     {
         if(!glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_A))
         {
+            if(timer % 50 == 0 && timer % 100 != 0) 
+                glb::con.print(0, 0, "Select: %s         ", autons.at(selected).get_name());
+
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT) && selected > 0)
                 selected--;
+
             if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT) && selected < autons.size()-1)
                 selected++;
         }
@@ -151,10 +155,9 @@ Auton auton_selector(std::vector<Auton> autons)
             return autons.at(selected);
         }
 
-        pros::delay(10);
-        timer += 10;
+        pros::delay(1);
+        timer++;
     }
 }
-
 
 #endif 

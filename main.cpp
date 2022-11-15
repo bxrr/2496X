@@ -23,7 +23,6 @@ void initialize()
 void autonomous()
 {
 	(*auton).run();
-	pid::fw_recover(true);
 }
 
 void opcontrol() 
@@ -33,6 +32,7 @@ void opcontrol()
 
 	while(true)
 	{
+		pid::fw_recover(true);
 		if(chassis_on)
 			arcade_drive();
 		intake_control();
