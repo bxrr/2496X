@@ -96,7 +96,30 @@ void ml_half_awp()
 
 void nml_half_awp()
 {
+    fw_spin(500);
+    drive(1300, 1500);
+    turn_to(97, 1500);
+    delay(100);
+    index(2, 800, 4000);
+    delay(100);
     
+    fw_spin(450);
+    turn_to(90, 1000);
+    chas.spin(50);
+    delay(150);
+    intake_dist(-200);
+    delay(200);
+
+    drive(-400, 1000);
+    turn_to(-139, 1500);
+    intake_vel();
+    drive(2800, 3300);
+
+    turn_to(135, 2200);
+    delay(100);
+    index(3, 800, 4000);
+    delay(100);
+    fw_stop();
 }
 
 void skills()
