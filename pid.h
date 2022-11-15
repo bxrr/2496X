@@ -41,7 +41,7 @@ namespace pid
         bool within_err = false;
         int within_err_time = 0;
 
-        double slew = 0.05;
+        double slew = 0.1;
 
         while(time < timeout)
         {
