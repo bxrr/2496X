@@ -51,6 +51,11 @@ namespace auf
             t_since_shot++;
             time++;
         }
+
+        if(discs_shot < num_discs)
+        {
+            intake_dist(-1800);
+        }
     }
 }
 

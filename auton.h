@@ -26,8 +26,8 @@ void solo_awp()
     delay(100);
     intake_dist(-200);
     delay(200);
-    drive(-400, 1000);
-    turn_to(-5.2, 1000);
+    drive(-400, 800);
+    turn_to(-5.2, 700);
     delay(100);
     index(2, 600, 3000);
     delay(100);
@@ -51,12 +51,12 @@ void solo_awp()
     delay(100);
     fw_stop();
 
-    turn_to(-135);
+    turn_to(-135, 2000);
     drive_const(3500);
     arc_turn(90, 500, 900);
     chas.spin(50);
     delay(250);
-    intake_dist(-200);
+    intake_dist(-300);
     delay(300);
     chas.stop();
 }
