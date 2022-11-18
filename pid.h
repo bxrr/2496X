@@ -330,11 +330,6 @@ namespace pid
         double kD = 0.00;
         double kF = 0.175;
 
-        double large_kP = 0.14;
-        double large_kI = 0.3;
-        double large_kD = 0.00;
-        double large_kF = 0.0;
-
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
         double error = 0; 
@@ -404,8 +399,7 @@ namespace pid
                 integral += error / 100;
                 derivative = (error - last_error) * 100;
 
-                if(flywheel_target < 400) volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
-                else volt_speed = error * large_kP + integral * large_kI + derivative * large_kD;
+                volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
 
                 // apply speeds
                 if(volt_speed <= 0) volt_speed = 1; 
@@ -450,7 +444,7 @@ namespace pid
 
     double fw_speed()
     {
-        return fw::win_avg;
+        return fw::actual_avg;
     }
 
     void fw_stop()

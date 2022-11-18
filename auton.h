@@ -63,7 +63,7 @@ void solo_awp()
 
 void ml_half_awp()
 {
-    fw_spin(500);
+    fw_spin(490);
     chas.spin(50);
     delay(100);
     intake_dist(-200);
@@ -74,23 +74,24 @@ void ml_half_awp()
     index(2, 1000, 4000);
     delay(200);
 
-    fw_spin(435);
+    fw_stop();
     intakeP.set(true);
-    turn_to(-127, 3000);
+    turn_to(-122, 3000);
 
     // start intake
     intake_vel();
 
     // intake discs
-    drive(1150, 1600);
+    drive(1150, 1300);
     intakeP.set(false);
-    delay(1000);
+    drive(500, 1000);
+    fw_spin(435);
 
     turn_to(-22, 2000);
     intake_vel(0);
     delay(50);
     index(3, 800, 4000);
-    delay(400);
+    delay(1200);
     fw_stop();
 }
 
