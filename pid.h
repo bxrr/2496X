@@ -401,6 +401,7 @@ namespace pid
                 derivative = (error - last_error) * 100;
 
                 volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
+                if(volt_speed > 127) volt_speed = 127;
 
 
                 // if target speed is set to 0, reset all variables

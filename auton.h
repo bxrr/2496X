@@ -86,7 +86,7 @@ void ml_half_awp()
     intake_dist(-200);
     delay(200);
     drive(-400, 1000);
-    intake_dist(150);//make sure to keep good documentation of your code through comments
+    intake_dist(150);
     turn_to(-4.8, 1000);
     delay(100);
     index(2, 800, 4000);
@@ -117,29 +117,29 @@ void nml_half_awp()
 {
     fw_spin(493.8);
     drive(1200, 1500);
-    turn_to(94.9, 1500);
+    turn_to(94.5, 1500);
     delay(100);
     index(2, 800, 4000);
     delay(200);
     
     fw_stop();
     turn_to(90, 1000);
-    chas.spin(69);
+    chas.spin(60);
     delay(320);
-    intake_dist(-250);
+    intake_dist(-260);
     delay(300);
 
     drive(-250, 1000);
-    turn_to(-149, 2400);
+    turn_to(-149, 2100);
     intake_vel();
-    drive(3550, 2400);
+    drive(3550, 2200);
 
     fw_spin(463.6);
     turn_to(134.5, 2000);
     intake_vel(0);
     delay(100);
     index(3, 800, 4000);
-    delay(100);
+    delay(900);
     fw_stop();
 }
 
