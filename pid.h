@@ -419,7 +419,7 @@ namespace pid
                 glb::flywheelR = volt_speed;
 
                 // print rpm to controller
-                if(speed != 0) printf("[%lf, %lf], ", win_avg, glb::intakeR.get_actual_velocity());
+                if(speed != 0) printf("[%lf, %lf], ", glb::flywheelL.get_actual_velocity(), glb::flywheelR.get_actual_velocity());
 
                 // print stuff
                 if(time % 100 == 0 && time % 1600 != 0)
