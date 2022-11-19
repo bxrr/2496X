@@ -22,44 +22,44 @@ void none()
 void solo_awp()//pmuller@tustin.k12.ca.us
 {
     // 482.5
-    fw_spin(485);
+    fw_spin(500);
     chas.spin(50);
     delay(100);
     intake_dist(-200);
     delay(200);
-    drive(-400, 1000);
+    drive(-400, 800);
     intake_dist(150);
-    turn_to(-4.8, 800);
+    turn_to(-4, 600);
     delay(100);
     // 600
-    index(2, 500, 2500);
+    index(1, 100, 2500);
     delay(200);
 
     fw_stop();
     intakeP.set(true);
-    turn_to(-122, 1400);
+    turn_to(-122, 1100);
 
     // start intake
     intake_vel(110);
 
-    // intake discs
-    drive(1100, 1100);//.Change the numbers to see what happens!
+    // intake discs 
+    drive(1170, 1100);//.Change the numbers to see what happens!
     intakeP.set(false);
-    drive(200, 800);
+    drive(200, 1000);
     // fw_spin(463);
-    fw_spin(471);
+    fw_spin(480);
 
     // 14.2
-    turn_to(-13, 1300);
+    turn_to(-17.5, 1200);
     intake_vel(0);
     delay(50);
-    index(3, 500, 3200);
+    index(3, 400, 3200);
     delay(300);
     fw_stop();
 
-    turn_to(-132, 1500);
+    turn_to(-132, 1200);
     intake_vel(127);
-    drive_const(4250);
+    drive_const(4200);
     delay(150);
     chas.spin_left(112);
     chas.spin_right(34);
@@ -70,9 +70,9 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     // chas.spin(50);
     // intake_dist(-300);
     // delay(300);
-    chas.spin(50);
-    delay(100);
-    intake_dist(-300);
+    chas.spin(70);
+    delay(400);
+    intake_dist(-350);
     delay(200);
     intake_stop();
     chas.stop();
@@ -80,17 +80,17 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    fw_spin(482.5);
+    fw_spin(490);
     chas.spin(50);
     delay(100);
     intake_dist(-200);
     delay(200);
     drive(-400, 1000);
     intake_dist(150);
-    turn_to(-4.8, 1000);
+    turn_to(-3.8, 1000);
     delay(100);
     index(2, 800, 4000);
-    delay(200);
+    delay(250);
 
     fw_stop();
     intakeP.set(true);
@@ -100,10 +100,10 @@ void ml_half_awp()
     intake_vel(110);
 
     // intake discs
-    drive(1100, 1300);
+    drive(1160, 1300);
     intakeP.set(false);
     drive(200, 1000);
-    fw_spin(463);
+    fw_spin(469);
 
     turn_to(-14.2, 2000);
     intake_vel(0);
@@ -115,9 +115,9 @@ void ml_half_awp()
 
 void nml_half_awp()
 {
-    fw_spin(493.8);
+    fw_spin(495);
     drive(1200, 1500);
-    turn_to(94.5, 1500);
+    turn_to(98.5, 1500);
     delay(100);
     index(2, 800, 4000);
     delay(200);
@@ -129,13 +129,13 @@ void nml_half_awp()
     intake_dist(-260);
     delay(300);
 
-    drive(-250, 1000);
-    turn_to(-149, 2100);
+    drive(-150, 1000);
+    turn_to(-144, 2100);
     intake_vel();
     drive(3550, 2200);
 
-    fw_spin(463.6);
-    turn_to(134.5, 2000);
+    fw_spin(467);
+    turn_to(137.5, 2000);
     intake_vel(0);
     delay(100);
     index(3, 800, 4000);
