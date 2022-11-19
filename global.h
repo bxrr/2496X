@@ -14,8 +14,8 @@ namespace glb
     #define P_FL 12
     #define P_BR 14
     #define P_FR 13
-    #define P_FLY_L 18
-    #define P_FLY_R 19
+    #define P_FLY_L 16
+    #define P_FLY_R 17
     #define P_INTAKE_L 9
     #define P_INTAKE_R 10
     #define P_INTAKE_P 'A'

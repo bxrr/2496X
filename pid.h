@@ -344,6 +344,7 @@ namespace pid
         {
             // count for average speed over n iterations
             auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
+            auto f_fullspeed = [](double target, double error) { return error > -0.12 * (target - 350) + 50; };
 
             double window[25];
             memset(window, 0, sizeof(window)); // 0 initialize window;
@@ -399,10 +400,8 @@ namespace pid
                 integral += error / 100;
                 derivative = (error - last_error) * 100;
 
-                volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
+                volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
 
-                // apply speeds
-                if(volt_speed <= 0) volt_speed = 1; 
 
                 // if target speed is set to 0, reset all variables
                 if(speed == 0)
@@ -419,7 +418,7 @@ namespace pid
                 glb::flywheelR = volt_speed;
 
                 // print rpm to controller
-                if(speed != 0) printf("[%lf, %lf], ", glb::flywheelL.get_actual_velocity(), glb::flywheelR.get_actual_velocity());
+                if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
                 // print stuff
                 if(time % 100 == 0 && time % 1600 != 0)

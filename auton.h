@@ -115,26 +115,28 @@ void ml_half_awp()
 
 void nml_half_awp()
 {
-    fw_spin(500);
-    drive(1300, 1500);
-    turn_to(97, 1500);
+    fw_spin(493.8);
+    drive(1200, 1500);
+    turn_to(94.9, 1500);
     delay(100);
     index(2, 800, 4000);
-    delay(100);
-    
-    fw_spin(450);
-    turn_to(90, 1000);
-    chas.spin(50);
-    delay(150);
-    intake_dist(-200);
     delay(200);
+    
+    fw_stop();
+    turn_to(90, 1000);
+    chas.spin(69);
+    delay(320);
+    intake_dist(-250);
+    delay(300);
 
-    drive(-400, 1000);
-    turn_to(-139, 1500);
+    drive(-250, 1000);
+    turn_to(-149, 2400);
     intake_vel();
-    drive(2800, 3300);
+    drive(3550, 2400);
 
-    turn_to(135, 2200);
+    fw_spin(463.6);
+    turn_to(134.5, 2000);
+    intake_vel(0);
     delay(100);
     index(3, 800, 4000);
     delay(100);
