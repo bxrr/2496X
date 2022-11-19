@@ -19,45 +19,62 @@ void none()
     return;
 }
 
-void solo_awp()
+void solo_awp()//pmuller@tustin.k12.ca.us
 {
-    fw_spin(520);
+    // 482.5
+    fw_spin(485);
     chas.spin(50);
     delay(100);
     intake_dist(-200);
     delay(200);
-    drive(-400, 800);
-    turn_to(-5.2, 700);
+    drive(-400, 1000);
+    intake_dist(150);
+    turn_to(-4.8, 800);
     delay(100);
-    index(2, 600, 3000);
-    delay(100);
+    // 600
+    index(2, 500, 2500);
+    delay(200);
 
-    fw_spin(435);
+    fw_stop();
     intakeP.set(true);
-    turn_to(-127, 2200);
+    turn_to(-122, 1400);
 
     // start intake
-    intake_vel();
+    intake_vel(110);
 
     // intake discs
-    drive(1150, 1600);
+    drive(1100, 1100);//.Change the numbers to see what happens!
     intakeP.set(false);
-    delay(1000);
+    drive(200, 800);
+    // fw_spin(463);
+    fw_spin(471);
 
-    turn_to(-22, 1700);
+    // 14.2
+    turn_to(-13, 1300);
     intake_vel(0);
-    delay(100);
-    index(3, 700, 4000);
-    delay(100);
+    delay(50);
+    index(3, 500, 3200);
+    delay(300);
     fw_stop();
 
-    turn_to(-135, 2000);
-    drive_const(3500);
-    arc_turn(90, 500, 900);
+    turn_to(-132, 1500);
+    intake_vel(127);
+    drive_const(4250);
+    delay(150);
+    chas.spin_left(112);
+    chas.spin_right(34);
+    delay(480);
+    intake_stop();
+    chas.stop();
+    delay(100);
+    // chas.spin(50);
+    // intake_dist(-300);
+    // delay(300);
     chas.spin(50);
-    delay(250);
+    delay(100);
     intake_dist(-300);
-    delay(300);
+    delay(200);
+    intake_stop();
     chas.stop();
 }
 
@@ -69,7 +86,7 @@ void ml_half_awp()
     intake_dist(-200);
     delay(200);
     drive(-400, 1000);
-    intake_dist(150);
+    intake_dist(150);//make sure to keep good documentation of your code through comments
     turn_to(-4.8, 1000);
     delay(100);
     index(2, 800, 4000);
