@@ -16,54 +16,48 @@ using namespace auf;
 
 void none()
 {
-    return;
+    fw_spin(500);
+    delay(15000);
 }
 
 void solo_awp()//pmuller@tustin.k12.ca.us
 {
-    // 482.5
-    fw_spin(500);
-    chas.spin(50);
-    delay(100);
+    fw_spin(485);
+    drive(100, 200);
     intake_dist(-200);
     delay(200);
-    drive(-400, 800);
-    intake_dist(150);
-    turn_to(-4, 600);
-    delay(100);
-    // 600
-    index(1, 100, 2500);
+    drive(-200, 800);
+    turn_to(-4.5, 800);
+    intake_dist(200);
+    index(2, 600, 2000);
     delay(200);
-
     fw_stop();
+
     intakeP.set(true);
-    turn_to(-122, 1100);
-
-    // start intake
-    intake_vel(110);
-
-    // intake discs 
-    drive(1170, 1100);//.Change the numbers to see what happens!
+    turn_to(-130, 1400);
+    intake_vel();
+    drive(1170);
     intakeP.set(false);
-    drive(200, 1000);
-    // fw_spin(463);
-    fw_spin(480);
-
-    // 14.2
-    turn_to(-17.5, 1200);
+    delay(1500);
+    fw_spin(460);
+    turn_to(-14);
+    fw_spin(470);
     intake_vel(0);
-    delay(50);
-    index(3, 400, 3200);
-    delay(300);
+    intakeP.set(true);
+    index(3, 500, 2000);
+    delay(200);
     fw_stop();
 
-    turn_to(-132, 1200);
+    turn_to(-135, 1200);
+    intakeP.set(false);
     intake_vel(127);
-    drive_const(4200);
+    drive_const(4500);
     delay(150);
+
     chas.spin_left(112);
     chas.spin_right(34);
     delay(480);
+    intakeP.set(true);
     intake_stop();
     chas.stop();
     delay(100);
@@ -72,73 +66,80 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     // delay(300);
     chas.spin(70);
     delay(400);
-    intake_dist(-350);
+    intake_dist(-380);
     delay(200);
+    intakeP.set(false);
     intake_stop();
     chas.stop();
 }
 
 void ml_half_awp()
 {
-    fw_spin(490);
-    chas.spin(50);
-    delay(100);
+    fw_spin(485);
+    drive(100, 200);
     intake_dist(-200);
     delay(200);
-    drive(-400, 1000);
-    intake_dist(150);
-    turn_to(-3.8, 1000);
-    delay(100);
-    index(2, 800, 4000);
-    delay(250);
-
+    drive(-200, 800);
+    turn_to(-4.3, 800);
+    intake_dist(200);
+    index(2, 600, 2000);
     fw_stop();
+
     intakeP.set(true);
-    turn_to(-122, 3000);
-
-    // start intake
-    intake_vel(110);
-
-    // intake discs
-    drive(1160, 1300);
+    turn_to(-130, 1400);
+    intake_vel();
+    drive(1170);
     intakeP.set(false);
-    drive(200, 1000);
-    fw_spin(469);
-
-    turn_to(-14.2, 2000);
+    fw_spin(465);
+    delay(1500);
+    turn_to(-14);
     intake_vel(0);
-    delay(50);
-    index(3, 800, 4000);
-    delay(1200);
+    intakeP.set(true);
+    index(3, 600, 2000);
+    fw_stop();
+
+    turn_to(103.8);
+    intake_vel();
+    drive(510);
+    intakeP.set(false);
+    fw_spin(465);
+    delay(800);
+    drive(-400);
+    turn_to(-15);
+    intake_vel(0);
+    intakeP.set(true);
+    intake_vel(-127);
+    delay(3000);
+    intakeP.set(false);
     fw_stop();
 }
 
 void nml_half_awp()
 {
-    fw_spin(495);
-    drive(1200, 1500);
-    turn_to(98.5, 1500);
+    fw_spin(500);
+    drive(1160, 1500);
+    turn_to(99, 1500);
     delay(100);
-    index(2, 800, 4000);
-    delay(200);
+    index(2, 600, 4000);
+    delay(300);
     
     fw_stop();
     turn_to(90, 1000);
     chas.spin(60);
-    delay(320);
+    delay(340);
     intake_dist(-260);
     delay(300);
 
     drive(-150, 1000);
-    turn_to(-144, 2100);
+    turn_to(-143.8, 1800);
     intake_vel();
-    drive(3550, 2200);
+    drive(3550, 2000);
 
-    fw_spin(467);
-    turn_to(137.5, 2000);
+    fw_spin(450);
+    turn_to(139.3, 2000);
     intake_vel(0);
     delay(100);
-    index(3, 800, 4000);
+    index(3, 600, 4000);
     delay(900);
     fw_stop();
 }

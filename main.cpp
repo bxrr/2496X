@@ -18,10 +18,12 @@ void initialize()
 
 	// tasks
 	Task fw_ctrl(pid::fw::fw_pid);
+	Task disc_sensor(pid::disc::disc_sense);
 }
 
 void autonomous()
 {
+	auton_running = true;
 	(*auton).run();
 }
 
@@ -32,13 +34,14 @@ void opcontrol()
 
 	while(true)
 	{
+		auton_running = false;
 		pid::fw_recover(true);
 		if(chassis_on)
 			arcade_drive();
 			// tank_drive();
 		intake_control();
 		angle_control();
-		flywheel_control();
+		flywheel_control(time);
 		print_info(time);
 
 		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))

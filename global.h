@@ -10,18 +10,20 @@
 namespace glb
 {
     // ports ===============================
-    #define P_BL 11
-    #define P_FL 12
-    #define P_BR 14
-    #define P_FR 13
-    #define P_FLY_L 16
-    #define P_FLY_R 17
-    #define P_INTAKE_L 9
-    #define P_INTAKE_R 10
+    #define P_BL 9
+    #define P_FL 8
+    #define P_BR 3
+    #define P_FR 2
+    #define P_FLY_L 11
+    #define P_FLY_R 12
+    #define P_INTAKE_L 10
+    #define P_INTAKE_R 1
     #define P_INTAKE_P 'A'
     #define P_ANGLE_P 'B'
+    #define P_DISC_SENSOR1_P 15
+    #define P_DISC_SENSOR2_P 20
 
-    #define P_IMU 20
+    #define P_IMU 7
     // objects =============================
     pros::Controller con(pros::E_CONTROLLER_MASTER);
     pros::Imu imu(P_IMU);
@@ -29,11 +31,15 @@ namespace glb
     pros::Motor flywheelR(P_FLY_R, pros::E_MOTOR_GEARSET_06, false);
     pros::Motor intakeL(P_INTAKE_L, pros::E_MOTOR_GEARSET_06, true);
     pros::Motor intakeR(P_INTAKE_R, pros::E_MOTOR_GEARSET_06, false);
+    pros::Distance disc_sensor1(P_DISC_SENSOR1_P);
+    pros::Distance disc_sensor2(P_DISC_SENSOR2_P);
 
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P);
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
+
+    bool auton_running = false;
 }
 
 #endif

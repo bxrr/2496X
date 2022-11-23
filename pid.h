@@ -20,9 +20,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.17;
+        double kP = 0.6;
         double kI = 3.0;
-        double kD = 0.0;
+        double kD = 0.05;
 
         double straight_kI = 2.0;
 
@@ -77,9 +77,9 @@ namespace pid
             if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             straight_i += (glb::imu.get_heading() - init_heading) / 100;
-            double correction = straight_i * straight_kI;
+            double correction = (abs(speed) / speed) * speed / 75 * straight_i * straight_kI;
 
-            slew += slew <= 1 ? 0.05 : 0;
+            slew += slew <= 1 ? 0.1 : 0;
             slew = slew > 1 ? 1 : slew;
 
             // apply speed
@@ -131,11 +131,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.9;
-        double kI = 20.0;
-        double kD = 0;
-
-        auto f_k = [](double error) { return error / abs(error) * 30 * log(0.25 * (abs(error) + 4)) + 5; };
+        double kP = 5.0;
+        double kI = 18.0;
+        double kD = 0.37;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -153,7 +151,7 @@ namespace pid
             // calculate pid 
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < 8) integral += error / 100;
+            if(abs(error) < 18) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
@@ -176,8 +174,7 @@ namespace pid
             }
 
             // calculate speed
-            double speed = kP * f_k(error) + integral * kI + derivative * kD;
-            if(abs(speed) > 127) speed = speed / abs(speed) * 127;
+            double speed = kP * error + integral * kI + derivative * kD;
 
             glb::chas.spin_left(speed);
             glb::chas.spin_right(-speed);
@@ -315,11 +312,70 @@ namespace pid
         glb::chas.stop();
         global_heading += glb::imu.get_heading() - init_heading;
     }
+    
+    // not actually a pid - disc sensor
+    namespace disc
+    {
+        bool two_discs = false;
+        bool disc_present = false;
+        
+        void disc_sense() // task
+        {
+            int time = 0;
+            int time_seen1 = 0;
+            int time_seen2 = 0;
+            bool one_seen = false;
+            bool two_seen = false;
+
+            while(true)
+            {
+                if(glb::disc_sensor1.get() < 11)
+                {
+                    if(one_seen == false)
+                    {
+                        one_seen = true;
+                        time_seen1 = time;
+                    }
+                    else if(time_seen1 + 100 <= time)
+                    {
+                        disc_present = true;
+                    }
+                }
+                else
+                {
+                    one_seen = false;
+                    disc_present = false;
+                }
+
+                if(glb::disc_sensor2.get() < 30)
+                {
+                    if(two_seen == false)
+                    {
+                        two_seen = true;
+                        time_seen2 = time;
+                    }
+                    else if(time_seen2 + 100 <= time)
+                    {
+                        two_discs = true;
+                    }
+                }
+                else
+                {
+                    two_seen = false;
+                    two_discs = false;
+                }
+
+                pros::delay(10);
+                time += 10;
+            }
+        }
+    }
 
     // flywheel ============================================================
     namespace fw
     {
         double flywheel_target = 0;
+        double last_target = 0;
         bool recover = true;
 
         int time = 0;
@@ -328,7 +384,12 @@ namespace pid
         double kP = 0.5;
         double kI = 0.08;
         double kD = 0.00;
-        double kF = 0.175;
+        double kF = 0.181;
+
+        double l_kP = 14;
+        double l_kI = 0.7;
+        double l_kD = 0.0;
+        double l_kF = 0.0;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -337,6 +398,7 @@ namespace pid
         double last_error;
         double derivative = 0;
         double base_speed = 0;
+        float slew = 0;
 
         double win_avg = 0;
 
@@ -355,9 +417,26 @@ namespace pid
             int recover_start_time = 0;
             bool recover_start = false;
 
+            bool had_two = false;
+
             while(true) // defined as a task; always running
             {
-                double speed = flywheel_target;
+                double speed;
+                if(glb::auton_running == false) speed = flywheel_target;
+                else if(pid::disc::two_discs)
+                {
+                    speed = flywheel_target;
+                    had_two = true;
+                }
+                else if(pid::disc::disc_present && had_two)
+                {
+                    speed = flywheel_target;
+                }
+                else
+                {
+                    speed = last_target;
+                    had_two = false;
+                }
 
                 // calculate average speed
                 actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -400,7 +479,8 @@ namespace pid
                 integral += error / 100;
                 derivative = (error - last_error) * 100;
 
-                volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
+                if(flywheel_target < 400) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
+                else volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
                 if(volt_speed > 127) volt_speed = 127;
 
 
@@ -415,14 +495,17 @@ namespace pid
                     derivative = 0;
                 }
 
-                glb::flywheelL = volt_speed;
-                glb::flywheelR = volt_speed;
+                slew += slew < 1 ? 0.03 : 0;
+                if(slew > 1) slew = 1;
+
+                glb::flywheelL = slew * volt_speed;
+                glb::flywheelR = slew * volt_speed;
 
                 // print rpm to controller
                 if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
                 // print stuff
-                if(time % 100 == 0 && time % 1600 != 0)
+                if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
                     glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
                 
                 // update time
@@ -434,6 +517,7 @@ namespace pid
 
     void fw_spin(double speed)
     {
+        fw::last_target = fw::flywheel_target;
         fw::flywheel_target = speed;
     }
 

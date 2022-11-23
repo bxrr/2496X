@@ -43,29 +43,71 @@ void tank_drive()
     }
 }
 
-int flywheel_control()
+void flywheel_control(int time)
 {
     static int speed_index = 0;
+    static bool manual_control = true;
     static bool fly_on = false;
-    std::vector<int> speeds = {340, 370};
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
-        fly_on = !fly_on;
+    std::vector<int> speeds = {330, 385};
 
-    if(fly_on)
-    {
-        if(angleP.get_status() == true)
-            speed_index = 1;
-        else
-            speed_index = 0;
+    static bool no_discs_first = true;
+    static int no_discs_time = 0;
 
-        pid::fw_spin(speeds[speed_index]);
-    }
-    else
+    // check manual control button
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
     {
         pid::fw_stop();
+        manual_control = !manual_control;
     }
+    
+    // set speed index
+    if(angleP.get_status() == true)
+        speed_index = 1;
+    else
+        speed_index = 0;
 
-    return speed_index;
+    // if not manual control, run distance sensor
+    if(!manual_control)
+    {
+        fly_on = false;
+        if(pid::disc::two_discs)
+        {
+            pid::fw_spin(speeds[speed_index]);
+        }
+        else if(pid::disc::disc_present == false)
+        {
+            if(no_discs_first)
+            {
+                no_discs_first = false;
+                no_discs_time = time;
+            }
+            else if(no_discs_time + 150 < time)
+            {
+                pid::fw_stop();
+            }
+        }
+        else
+        {
+            no_discs_first = true;
+        }
+    }
+    else // if manual control, check for button press R1 to toggle flywheel
+    {
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
+        {
+            fly_on = !fly_on;
+        }
+
+        if(fly_on)
+        {
+            pid::fw_spin(speeds[speed_index]);
+        }
+        else
+        {
+            pid::fw_stop();
+        }
+    }
+        
 }
 
 void intake_control()
@@ -109,10 +151,10 @@ int change_speed()
 void print_info(int time)
 {
 
-    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (pid::fw::actual_avg) <= 200)
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (pid::fw::actual_avg) <= 150)
         con.print(0, 0, "Chas Temp: %.1lf         ", chas.temp());
     if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0) 
-        con.print(1, 0, "imu: %.2f            ", imu.get_heading());
+        con.print(1, 0, "imu: %.2f            ", glb::imu.get_heading());
     if(time % 150 == 0 && time % 1600 != 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }
