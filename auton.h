@@ -16,8 +16,8 @@ using namespace auf;
 
 void none()
 {
-    fw_spin(500);
-    delay(15000);
+    fw_spin(490);
+    index(3, 500, 15000);
 }
 
 void solo_awp()//pmuller@tustin.k12.ca.us
@@ -82,7 +82,7 @@ void ml_half_awp()
     drive(-200, 800);
     turn_to(-4.3, 800);
     intake_dist(200);
-    index(2, 600, 2000);
+    index(2, 500, 2000);
     fw_stop();
 
     intakeP.set(true);
@@ -90,45 +90,42 @@ void ml_half_awp()
     intake_vel();
     drive(1170);
     intakeP.set(false);
-    fw_spin(465);
-    delay(1500);
-    turn_to(-14);
+    delay(600);
+    fw_spin(470);
+    drive(-530);
+    turn_to(-13);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 600, 2000);
+    index(3, 500, 2000);
     fw_stop();
 
-    turn_to(103.8);
+    turn_to(135);
     intake_vel();
-    drive(510);
+    drive(410);
     intakeP.set(false);
+    delay(600);
     fw_spin(465);
-    delay(800);
     drive(-400);
     turn_to(-15);
     intake_vel(0);
     intakeP.set(true);
-    intake_vel(-127);
-    delay(3000);
+    index(3, 500, 2000);
     intakeP.set(false);
     fw_stop();
 }
 
 void nml_half_awp()
 {
-    fw_spin(500);
+    fw_spin(490);
     drive(1160, 1500);
     turn_to(99, 1500);
-    delay(100);
-    index(2, 600, 4000);
-    delay(300);
+    index(2, 500, 4000);
     
     fw_stop();
     turn_to(90, 1000);
-    chas.spin(60);
-    delay(340);
-    intake_dist(-260);
-    delay(300);
+    drive(100, 250);
+    intake_dist(-250);
+    delay(250);
 
     drive(-150, 1000);
     turn_to(-143.8, 1800);
@@ -146,10 +143,108 @@ void nml_half_awp()
 
 void skills()
 {
-    fw_recover(true);
-    fw_spin(390);
-    index(9);
+    // match loader 1
+    fw_spin(350);
+    turn_to(-3);
+    for(int i = 0; i < 10; i++)
+    {
+        intake_vel(-127);
+        delay(300);
+        intake_vel(127);
+        delay(300);
+    }
     fw_stop();
+
+    // get roller 1
+    turn_to(0);
+    drive(1200);
+    turn_to(90);
+    drive(200, 400);
+    intake_dist(-600);
+    delay(600);
+
+    // get 3 stack
+    turn_to(-90);
+    intakeP.set(true);
+    intake_vel();
+    drive(700);
+    intakeP.set(false);
+    delay(400);
+    drive(500);
+    
+    // get 2nd roller
+    intakeP.set(true);
+    turn_to(0);
+    intake_vel(0);
+    drive(1400);
+    intake_dist(-600);
+    delay(600);
+
+    // shoot 3 disc
+    drive(-350);
+    turn_to(-90);
+    fw_spin(350);
+    drive(2500);
+    shoot();
+    fw_stop();
+
+    // get 3 more discs and shoot
+    drive(-1900);
+    turn_to(135);
+    intake_vel();
+    intakeP.set(false):
+    drive(3500);
+    fw_spin(340);
+    turn_to(-135);
+    shoot();
+    fw_stop();
+
+    // get 3 more discs and shoot
+    intakeP.set(true);
+    turn_to(135);
+    intake_vel();
+    drive(1400);
+    intakeP.set(false);
+    delay(600);
+
+    // set up for match loads
+    turn_to(90);
+    drive(1900);
+    intake_vel(0);
+    drive(-200);
+    turn_to(180);
+    drive(-300);
+    fw_spin(350);
+    turn_to(177);
+    for(int i = 0; i < 11; i++)
+    {
+        intake_vel(-127);
+        delay(300);
+        intake_vel(127);
+        delay(300);
+    }
+    fw_stop();
+
+    // get roller 3
+    turn_to(180);
+    drive(1200);
+    turn_to(90);
+    drive(200, 400);
+    intake_dist(-600);
+    delay(600);
+
+    // get roller 4
+    drive(-1200);
+    turn_to(180);
+    intakeP.set(true);
+    drive(1400)
+    intake_dist(-600);
+    delay(600);
+
+    // end game
+    drive(-1400);
+    turn_to(135);
+    drive(300);
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR

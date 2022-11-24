@@ -336,7 +336,7 @@ namespace pid
                         one_seen = true;
                         time_seen1 = time;
                     }
-                    else if(time_seen1 + 100 <= time)
+                    else if(time_seen1 + 50 <= time)
                     {
                         disc_present = true;
                     }
@@ -387,7 +387,7 @@ namespace pid
         double kF = 0.181;
 
         double l_kP = 14;
-        double l_kI = 0.7;
+        double l_kI = 0.4;
         double l_kD = 0.0;
         double l_kF = 0.0;
 
@@ -421,22 +421,7 @@ namespace pid
 
             while(true) // defined as a task; always running
             {
-                double speed;
-                if(glb::auton_running == false) speed = flywheel_target;
-                else if(pid::disc::two_discs)
-                {
-                    speed = flywheel_target;
-                    had_two = true;
-                }
-                else if(pid::disc::disc_present && had_two)
-                {
-                    speed = flywheel_target;
-                }
-                else
-                {
-                    speed = last_target;
-                    had_two = false;
-                }
+                double speed = flywheel_target;
 
                 // calculate average speed
                 actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -464,7 +449,8 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        speed += 100;
+                        if(flywheel_target < 400) speed += 100;
+                        else speed += 200;
                     }
                 }
                 else

@@ -43,7 +43,7 @@ namespace auf
             if(abs(pid::fw_target() - pid::fw_speed()) < 1.4 && t_since_shot >= delay_ms)
             {
                 t_since_shot = 0;
-                intake_dist(-600);
+                intake_dist(-590);
                 discs_shot++;
             }
 
@@ -57,7 +57,14 @@ namespace auf
             intake_dist(-2400);
         }
 
-        pros::delay(400);
+        pros::delay(300);
+    }
+
+    void shoot(int num_discs=3)
+    {
+        intake_vel(-127);
+        delay(num_discs * 180);
+        intake_vel(0);
     }
 }
 
