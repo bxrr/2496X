@@ -381,15 +381,15 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.5;
+        double kP = 1.03;
         double kI = 0.08;
-        double kD = 0.00;
+        double kD = 0.0;
         double kF = 0.181;
 
-        double l_kP = 14;
-        double l_kI = 0.4;
-        double l_kD = 0.0;
-        double l_kF = 0.0;
+        double aut_kP = 1.03;
+        double aut_kI = 0.08;
+        double aut_kD = 0.0;
+        double aut_kF = 0.188
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -406,7 +406,7 @@ namespace pid
         {
             // count for average speed over n iterations
             auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
-            auto f_fullspeed = [](double target, double error) { return error > -0.12 * (target - 350) + 50; };
+            auto f_fullspeed = [](double target, double error) { return error > -(2/9) * (target - 330) + 70; };
 
             double window[25];
             memset(window, 0, sizeof(window)); // 0 initialize window;
@@ -439,7 +439,7 @@ namespace pid
                 }
                 win_avg = window_sum / n_terms;
 
-                // flywheel recovery adds 150 to target speed
+                // flywheel recovery adds to target speed
                 if(glb::intakeR.get_actual_velocity() > 100 && speed != 0 && recover)
                 {
                     if(recover_start == false)
@@ -449,50 +449,54 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        if(flywheel_target < 400) speed += 100;
-                        else speed += 200;
+                        speed += 100;
                     }
                 }
                 else
                 {
                     recover_start = false;
                 }
-                
-                // calculate pid variables
-                double volt_speed = 0;
-                last_error = error;
-                error = speed - win_avg;
-                integral += error / 100;
-                derivative = (error - last_error) * 100;
-
-                if(flywheel_target < 400) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
-                else volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
-                if(volt_speed > 127) volt_speed = 127;
-
 
                 // if target speed is set to 0, reset all variables
                 if(speed == 0)
                 {
-                    volt_speed = 0;
                     memset(window, 0, sizeof(window));
                     error = 0;
                     last_error = 0;
                     integral = 0;
                     derivative = 0;
+                    glb::flywheelL = 0;
+                    glb::flywheelR = 0;
                 }
+                else
+                {
+                    // calculate pid variables (different calculations for auton and not autonomous)
+                    double volt_speed = 0;
+                    last_error = error;
+                    error = speed - win_avg;
+                    integral += error / 100;
+                    if(f_fullspeed(flywheel_target, error)) integral = 0;
+                    derivative = (error - last_error) * 100;
+                    
+                    if(glb::auton_running) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * aut_kF + error * aut_kP + integral * aut_kI + derivative * aut_kD;
+                    else volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
 
-                slew += slew < 1 ? 0.03 : 0;
-                if(slew > 1) slew = 1;
+                    if(volt_speed > 127) volt_speed = 127;
+                    slew += slew < 1 ? 0.03 : 0;
+                    if(slew > 1) slew = 1;
 
-                glb::flywheelL = slew * volt_speed;
-                glb::flywheelR = slew * volt_speed;
+                    if(volt_speed > 0)
+                    {
+                        glb::flywheelL = slew * volt_speed;
+                        glb::flywheelR = slew * volt_speed;
+                    }
 
-                // print rpm to controller
-                if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
+                    // print stuff
+                    if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
-                // print stuff
-                if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
-                    glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
+                    if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
+                        glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
+                }
                 
                 // update time
                 pros::delay(10);
