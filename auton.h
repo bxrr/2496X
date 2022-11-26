@@ -134,7 +134,7 @@ void nml_half_awp()
 
     fw_spin(450);
     turn_to(139.3, 2000);
-    intake_vel(0);drive
+    intake_vel(0);
     delay(100);
     index(3, 600, 4000);
     delay(900);

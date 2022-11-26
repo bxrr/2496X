@@ -389,7 +389,7 @@ namespace pid
         double aut_kP = 1.03;
         double aut_kI = 0.08;
         double aut_kD = 0.0;
-        double aut_kF = 0.188
+        double aut_kF = 0.188;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -494,8 +494,8 @@ namespace pid
                     // print stuff
                     if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
-                    if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
-                        glb::con.print(0, 0, "rpm: %.2lf", (win_avg));
+                    if(time % 100 == 0 && time % 1600 != 0 && actual_avg > 150)
+                        glb::con.print(1, 0, "rpm: %.2lf", (win_avg));
                 }
                 
                 // update time

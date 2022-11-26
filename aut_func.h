@@ -63,13 +63,13 @@ namespace auf
     void shoot(int num_discs=3)
     {
         intake_vel(-127);
-        delay(num_discs * 180);
+        delay(num_discs * 150);
         intake_vel(0);
     }
 
     void roller()
     {
-        drive_const(300, 70, 320);
+        pid::drive_const(300, 70, 320);
         intake_dist(-600);
         delay(600);
     }

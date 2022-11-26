@@ -20,6 +20,7 @@ namespace glb
     #define P_INTAKE_R 1
     #define P_INTAKE_P 'A'
     #define P_ANGLE_P 'B'
+    #define P_EXPANSION_P 'C'
     #define P_DISC_SENSOR1_P 15
     #define P_DISC_SENSOR2_P 20
 
@@ -36,6 +37,7 @@ namespace glb
 
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P);
+    Piston expansionP(P_EXPANSION_P);
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
 

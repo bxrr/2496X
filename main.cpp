@@ -42,14 +42,15 @@ void opcontrol()
 		intake_control();
 		angle_control();
 		flywheel_control(time);
-		print_info(time);
+		expansion(time);
+		print_info(time, chassis_on);
 
-		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN))
-			autonomous();
 		if(con.get_digital(E_CONTROLLER_DIGITAL_LEFT))
 			calibrate_robot();
 		if(con.get_digital(E_CONTROLLER_DIGITAL_RIGHT))
 			chassis_on = !chassis_on;
+		if(con.get_digital(E_CONTROLLER_DIGITAL_DOWN) && chassis_on)
+			autonomous();
 		
 		delay(10);
 		time += 10;

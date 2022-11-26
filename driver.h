@@ -48,13 +48,13 @@ void flywheel_control(int time)
     static int speed_index = 0;
     static bool manual_control = true;
     static bool fly_on = false;
-    std::vector<int> speeds = {330, 385};
+    std::vector<int> speeds = {335, 385};
 
     static bool no_discs_first = true;
     static int no_discs_time = 0;
 
     // check manual control button
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
     {
         pid::fw_stop();
         manual_control = !manual_control;
@@ -140,20 +140,33 @@ void angle_control()
         angleP.toggle();
 }
 
-int change_speed()
+void expansion(int time)
 {
-    static int num = 0;
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A) && num < 2) num++;
-    else if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) && num > 0) num--;
-    return num;
+    static bool first_pressed = false;
+    static int first_pressed_time = 0;
+
+    if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+    {
+        if(first_pressed)
+        {
+            expansionP.set(true);
+        }
+        first_pressed = true;
+        first_pressed_time = time;
+    }
+
+    if(first_pressed_time + 300 < time)
+        first_pressed = false;
 }
 
-void print_info(int time)
+void print_info(int time, bool chassis_on)
 {
-
-    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0 && (pid::fw::actual_avg) <= 150)
-        con.print(0, 0, "Chas Temp: %.1lf         ", chas.temp());
-    if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0) 
+    if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0)
+    {
+        if(chassis_on) con.print(0, 0, "temp: %.1lf         ", chas.temp());
+        else con.print(0, 0, "CHAS OFF (right)     ");
+    }
+    if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0  && (pid::fw_speed()) <= 150) 
         con.print(1, 0, "imu: %.2f            ", glb::imu.get_heading());
     if(time % 150 == 0 && time % 1600 != 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
