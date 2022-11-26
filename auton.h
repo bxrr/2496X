@@ -134,7 +134,7 @@ void nml_half_awp()
 
     fw_spin(450);
     turn_to(139.3, 2000);
-    intake_vel(0);
+    intake_vel(0);drive
     delay(100);
     index(3, 600, 4000);
     delay(900);
@@ -178,18 +178,17 @@ void skills()
     turn_to(135);
     intakeP.set(false);
     intake_vel();
-    drive(3000);
-    drive(-2000);
+    drive(2500);
+    fw_spin(380);
+    turn_to(81);
     intake_stop();
-    fw_spin(350);
-    turn_to(58);
     intakeP.set(true);
     shoot();
     fw_stop();
 
     // get roller 1
     turn_to(135);
-    drive(4000);
+    drive(1800);
     turn_to(180);
     roller();
 
@@ -221,7 +220,7 @@ void skills()
     }
 
     // REPEATS START
-    // get 3 stack and shoot
+    // get 3 stack and shootshoot
     turn_to(0);
     drive(700);
     turn_to(90);
@@ -244,18 +243,17 @@ void skills()
     turn_to(135);
     intakeP.set(false);
     intake_vel();
-    drive(3000);
-    drive(-2000);
+    drive(2500);
+    fw_spin(380);
+    turn_to(81);
     intake_stop();
-    fw_spin(350);
-    turn_to(58);
     intakeP.set(true);
     shoot();
     fw_stop();
 
     // get roller 1
     turn_to(135);
-    drive(4000);
+    drive(1800);
     turn_to(180);
     roller();
 
@@ -270,6 +268,7 @@ void skills()
     turn_to(-45);
     
     // end game shoot!!!
+    
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
