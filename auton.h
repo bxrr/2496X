@@ -145,7 +145,7 @@ void skills()
 {
     // match loader 1
     fw_spin(350);
-    turn_to(-3);
+    turn_to(-5);
     for(int i = 0; i < 10; i++)
     {
         intake_vel(-127);
@@ -155,67 +155,63 @@ void skills()
     }
     fw_stop();
 
-    // get roller 1
+    // get 3 stack and shoot
     turn_to(0);
-    drive(1200);
-    turn_to(90);
-    drive(200, 400);
-    intake_dist(-600);
-    delay(600);
-
-    // get 3 stack
-    turn_to(-90);
-    intakeP.set(true);
-    intake_vel();
     drive(700);
-    intakeP.set(false);
-    delay(400);
-    drive(500);
-    
-    // get 2nd roller
-    intakeP.set(true);
-    turn_to(0);
-    intake_vel(0);
-    drive(1400);
-    intake_dist(-600);
-    delay(600);
-
-    // shoot 3 disc
-    drive(-350);
-    turn_to(-90);
-    fw_spin(350);
-    drive(2500);
-    shoot();
-    fw_stop();
-
-    // get 3 more discs and shoot
-    drive(-1900);
-    turn_to(135);
-    intake_vel();
-    intakeP.set(false):
-    drive(3500);
-    fw_spin(340);
-    turn_to(-135);
-    shoot();
-    fw_stop();
-
-    // get 3 more discs and shoot
-    intakeP.set(true);
-    turn_to(135);
-    intake_vel();
-    drive(1400);
-    intakeP.set(false);
-    delay(600);
-
-    // set up for match loads
     turn_to(90);
-    drive(1900);
-    intake_vel(0);
-    drive(-200);
-    turn_to(180);
-    drive(-300);
+    intakeP.set(true);
+    intake_vel();
+    drive(1400);
+    intakeP.set(false);
+    delay(600);
+
+    turn_to(135);
+    drive(1000);
+    intake_stop();
     fw_spin(350);
-    turn_to(177);
+    turn_to(26);
+    intakeP.set(true);
+    shoot();
+    fw_stop();
+
+    // get 3 and shoot
+    turn_to(135);
+    intakeP.set(false);
+    intake_vel();
+    drive(3000);
+    drive(-2000);
+    intake_stop();
+    fw_spin(350);
+    turn_to(58);
+    intakeP.set(true);
+    shoot();
+    fw_stop();
+
+    // get roller 1
+    turn_to(135);
+    drive(4000);
+    turn_to(180);
+    roller();
+
+    // get 3 more discs and do roller 2
+    drive(-600);
+    turn_to(45);
+    intake_vel();
+    drive(600);
+    intakeP.set(false);
+    delay(600);
+    drive(800);
+    intake_stop();
+    turn_to(90);
+    drive(500);
+    roller();
+
+    // match loads 2
+    drive(-100);
+    turn_to(180);
+    drive(-1200);
+    fw_spin(350);
+    turn_to(175);
     for(int i = 0; i < 11; i++)
     {
         intake_vel(-127);
@@ -223,28 +219,57 @@ void skills()
         intake_vel(127);
         delay(300);
     }
+
+    // REPEATS START
+    // get 3 stack and shoot
+    turn_to(0);
+    drive(700);
+    turn_to(90);
+    intakeP.set(true);
+    intake_vel();
+    drive(1400);
+    intakeP.set(false);
+    delay(600);
+
+    turn_to(135);
+    drive(1000);
+    intake_stop();
+    fw_spin(350);
+    turn_to(26);
+    intakeP.set(true);
+    shoot();
     fw_stop();
 
-    // get roller 3
-    turn_to(180);
-    drive(1200);
-    turn_to(90);
-    drive(200, 400);
-    intake_dist(-600);
-    delay(600);
-
-    // get roller 4
-    drive(-1200);
-    turn_to(180);
-    intakeP.set(true);
-    drive(1400)
-    intake_dist(-600);
-    delay(600);
-
-    // end game
-    drive(-1400);
+    // get 3 and shoot
     turn_to(135);
-    drive(300);
+    intakeP.set(false);
+    intake_vel();
+    drive(3000);
+    drive(-2000);
+    intake_stop();
+    fw_spin(350);
+    turn_to(58);
+    intakeP.set(true);
+    shoot();
+    fw_stop();
+
+    // get roller 1
+    turn_to(135);
+    drive(4000);
+    turn_to(180);
+    roller();
+
+    // END OF REPEAT
+    // get 3 more discs and do roller 2
+    drive(-1800);
+    turn_to(-90);
+    drive(1500);
+    roller();
+    turn_to(-135);
+    drive(-1000);
+    turn_to(-45);
+    
+    // end game shoot!!!
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR

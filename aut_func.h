@@ -40,7 +40,7 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 1.4 && t_since_shot >= delay_ms)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 1 && t_since_shot >= delay_ms)
             {
                 t_since_shot = 0;
                 intake_dist(-590);
@@ -65,6 +65,13 @@ namespace auf
         intake_vel(-127);
         delay(num_discs * 180);
         intake_vel(0);
+    }
+
+    void roller()
+    {
+        drive_const(300, 70, 320);
+        intake_dist(-600);
+        delay(600);
     }
 }
 
