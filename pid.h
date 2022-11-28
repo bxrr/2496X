@@ -299,7 +299,7 @@ namespace pid
             double dist_correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
             double imu_correction = imu_kP * deg_err + imu_kI * deg_i + imu_kD * deg_d;
 
-            if(lspeed == rspeed && lspeed = 127)
+            if(lspeed == rspeed && lspeed == 127)
             {
                 rspeed *= inner_target / outer_target;
             }
