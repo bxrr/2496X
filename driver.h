@@ -66,48 +66,54 @@ void flywheel_control(int time)
     else
         speed_index = 0;
 
-    // if not manual control, run distance sensor
-    if(!manual_control)
+    if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
     {
-        fly_on = false;
-        if(pid::disc::two_discs)
+        pid::fw_spin(-70);
+    }
+    else
+    {
+    // if not manual control, run distance sensor
+        if(!manual_control)
         {
-            pid::fw_spin(speeds[speed_index]);
-        }
-        else if(pid::disc::disc_present == false)
-        {
-            if(no_discs_first)
+            fly_on = false;
+            if(pid::disc::two_discs)
             {
-                no_discs_first = false;
-                no_discs_time = time;
+                pid::fw_spin(speeds[speed_index]);
             }
-            else if(no_discs_time + 150 < time)
+            else if(pid::disc::disc_present == false)
+            {
+                if(no_discs_first)
+                {
+                    no_discs_first = false;
+                    no_discs_time = time;
+                }
+                else if(no_discs_time + 150 < time)
+                {
+                    pid::fw_stop();
+                }
+            }
+            else
+            {
+                no_discs_first = true;
+            }
+        }
+        else // if manual control, check for button press R1 to toggle flywheel
+        {
+            if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
+            {
+                fly_on = !fly_on;
+            }
+
+            if(fly_on)
+            {
+                pid::fw_spin(speeds[speed_index]);
+            }
+            else
             {
                 pid::fw_stop();
             }
         }
-        else
-        {
-            no_discs_first = true;
-        }
     }
-    else // if manual control, check for button press R1 to toggle flywheel
-    {
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
-        {
-            fly_on = !fly_on;
-        }
-
-        if(fly_on)
-        {
-            pid::fw_spin(speeds[speed_index]);
-        }
-        else
-        {
-            pid::fw_stop();
-        }
-    }
-        
 }
 
 void intake_control()
@@ -149,7 +155,7 @@ void expansion(int time)
     {
         if(first_pressed)
         {
-            expansionP.set(true);
+            expansionP.toggle();
         }
         first_pressed = true;
         first_pressed_time = time;

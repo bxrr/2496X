@@ -247,7 +247,7 @@ namespace pid
         double kI = 0.0;
         double kD = 0;
 
-        double diff_kP = 0.1;
+        double diff_kP = 0.4;
         double diff_kI = 0;
         double diff_kD = 0;
 
@@ -387,14 +387,14 @@ namespace pid
 
         // constants
         double kP = 1.03;
-        double kI = 0.08;
+        double kI = 0.15;
         double kD = 0.0;
         double kF = 0.181;
 
-        double l_kP = 1.03;
-        double l_kI = 0.08;
+        double l_kP = 1.05;
+        double l_kI = 0.5;
         double l_kD = 0.0;
-        double l_kF = 0.188;
+        double l_kF = 0.2;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -472,6 +472,16 @@ namespace pid
                     glb::flywheelL = 0;
                     glb::flywheelR = 0;
                 }
+                else if(flywheel_target < 0)
+                {
+                    glb::flywheelL = flywheel_target;
+                    glb::flywheelR = flywheel_target;
+                    memset(window, 0, sizeof(window));
+                    error = 0;
+                    last_error = 0;
+                    integral = 0;
+                    derivative = 0;
+                }
                 else
                 {
                     // calculate pid variables (different calculations for auton and not autonomous)
@@ -482,9 +492,12 @@ namespace pid
                     if(integral * (flywheel_target > 400 ? l_kI : kI) > 40) integral = 40 / (flywheel_target > 400 ? l_kI : kI); // limit integral to add only 40 speed max
                     if(f_fullspeed(flywheel_target, error)) integral = 0; // integral floor
                     derivative = (error - last_error) * 100;
+
+                    double temp_kP = flywheel_target > 400 ? l_kP : kP;
+                    if(error < -4) temp_kP /= 3;
                     
-                    if(flywheel_target > 400) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * l_kF + error * l_kP + integral * l_kI + derivative * l_kD;
-                    else volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * kP + integral * kI + derivative * kD;
+                    if(flywheel_target > 400) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * temp_kP + integral * l_kI + derivative * l_kD;
+                    else volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
                     if(volt_speed > 127) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;
@@ -493,7 +506,7 @@ namespace pid
                     glb::flywheelR = volt_speed;
 
                     // print stuff
-                    if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
+                    if(speed != 0) printf("[%lf, %lf], ", win_avg, error * kP);
 
                     if(time % 100 == 0 && time % 1600 != 0 && actual_avg > 150)
                         glb::con.print(1, 0, "rpm: %.2lf", (win_avg));

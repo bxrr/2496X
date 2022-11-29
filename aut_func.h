@@ -40,7 +40,7 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 2 && t_since_shot >= delay_ms)
+            if(abs(pid::fw_target() - pid::fw_speed()) < 5 && t_since_shot >= delay_ms)
             {
                 t_since_shot = 0;
                 intake_dist(-590);
@@ -62,8 +62,9 @@ namespace auf
 
     void shoot(int num_discs=3)
     {
+        delay(300);
         intake_vel(-127);
-        delay(num_discs * 150);
+        delay(num_discs * 200);
         intake_vel(0);
     }
 

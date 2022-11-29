@@ -20,6 +20,11 @@ void none()
     index(3, 500, 15000);
 }
 
+void arc()
+{
+    arc_turn(90, 650, 2000);
+}
+
 void solo_awp()//pmuller@tustin.k12.ca.us
 {
     fw_spin(485);
@@ -75,14 +80,14 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    fw_spin(485);
+    fw_spin(490);
     drive(100, 200);
     intake_dist(-200);
     delay(200);
     drive(-200, 800);
     turn_to(-4.3, 800);
     intake_dist(200);
-    index(2, 500, 2000);
+    index(2, 300, 2000);
     fw_stop();
 
     intakeP.set(true);
@@ -91,25 +96,25 @@ void ml_half_awp()
     drive(1170);
     intakeP.set(false);
     delay(600);
-    fw_spin(470);
+    fw_spin(475);
     drive(-530);
-    turn_to(-13);
+    turn_to(-10);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 500, 2000);
+    index(3, 300, 2500);
     fw_stop();
 
     turn_to(135);
     intake_vel();
-    drive(410);
+    drive(340);
     intakeP.set(false);
     delay(600);
-    fw_spin(465);
-    drive(-400);
-    turn_to(-15);
+    fw_spin(470);
+    drive(-340);
+    turn_to(-9);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 500, 2000);
+    index(3, 300, 2500);
     intakeP.set(false);
     fw_stop();
 }
@@ -146,7 +151,7 @@ void skills()
     // match loader 1
     fw_spin(350);
     turn_to(-5);
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 11; i++)
     {
         intake_vel(-127);
         delay(300);
@@ -157,61 +162,63 @@ void skills()
 
     // get 3 stack and shoot
     turn_to(0);
-    drive(700);
+    drive(500);
     turn_to(90);
     intakeP.set(true);
     intake_vel();
-    drive(1400);
+    drive(1200);
     intakeP.set(false);
     delay(600);
 
     turn_to(135);
-    drive(1000);
+    drive(500);
     intake_stop();
     fw_spin(350);
     turn_to(26);
-    intakeP.set(true);
     shoot();
     fw_stop();
 
     // get 3 and shoot
     turn_to(135);
-    intakeP.set(false);
     intake_vel();
     drive(2500);
-    fw_spin(380);
     turn_to(81);
+    fw_spin(350);
     intake_stop();
     intakeP.set(true);
+    drive(-1400);
     shoot();
     fw_stop();
 
-    // get roller 1
-    turn_to(135);
-    drive(1800);
+    // get three stack
+    drive(1400);
+    turn_to(90);
+    drive(800);
+    intake_vel();
+    intakeP.set(false);
+    delay(300);
+    drive(250);
+
+    // do roller 1
     turn_to(180);
+    intakeP.set(true);
+    drive(1200);
+    intake_stop();
     roller();
 
-    // get 3 more discs and do roller 2
-    drive(-600);
-    turn_to(45);
-    intake_vel();
-    drive(600);
-    intakeP.set(false);
-    delay(600);
-    drive(800);
-    intake_stop();
+    // do roller 2
+    drive(-1200);
     turn_to(90);
-    drive(500);
+    drive(1200);
     roller();
 
     // match loads 2
-    drive(-100);
+    drive(-70);
     turn_to(180);
     drive(-1200);
     fw_spin(350);
     turn_to(175);
-    for(int i = 0; i < 11; i++)
+    for(int i = 0; i < 12; i++)
     {
         intake_vel(-127);
         delay(300);
@@ -221,60 +228,73 @@ void skills()
 
     // REPEATS START
     // get 3 stack and shootshoot
-    turn_to(0);
-    drive(700);
-    turn_to(90);
+    turn_to(180);
+    drive(500);
+    turn_to(-90);
     intakeP.set(true);
     intake_vel();
-    drive(1400);
+    drive(1200);
     intakeP.set(false);
     delay(600);
 
     turn_to(135);
-    drive(1000);
+    drive(500);
     intake_stop();
     fw_spin(350);
     turn_to(26);
-    intakeP.set(true);
     shoot();
     fw_stop();
 
     // get 3 and shoot
-    turn_to(135);
-    intakeP.set(false);
+    turn_to(-45);
     intake_vel();
     drive(2500);
-    fw_spin(380);
-    turn_to(81);
+    turn_to(-99);
+    fw_spin(350);
     intake_stop();
     intakeP.set(true);
+    drive(-1400);
     shoot();
     fw_stop();
 
-    // get roller 1
-    turn_to(135);
-    drive(1800);
-    turn_to(180);
-    roller();
-
-    // END OF REPEAT
-    // get 3 more discs and do roller 2
-    drive(-1800);
+    drive(1400);
     turn_to(-90);
-    drive(1500);
+    drive(800);
+    intake_vel();
+    intakeP.set(false);
+
+    // end of repeat-shoot 3 stack
+    delay(600);
+    turn_to(-94);
+    intakeP.set(true);
+    fw_spin(350);
+    drive(-1900);
+    intake_stop();
+    shoot();
+    fw_stop();
+
+    // get roller 3
+    drive(1800);
+    turn_to(-90);
+    drive(1400);
     roller();
-    turn_to(-135);
-    drive(-1000);
+    drive(-1200);
+    turn_to(0);
+    drive(1200);
+    roller();
+    drive(-1300);
     turn_to(-45);
-    
+    drive(500);
+
     // end game shoot!!!
-    
+    expansionP.toggle();
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
     Auton("none", none),
+    Auton("arc", arc),
     Auton("solo awp", solo_awp),
     Auton("ml half awp", ml_half_awp),
     Auton("nml half awp", nml_half_awp),
