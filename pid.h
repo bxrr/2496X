@@ -247,11 +247,11 @@ namespace pid
         double kI = 0.0;
         double kD = 0;
 
-        double diff_kP = 0.4;
+        double diff_kP = 0;
         double diff_kI = 0;
         double diff_kD = 0;
 
-        double imu_kP = 0;
+        double imu_kP = 1.5;
         double imu_kI = 0;
         double imu_kD = 0;
 
@@ -382,6 +382,7 @@ namespace pid
         double flywheel_target = 0;
         double last_target = 0;
         bool recover = true;
+        bool force_recovery = false;
 
         int time = 0;
 
@@ -389,7 +390,7 @@ namespace pid
         double kP = 1.03;
         double kI = 0.15;
         double kD = 0.0;
-        double kF = 0.181;
+        double kF = 0.2;
 
         double l_kP = 1.05;
         double l_kI = 0.5;
@@ -444,7 +445,7 @@ namespace pid
                 win_avg = window_sum / n_terms;
 
                 // flywheel recovery adds to target speed
-                if(glb::intakeR.get_actual_velocity() > 100 && recover)
+                if(glb::intakeR.get_actual_velocity() > 100 && recover || force_recovery)
                 {
                     if(recover_start == false)
                     {
@@ -453,7 +454,7 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        speed += 100;
+                        speed += flywheel_target > 400 ? 200 : 100;
                     }
                 }
                 else
@@ -496,8 +497,8 @@ namespace pid
                     double temp_kP = flywheel_target > 400 ? l_kP : kP;
                     if(error < -4) temp_kP /= 3;
                     
-                    if(flywheel_target > 400) volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * temp_kP + integral * l_kI + derivative * l_kD;
-                    else volt_speed = f_fullspeed(flywheel_target, error) ? 127 : speed * kF + error * temp_kP + integral * kI + derivative * kD;
+                    if(flywheel_target > 400) volt_speed = f_fullspeed(speed, error) ? 127 : speed * kF + error * temp_kP + integral * l_kI + derivative * l_kD;
+                    else volt_speed = f_fullspeed(speed, error) ? 127 : speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
                     if(volt_speed > 127) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;

@@ -24,6 +24,7 @@ void initialize()
 void autonomous()
 {
 	(*auton).run();
+	auton_ran = true;
 }
 
 void opcontrol() 
@@ -33,13 +34,14 @@ void opcontrol()
 
 	while(true)
 	{
+		pid::fw::force_recovery = false;
 		pid::fw_recover(true);
 		if(chassis_on)
 			arcade_drive();
 			// tank_drive();
 		intake_control();
 		angle_control();
-		flywheel_control(time);
+		flywheel_control(time, auton_ran);
 		expansion(time);
 		print_info(time, chassis_on);
 

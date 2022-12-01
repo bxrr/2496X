@@ -137,11 +137,11 @@ void nml_half_awp()
     intake_vel();
     drive(3550, 2000);
 
-    fw_spin(450);
+    fw_spin(455);
     turn_to(139.3, 2000);
     intake_vel(0);
     delay(100);
-    index(3, 600, 4000);
+    index(3, 500, 4000);
     delay(900);
     fw_stop();
 }
@@ -171,12 +171,14 @@ void skills()
     delay(600);
 
     turn_to(135);
+    intakeP.set(true);
     drive(500);
     intake_stop();
     fw_spin(350);
     turn_to(26);
     shoot();
     fw_stop();
+    intakeP.set(false);
 
     // get 3 and shoot
     turn_to(135);
@@ -237,7 +239,7 @@ void skills()
     intakeP.set(false);
     delay(600);
 
-    turn_to(135);
+    turn_to(-45);
     drive(500);
     intake_stop();
     fw_spin(350);

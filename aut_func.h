@@ -40,11 +40,16 @@ namespace auf
         int t_since_shot = 0;
         while(time < timeout && discs_shot < num_discs)
         {
-            if(abs(pid::fw_target() - pid::fw_speed()) < 5 && t_since_shot >= delay_ms)
+            if(t_since_shot >= delay_ms)
             {
-                t_since_shot = 0;
-                intake_dist(-590);
-                discs_shot++;
+                if(pid::fw_target() - pid::fw_speed() < 10) pid::fw::force_recovery = false;
+                if(abs(pid::fw_target() - pid::fw_speed()) < 5)
+                {
+                    t_since_shot = 0;
+                    intake_dist(-590);
+                    pid::fw::force_recovery = true;
+                    discs_shot++;
+                }
             }
 
             pros::delay(10);

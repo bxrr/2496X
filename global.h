@@ -41,7 +41,7 @@ namespace glb
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
 
-    bool auton_running = false;
+    bool auton_ran = false;
 }
 
 #endif

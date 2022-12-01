@@ -15,6 +15,9 @@ void arcade_drive()
     double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
     double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
 
+    if(abs(left) > 100) left = left/abs(left) * 2 * abs(left) - 100;
+    if(abs(right) > 100) right = right/abs(right) * 2 * abs(right) - 100;
+
     if(left || right)
     {
         chas.spin_left(left + right);
@@ -43,15 +46,24 @@ void tank_drive()
     }
 }
 
-void flywheel_control(int time)
+void flywheel_control(int time, bool run_driver=false)
 {
     static int speed_index = 0;
     static bool manual_control = true;
     static bool fly_on = false;
-    std::vector<int> speeds = {335, 385};
+    static bool driver_first = true;
+
+    std::vector<int> speeds = {330, 385};
 
     static bool no_discs_first = true;
     static int no_discs_time = 0;
+
+    // run driver
+    if(run_driver && driver_first)
+    {
+        driver_first = false;
+        manual_control = false;
+    }
 
     // check manual control button
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
