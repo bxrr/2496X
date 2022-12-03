@@ -392,7 +392,7 @@ namespace pid
         double kD = 0.0;
         double kF = 0.2;
 
-        double l_kP = 1.05;
+        double l_kP = 1.03;
         double l_kI = 0.5;
         double l_kD = 0.0;
         double l_kF = 0.2;

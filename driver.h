@@ -80,7 +80,7 @@ void flywheel_control(int time, bool run_driver=false)
 
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
     {
-        pid::fw_spin(-70);
+        pid::fw_spin(-127);
     }
     else
     {

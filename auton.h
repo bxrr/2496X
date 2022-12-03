@@ -27,14 +27,14 @@ void arc()
 
 void solo_awp()//pmuller@tustin.k12.ca.us
 {
-    fw_spin(485);
     drive(100, 200);
     intake_dist(-200);
     delay(200);
-    drive(-200, 800);
-    turn_to(-4.5, 800);
-    intake_dist(200);
-    index(2, 600, 2000);
+    drive(-200);
+    fw_spin(475);
+    intake_dist(300);
+    turn_to(-4.1);
+    index(2, 300, 2000);
     delay(200);
     fw_stop();
 
@@ -44,25 +44,23 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     drive(1170);
     intakeP.set(false);
     delay(1500);
-    fw_spin(460);
-    turn_to(-14);
-    fw_spin(470);
+    fw_spin(445);
+    turn_to(-14.3);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 500, 2000);
+    index(3, 300, 3500);
     delay(200);
     fw_stop();
 
-    turn_to(-135, 1200);
+    turn_to(-136, 1200);
     intakeP.set(false);
     intake_vel(127);
-    drive_const(4500);
-    delay(150);
-
+    drive_const(4900);
     chas.spin_left(112);
     chas.spin_right(34);
-    delay(480);
+
     intakeP.set(true);
+    delay(500);
     intake_stop();
     chas.stop();
     delay(100);
@@ -70,9 +68,9 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     // intake_dist(-300);
     // delay(300);
     chas.spin(70);
-    delay(400);
-    intake_dist(-380);
-    delay(200);
+    delay(300);
+    intake_dist(-400);
+    delay(300);
     intakeP.set(false);
     intake_stop();
     chas.stop();
@@ -80,24 +78,26 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    fw_spin(490);
     drive(100, 200);
+    fw_spin(490);
     intake_dist(-200);
     delay(200);
     drive(-200, 800);
-    turn_to(-4.3, 800);
-    intake_dist(200);
+    turn_to(-4.1, 800);
+    intake_dist(300);
+    delay(200);
     index(2, 300, 2000);
     fw_stop();
 
     intakeP.set(true);
     turn_to(-130, 1400);
+    delay(150);
     intake_vel();
-    drive(1170);
+    drive(1130);
     intakeP.set(false);
-    delay(600);
-    fw_spin(475);
-    drive(-530);
+    delay(900);
+    fw_spin(455);
+    drive(-350);
     turn_to(-10);
     intake_vel(0);
     intakeP.set(true);
@@ -106,42 +106,37 @@ void ml_half_awp()
 
     turn_to(135);
     intake_vel();
-    drive(340);
+    drive(270);
     intakeP.set(false);
-    delay(600);
-    fw_spin(470);
-    drive(-340);
-    turn_to(-9);
+    delay(900);
+    drive(-250);
+    turn_to(-9.5);
     intake_vel(0);
-    intakeP.set(true);
-    index(3, 300, 2500);
-    intakeP.set(false);
-    fw_stop();
 }
 
 void nml_half_awp()
 {
-    fw_spin(490);
+    fw_spin(480);
     drive(1160, 1500);
     turn_to(99, 1500);
-    index(2, 500, 4000);
+    index(2, 300, 2500);
     
     fw_stop();
     turn_to(90, 1000);
-    drive(100, 250);
+    drive(300, 500);
     intake_dist(-250);
-    delay(250);
+    delay(400);
 
     drive(-150, 1000);
-    turn_to(-143.8, 1800);
+    turn_to(-146);
     intake_vel();
-    drive(3550, 2000);
+    drive(3550);
 
-    fw_spin(455);
+    fw_spin(435);
     turn_to(139.3, 2000);
+    delay(500);
     intake_vel(0);
-    delay(100);
-    index(3, 500, 4000);
+    index(3, 300, 2500);
     delay(900);
     fw_stop();
 }
@@ -149,9 +144,9 @@ void nml_half_awp()
 void skills()
 {
     // match loader 1
-    fw_spin(350);
-    turn_to(-5);
-    for(int i = 0; i < 11; i++)
+    fw_spin(355);
+    turn_to(-6);
+    for(int i = 0; i < 3; i++)
     {
         intake_vel(-127);
         delay(300);
@@ -166,9 +161,10 @@ void skills()
     turn_to(90);
     intakeP.set(true);
     intake_vel();
-    drive(1200);
+    drive(1400);
     intakeP.set(false);
-    delay(600);
+    delay(300);
+    drive(300);
 
     turn_to(135);
     intakeP.set(true);
@@ -220,7 +216,7 @@ void skills()
     drive(-1200);
     fw_spin(350);
     turn_to(175);
-    for(int i = 0; i < 12; i++)
+    for(int i = 0; i < 4; i++)
     {
         intake_vel(-127);
         delay(300);
