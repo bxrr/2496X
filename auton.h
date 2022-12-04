@@ -148,9 +148,9 @@ void skills()
     for(int i = 0; i < 3; i++)
     {
         intake_vel(-127);
-        delay(300);
+        delay(200);
         intake_vel(127);
-        delay(300);
+        delay(400);
     }
     fw_stop();
 
@@ -171,7 +171,13 @@ void skills()
     intake_stop();
     fw_spin(355);
     turn_to(28);
-    shoot();
+    for(int i = 0; i < 3; i++)
+    {
+        intake_vel(-127);
+        delay(200);
+        intake_vel(127);
+        delay(200);
+    }
     fw_stop();
     intakeP.set(false);
 
@@ -189,11 +195,11 @@ void skills()
     fw_stop();
 
     // get three stack
-    drive(1700);
+    drive(1550);
     intake_vel();
     intakeP.set(false);
     turn_to(90);
-    drive(700);
+    drive(800);
 
     // do roller 1
     turn_to(180);
@@ -222,9 +228,9 @@ void skills()
     for(int i = 0; i < 4; i++)
     {
         intake_vel(-127);
-        delay(400);
+        delay(200);
         intake_vel(127);
-        delay(400);
+        delay(200);
     }
 
     // REPEATS START
