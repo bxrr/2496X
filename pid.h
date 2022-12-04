@@ -24,7 +24,7 @@ namespace pid
         double kI = 3.0;
         double kD = 0.05;
 
-        double straight_kI = 2.0;
+        double straight_kI = 1.5;
 
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
@@ -97,6 +97,7 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
+        pros::delay(100);
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
@@ -126,7 +127,7 @@ namespace pid
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void turn(double degrees, int timeout=3000)
+    void turn(double degrees, int timeout=3500)
     {
         int time = 0;
 
@@ -190,10 +191,11 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
+        pros::delay(100);
         global_heading += glb::imu.get_heading() - start_pos;
     }
 
-    void turn_to(double degree_to, int timeout=3000)
+    void turn_to(double degree_to, int timeout=3500)
     {
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
@@ -533,7 +535,7 @@ namespace pid
 
     double fw_speed()
     {
-        return fw::win_avg;
+        return fw::actual_avg;
     }
 
     void fw_stop()

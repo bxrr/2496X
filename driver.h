@@ -53,7 +53,7 @@ void flywheel_control(int time, bool run_driver=false)
     static bool fly_on = false;
     static bool driver_first = true;
 
-    std::vector<int> speeds = {330, 385};
+    std::vector<int> speeds = {333, 385};
 
     static bool no_discs_first = true;
     static int no_discs_time = 0;
