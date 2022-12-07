@@ -32,8 +32,6 @@ namespace glb
     pros::Motor flywheelR(P_FLY_R, pros::E_MOTOR_GEARSET_06, false);
     pros::Motor intakeL(P_INTAKE_L, pros::E_MOTOR_GEARSET_06, true);
     pros::Motor intakeR(P_INTAKE_R, pros::E_MOTOR_GEARSET_06, false);
-    pros::Distance disc_sensor1(P_DISC_SENSOR1_P);
-    pros::Distance disc_sensor2(P_DISC_SENSOR2_P);
 
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P);

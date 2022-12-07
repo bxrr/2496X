@@ -49,28 +49,8 @@ void tank_drive()
 void flywheel_control(int time, bool run_driver=false)
 {
     static int speed_index = 0;
-    static bool manual_control = true;
     static bool fly_on = false;
-    static bool driver_first = true;
-
-    std::vector<int> speeds = {333, 385};
-
-    static bool no_discs_first = true;
-    static int no_discs_time = 0;
-
-    // run driver
-    if(run_driver && driver_first)
-    {
-        driver_first = false;
-        manual_control = false;
-    }
-
-    // check manual control button
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
-    {
-        pid::fw_stop();
-        manual_control = !manual_control;
-    }
+    std::vector<int> speeds = {340, 390};
     
     // set speed index
     if(angleP.get_status() == true)
@@ -85,45 +65,18 @@ void flywheel_control(int time, bool run_driver=false)
     else
     {
     // if not manual control, run distance sensor
-        if(!manual_control)
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         {
-            fly_on = false;
-            if(pid::disc::two_discs)
-            {
-                pid::fw_spin(speeds[speed_index]);
-            }
-            else if(pid::disc::disc_present == false)
-            {
-                if(no_discs_first)
-                {
-                    no_discs_first = false;
-                    no_discs_time = time;
-                }
-                else if(no_discs_time + 150 < time)
-                {
-                    pid::fw_stop();
-                }
-            }
-            else
-            {
-                no_discs_first = true;
-            }
+            fly_on = !fly_on;
         }
-        else // if manual control, check for button press R1 to toggle flywheel
-        {
-            if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
-            {
-                fly_on = !fly_on;
-            }
 
-            if(fly_on)
-            {
-                pid::fw_spin(speeds[speed_index]);
-            }
-            else
-            {
-                pid::fw_stop();
-            }
+        if(fly_on)
+        {
+            pid::fw_spin(speeds[speed_index]);
+        }
+        else
+        {
+            pid::fw_stop();
         }
     }
 }

@@ -134,7 +134,7 @@ namespace pid
         // constants
         double kP = 5.0;
         double kI = 18.0;
-        double kD = 0.37;
+        double kD = 0.34;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -156,7 +156,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.1)
+            if(abs(error) <= 0.15)
             {
                 if(within_err == false)
                 {
@@ -319,64 +319,6 @@ namespace pid
         glb::chas.stop();
         global_heading += glb::imu.get_heading() - init_heading;
     }
-    
-    // not actually a pid - disc sensor
-    namespace disc
-    {
-        bool two_discs = false;
-        bool disc_present = false;
-        
-        void disc_sense() // task
-        {
-            int time = 0;
-            int time_seen1 = 0;
-            int time_seen2 = 0;
-            bool one_seen = false;
-            bool two_seen = false;
-
-            while(true)
-            {
-                if(glb::disc_sensor1.get() < 11)
-                {
-                    if(one_seen == false)
-                    {
-                        one_seen = true;
-                        time_seen1 = time;
-                    }
-                    else if(time_seen1 + 50 <= time)
-                    {
-                        disc_present = true;
-                    }
-                }
-                else
-                {
-                    one_seen = false;
-                    disc_present = false;
-                }
-
-                if(glb::disc_sensor2.get() < 30)
-                {
-                    if(two_seen == false)
-                    {
-                        two_seen = true;
-                        time_seen2 = time;
-                    }
-                    else if(time_seen2 + 100 <= time)
-                    {
-                        two_discs = true;
-                    }
-                }
-                else
-                {
-                    two_seen = false;
-                    two_discs = false;
-                }
-
-                pros::delay(10);
-                time += 10;
-            }
-        }
-    }
 
     // flywheel ============================================================
     namespace fw
@@ -535,7 +477,7 @@ namespace pid
 
     double fw_speed()
     {
-        return fw::actual_avg;
+        return fw::win_avg;
     }
 
     void fw_stop()

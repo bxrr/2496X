@@ -18,7 +18,6 @@ void initialize()
 
 	// tasks
 	Task fw_ctrl(pid::fw::fw_pid);
-	Task disc_sensor(pid::disc::disc_sense);
 }
 
 void autonomous()

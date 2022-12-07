@@ -38,16 +38,21 @@ namespace auf
         int time = 0;
         int discs_shot = 0;
         int t_since_shot = 0;
+
         while(time < timeout && discs_shot < num_discs)
         {
             if(t_since_shot >= delay_ms)
             {
-                if(abs(pid::fw_target() - pid::fw_speed()) < 1)
+                if(abs(pid::fw_target() - pid::fw_speed()) < 2.5)
                 {
                     t_since_shot = 0;
-                    intake_dist(-400);
+                    intake_dist(-415);
                     discs_shot++;
                 }
+            }
+            else if(t_since_shot > 400 && t_since_shot < delay_ms)
+            {
+                intake_vel();
             }
 
             pros::delay(10);
@@ -75,7 +80,7 @@ namespace auf
     {
         pid::drive_const(320, 70, 300);
         imu.set_heading(180);
-        intake_dist(450);
+        intake_dist(400);
         delay(600);
         pid::global_heading += imu.get_heading() - 180;
     }
