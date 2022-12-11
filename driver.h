@@ -50,7 +50,7 @@ void flywheel_control(int time, bool run_driver=false)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {340, 390};
+    std::vector<int> speeds = {320, 385};
     
     // set speed index
     if(angleP.get_status() == true)
@@ -85,8 +85,8 @@ void intake_control()
 {
     if(con.get_digital(E_CONTROLLER_DIGITAL_L2))
     {
-        intakeL.move(127);
-        intakeR.move(127);
+        intakeL.move(77);
+        intakeR.move(77);
     }
     else if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
     {

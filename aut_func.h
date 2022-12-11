@@ -46,7 +46,7 @@ namespace auf
                 if(abs(pid::fw_target() - pid::fw_speed()) < 2.5)
                 {
                     t_since_shot = 0;
-                    intake_dist(-415);
+                    intake_dist(-410);
                     discs_shot++;
                 }
             }

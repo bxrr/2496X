@@ -398,7 +398,7 @@ namespace pid
                     }
                     else if(recover_start_time + 100 <= time)
                     {
-                        speed += flywheel_target > 400 ? 200 : 100;
+                        speed += flywheel_target > 400 ? 70 : 200;
                     }
                 }
                 else

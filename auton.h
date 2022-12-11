@@ -18,12 +18,8 @@ using namespace auf;
 void none()
 {
     fw_spin(490);
-    index(3, 500, 15000);
-}
-
-void arc()
-{
-    arc_turn(90, 650, 2000);
+    index(3, 400, 4000);
+    delay(2000);
 }
 
 void solo_awp()//pmuller@tustin.k12.ca.us
@@ -311,7 +307,6 @@ void skills()
 std::vector<Auton> autons
 {
     Auton("none", none),
-    Auton("arc", arc),
     Auton("solo awp", solo_awp),
     Auton("ml half awp", ml_half_awp),
     Auton("nml half awp", nml_half_awp),
