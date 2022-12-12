@@ -23,7 +23,6 @@ void initialize()
 void autonomous()
 {
 	(*auton).run();
-	auton_ran = true;
 }
 
 void opcontrol() 
@@ -40,7 +39,7 @@ void opcontrol()
 			// tank_drive();
 		intake_control();
 		angle_control();
-		flywheel_control(time, auton_ran);
+		flywheel_control(time);
 		expansion(time);
 		print_info(time, chassis_on);
 

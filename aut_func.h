@@ -68,6 +68,15 @@ namespace auf
         pros::delay(300);
     }
 
+    void index_const(int num_discs, int delay_ms)
+    {
+        for(int i = 0; i < num_discs; i++)
+        {
+            index_dist(-410);
+            delay(delay_ms);
+        }
+    }
+
     void shoot(int num_discs=3)
     {
         delay(300);

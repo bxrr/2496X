@@ -54,7 +54,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 7)
+            if(abs(error) < 5)
             {
                 if(within_err == false)
                 {
@@ -63,7 +63,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 100 <= time)
+                    if(within_err_time + 250 <= time)
                         break;
                 }
             }
@@ -97,7 +97,6 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
-        pros::delay(100);
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
@@ -132,9 +131,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 5.0;
-        double kI = 18.0;
-        double kD = 0.34;
+        double kP = 6.0;
+        double kI = 27.0;
+        double kD = 0.6;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -143,7 +142,7 @@ namespace pid
         double last_error;
         double integral = 0;
 
-        // variables for exiting if within 0.1 error for 100ms
+        // variables for exiting if within 0.1 error for 250ms
         bool within_err = false;
         int within_err_time = 0;
 
@@ -165,7 +164,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 100 <= time)
+                    if(within_err_time + 250 <= time)
                         break;
                 }
             }
@@ -191,7 +190,6 @@ namespace pid
 
         // stop chassis at end of loop
         glb::chas.stop();
-        pros::delay(100);
         global_heading += glb::imu.get_heading() - start_pos;
     }
 
@@ -332,14 +330,9 @@ namespace pid
 
         // constants
         double kP = 1.03;
-        double kI = 0.15;
-        double kD = 0.0;
-        double kF = 0.2;
-
-        double l_kP = 1.03;
-        double l_kI = 0.5;
-        double l_kD = 0.0;
-        double l_kF = 0.2;
+        double kI = 0.75;
+        double kD = 0.01;
+        double kF = 0.18;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -354,10 +347,9 @@ namespace pid
         void fw_pid()
         {
             // count for average speed over n iterations
-            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 5); };
-            auto f_fullspeed = [](double target, double error) { return error > -(2/9) * (target - 330) + 70; };
+            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 4); };
 
-            double window[25];
+            double window[50];
             memset(window, 0, sizeof(window)); // 0 initialize window;
             int win_size = sizeof(window) / sizeof(window[0]);
             win_avg = 0;
@@ -396,9 +388,9 @@ namespace pid
                         recover_start = true;
                         recover_start_time = time;
                     }
-                    else if(recover_start_time + 100 <= time)
+                    else if(recover_start_time + 50 <= time)
                     {
-                        speed += flywheel_target > 400 ? 70 : 200;
+                        speed += 100
                     }
                 }
                 else
@@ -433,16 +425,11 @@ namespace pid
                     double volt_speed = 0;
                     last_error = error;
                     error = speed - win_avg;
-                    integral += error / 100;
-                    if(integral * (flywheel_target > 400 ? l_kI : kI) > 40) integral = 40 / (flywheel_target > 400 ? l_kI : kI); // limit integral to add only 40 speed max
-                    if(f_fullspeed(flywheel_target, error)) integral = 0; // integral floor
-                    derivative = (error - last_error) * 100;
-
-                    double temp_kP = flywheel_target > 400 ? l_kP : kP;
-                    if(error < -4) temp_kP /= 3;
+                    if(abs(error) < 20) integral += error / 100;
+                    else integral = 0;
+                    derivative = (error - last_error);
                     
-                    if(flywheel_target > 400) volt_speed = f_fullspeed(speed, error) ? 127 : speed * kF + error * temp_kP + integral * l_kI + derivative * l_kD;
-                    else volt_speed = f_fullspeed(speed, error) ? 127 : speed * kF + error * temp_kP + integral * kI + derivative * kD;
+                    volt_speed = speed * kF + error * kP + integral * l_kI + derivative * l_kD;
 
                     if(volt_speed > 127) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;
@@ -453,7 +440,7 @@ namespace pid
                     // print stuff
                     if(speed != 0) printf("[%lf, %lf], ", win_avg, error * kP);
 
-                    if(time % 100 == 0 && time % 1600 != 0 && actual_avg > 150)
+                    if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
                         glb::con.print(1, 0, "rpm: %.2lf", (win_avg));
                 }
                 

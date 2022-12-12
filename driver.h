@@ -46,17 +46,36 @@ void tank_drive()
     }
 }
 
-void flywheel_control(int time, bool run_driver=false)
+void flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    std::vector<int> speeds = {320, 385};
+    static bool manual_control = false;
+    std::vector<int> speeds = {330, 385};
+
+    static int t_since_disc = 0;
+    bool disc_present = false;
+
+    if(glb::disc_sensor.get() < 15)
+    {
+        disc_present = true;
+        t_disc = time;
+    }
+    else
+    {
+        disc_present = false;
+    }
     
     // set speed index
     if(angleP.get_status() == true)
         speed_index = 1;
     else
         speed_index = 0;
+
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+    {
+        manual_control = !manual_control;
+    }
 
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
     {
@@ -72,11 +91,13 @@ void flywheel_control(int time, bool run_driver=false)
 
         if(fly_on)
         {
-            pid::fw_spin(speeds[speed_index]);
+            if(disc_present && !manual_control || manual_control)
+                pid::fw_spin(speeds[speed_index]);
         }
         else
         {
-            pid::fw_stop();
+            if(manual_control || time - t_disc > 200 && !manual_control)
+                pid::fw_stop();
         }
     }
 }
@@ -85,8 +106,8 @@ void intake_control()
 {
     if(con.get_digital(E_CONTROLLER_DIGITAL_L2))
     {
-        intakeL.move(77);
-        intakeR.move(77);
+        intakeL.move(75);
+        intakeR.move(75);
     }
     else if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
     {
