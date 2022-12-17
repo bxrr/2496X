@@ -12,14 +12,14 @@ namespace auf
 {
     void intake_vel(double speed=127)
     {
-        glb::intakeL = -speed;
-        glb::intakeR = -speed;
+        glb::intakeL.move(-speed);
+        glb::intakeR.move(-speed);
     }
 
     void intake_dist(double distance, double speed=600)
     {
-        glb::intakeL = 0;
-        glb::intakeR = 0;
+        glb::intakeL.move(0);
+        glb::intakeR.move(0);
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
     }
@@ -46,13 +46,15 @@ namespace auf
                 if(abs(pid::fw_target() - pid::fw_speed()) < 2.5)
                 {
                     t_since_shot = 0;
-                    intake_dist(-410);
+                    intake_dist(-410, -410);
+                    pid::fw::force_recovery = true;
                     discs_shot++;
                 }
             }
-            else if(t_since_shot > 400 && t_since_shot < delay_ms)
+
+            if(t_since_shot > 400)
             {
-                intake_vel();
+                pid::fw::force_recovery = false;
             }
 
             pros::delay(10);
@@ -65,22 +67,13 @@ namespace auf
             intake_dist(-2400);
         }
 
-        pros::delay(300);
-    }
-
-    void index_const(int num_discs, int delay_ms)
-    {
-        for(int i = 0; i < num_discs; i++)
-        {
-            index_dist(-410);
-            delay(delay_ms);
-        }
+        pros::delay(500);
     }
 
     void shoot(int num_discs=3)
     {
         delay(300);
-        intake_vel(-127);
+        intake_vel(70);
         delay(num_discs * 250);
         intake_vel(0);
     }

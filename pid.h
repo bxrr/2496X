@@ -24,7 +24,7 @@ namespace pid
         double kI = 3.0;
         double kD = 0.05;
 
-        double straight_kI = 1.5;
+        double straight_kI = 0.8;
 
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
@@ -132,8 +132,8 @@ namespace pid
 
         // constants
         double kP = 6.0;
-        double kI = 27.0;
-        double kD = 0.6;
+        double kI = 30.0;
+        double kD = 0.75;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -329,10 +329,10 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 1.03;
-        double kI = 0.75;
-        double kD = 0.01;
-        double kF = 0.18;
+        double kP = 0.6;
+        double kI = 0.8;
+        double kD = 0.0;
+        double kF = 0.19;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -347,9 +347,9 @@ namespace pid
         void fw_pid()
         {
             // count for average speed over n iterations
-            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 4); };
+            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
 
-            double window[50];
+            double window[10];
             memset(window, 0, sizeof(window)); // 0 initialize window;
             int win_size = sizeof(window) / sizeof(window[0]);
             win_avg = 0;
@@ -368,7 +368,7 @@ namespace pid
                 actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
 
                 // calculate average of last n window of values weighted by an exponential function defined as f_window above
-                memmove(window, window+1, sizeof(window[0]) * win_size-1);
+                memmove(window, window+1, sizeof(window[0]) * win_size - sizeof(window[0]));
                 window[win_size-1] = actual_avg;
                 
                 double window_sum = 0;
@@ -381,16 +381,16 @@ namespace pid
                 win_avg = window_sum / n_terms;
 
                 // flywheel recovery adds to target speed
-                if(glb::intakeR.get_actual_velocity() > 100 && recover || force_recovery)
+                if(glb::intakeR.get_actual_velocity() > 50 || force_recovery)
                 {
                     if(recover_start == false)
                     {
                         recover_start = true;
                         recover_start_time = time;
                     }
-                    else if(recover_start_time + 50 <= time)
+                    else if(recover_start_time + (flywheel_target < 420 ? 150 : 50) <= time)
                     {
-                        speed += 100
+                        speed += flywheel_target < 420 ? 90 : 250;
                     }
                 }
                 else
@@ -429,16 +429,16 @@ namespace pid
                     else integral = 0;
                     derivative = (error - last_error);
                     
-                    volt_speed = speed * kF + error * kP + integral * l_kI + derivative * l_kD;
+                    volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
 
                     if(volt_speed > 127) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;
 
-                    glb::flywheelL = volt_speed;
-                    glb::flywheelR = volt_speed;
+                    glb::flywheelL.move(volt_speed);
+                    glb::flywheelR.move(volt_speed);
 
                     // print stuff
-                    if(speed != 0) printf("[%lf, %lf], ", win_avg, error * kP);
+                    if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
                     if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
                         glb::con.print(1, 0, "rpm: %.2lf", (win_avg));

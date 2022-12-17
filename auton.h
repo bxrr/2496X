@@ -24,14 +24,49 @@ void none()
 void test_shoot()
 {
     fw_spin(485);
-    index(3, 400, 3000)
+    delay(1800);
+    index(3, 500, 4000);
     delay(500);
 }
 
-void test_const()
+void turns()
 {
-    fw_spin(485);
-    index_const(3, 500);
+    turn_to(180);
+    turn_to(0);
+    delay(500);
+    turn_to(135);
+    turn_to(0);
+    delay(500);
+    turn_to(90);
+    turn_to(0);
+    delay(500);
+    turn_to(45);
+    turn_to(0);
+    delay(500);
+    turn_to(30);
+    turn_to(0);
+    delay(500);
+    turn_to(9);
+    turn_to(0);
+    delay(500);
+}
+
+void drives()
+{
+    drive(3000);
+    drive(-3000);
+    delay(500);
+    drive(1000);
+    drive(-1000);
+    delay(500);
+    drive(500);
+    drive(-500);
+    delay(500);
+    drive(250);
+    drive(-250);
+    delay(500);
+    drive(100);
+    drive(-100);
 }
 
 void solo_awp()//pmuller@tustin.k12.ca.us
@@ -172,7 +207,8 @@ std::vector<Auton> autons
 {
     Auton("none", none),
     Auton("test shoot", test_shoot),
-    Auton("test shoot", test_const),
+    Auton("turns", turns),
+    Auton("drives", drives),
     Auton("solo awp", solo_awp),
     Auton("ml half awp", ml_half_awp),
     Auton("nml half awp", nml_half_awp),

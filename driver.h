@@ -6,6 +6,7 @@
 #include "lib/auton_obj.h"
 #include "pid.h"
 #include <vector>
+#include <cmath>
 
 using namespace glb;
 using namespace pros;
@@ -15,8 +16,8 @@ void arcade_drive()
     double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
     double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
 
-    if(abs(left) > 100) left = left/abs(left) * 2 * abs(left) - 100;
-    if(abs(right) > 100) right = right/abs(right) * 2 * abs(right) - 100;
+    auto turn_curve = [](double val) { return (val / abs(val) * 0.08873565094 * pow(abs(val), 1.5)); };
+    if(right) right = turn_curve(right);
 
     if(left || right)
     {
@@ -50,32 +51,31 @@ void flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    static bool manual_control = false;
-    std::vector<int> speeds = {330, 385};
+    int flat_speeds[] = {340, 360};
+    int angle_speeds[] = {385, 400};
 
-    static int t_since_disc = 0;
-    bool disc_present = false;
-
-    if(glb::disc_sensor.get() < 15)
-    {
-        disc_present = true;
-        t_disc = time;
-    }
-    else
-    {
-        disc_present = false;
-    }
-    
     // set speed index
+    std::vector<int> speeds;
     if(angleP.get_status() == true)
-        speed_index = 1;
-    else
-        speed_index = 0;
-
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
     {
-        manual_control = !manual_control;
+        for(int speed : angle_speeds)
+            speeds.push_back(speed);
     }
+    else
+    {
+        for(int speed : flat_speeds)
+            speeds.push_back(speed);
+    }
+
+    if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
+    {
+        speed_index = 0;
+    }
+    if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
+    {
+        speed_index = 1;
+    }
+
 
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
     {
@@ -91,28 +91,37 @@ void flywheel_control(int time)
 
         if(fly_on)
         {
-            if(disc_present && !manual_control || manual_control)
-                pid::fw_spin(speeds[speed_index]);
+            pid::fw_spin(speeds[speed_index]);
         }
         else
         {
-            if(manual_control || time - t_disc > 200 && !manual_control)
-                pid::fw_stop();
+            pid::fw_stop();
         }
     }
 }
 
 void intake_control()
 {
-    if(con.get_digital(E_CONTROLLER_DIGITAL_L2))
+    bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
+    bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
+    
+    if(intake)
     {
-        intakeL.move(75);
-        intakeR.move(75);
+        if(shoot)
+        {
+            intakeP.set(true);
+        }
+        else
+        {
+            intakeP.set(false);
+            intakeL.move(-127);
+            intakeR.move(-127);
+        }
     }
-    else if(con.get_digital(E_CONTROLLER_DIGITAL_L1))
+    else if(shoot)
     {
-        intakeL.move(-127);
-        intakeR.move(-127);
+        intakeL.move(100);
+        intakeR.move(100);
     }
     else
     {

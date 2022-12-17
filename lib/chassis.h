@@ -25,13 +25,13 @@ public:
     void spin_left(double speed)
     {
         for(pros::Motor motor : left_motors)
-            motor = speed;
+            motor.move(speed);
     }
 
     void spin_right(double speed)
     {
         for(pros::Motor motor : right_motors)
-            motor = speed;
+            motor.move(speed);
     }
 
     void spin(double speed)
