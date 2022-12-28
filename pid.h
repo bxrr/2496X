@@ -20,9 +20,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.6;
-        double kI = 3.0;
-        double kD = 0.05;
+        double kP = 0.5;
+        double kI = 1.2;
+        double kD = 0.06;
 
         double straight_kI = 0.8;
 
@@ -49,12 +49,12 @@ namespace pid
             last_error = error;
             error = distance - (glb::chas.pos() - start_pos);
 
-            if(abs(error)<50) integral += error / 100;
+            if(abs(error)<70) integral += error / 100;
 
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 5)
+            if(abs(error) < 10)
             {
                 if(within_err == false)
                 {
@@ -132,8 +132,8 @@ namespace pid
 
         // constants
         double kP = 6.0;
-        double kI = 30.0;
-        double kD = 0.75;
+        double kI = 18.0;
+        double kD = 0.4;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -155,7 +155,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.15)
+            if(abs(error) <= 0.3)
             {
                 if(within_err == false)
                 {
@@ -329,7 +329,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.6;
+        double kP = 0.5;
         double kI = 0.8;
         double kD = 0.0;
         double kF = 0.19;
@@ -349,7 +349,7 @@ namespace pid
             // count for average speed over n iterations
             auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
 
-            double window[10];
+            double window[25];
             memset(window, 0, sizeof(window)); // 0 initialize window;
             int win_size = sizeof(window) / sizeof(window[0]);
             win_avg = 0;
@@ -381,16 +381,17 @@ namespace pid
                 win_avg = window_sum / n_terms;
 
                 // flywheel recovery adds to target speed
-                if(glb::intakeR.get_actual_velocity() > 50 || force_recovery)
+                if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target <= 385 || force_recovery)
                 {
+                    bool run_auton = flywheel_target > 385;
                     if(recover_start == false)
                     {
                         recover_start = true;
                         recover_start_time = time;
                     }
-                    else if(recover_start_time + (flywheel_target < 420 ? 150 : 50) <= time)
+                    else if(recover_start_time + run_auton ? 150 : 100 <= time)
                     {
-                        speed += flywheel_target < 420 ? 90 : 250;
+                        speed += run_auton ? 85 : 110;
                     }
                 }
                 else
@@ -428,8 +429,10 @@ namespace pid
                     if(abs(error) < 20) integral += error / 100;
                     else integral = 0;
                     derivative = (error - last_error);
+
+                    double temp_kP = error < -5 ? kP / 5 : kP;
                     
-                    volt_speed = speed * kF + error * kP + integral * kI + derivative * kD;
+                    volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
                     if(volt_speed > 127) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;
