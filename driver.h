@@ -51,8 +51,8 @@ void flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    int flat_speeds[] = {320, 335};
-    int angle_speeds[] = {340, 355};
+    int flat_speeds[] = {330, 340};
+    int angle_speeds[] = {345, 370};
 
     // set speed index
     std::vector<int> speeds;
@@ -104,8 +104,9 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = angleP.get_status() ? 75 : 90;
-    
+    double shoot_speed = angleP.get_status() ? 90 : 100;
+
+    pid::fw_recover(true);
     if(intake)
     {
         if(shoot)
@@ -123,6 +124,12 @@ void intake_control()
     }
     else if(shoot)
     {
+        intakeL.move(shoot_speed);
+        intakeR.move(shoot_speed);
+    }
+    else if(con.get_digital(E_CONTROLLER_DIGITAL_B))
+    {
+        pid::fw_recover(false);
         intakeL.move(shoot_speed);
         intakeR.move(shoot_speed);
     }

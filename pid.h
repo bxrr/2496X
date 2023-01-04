@@ -54,7 +54,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 10)
+            if(abs(error) < 15)
             {
                 if(within_err == false)
                 {
@@ -63,7 +63,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 250 <= time)
+                    if(within_err_time + 170 <= time)
                         break;
                 }
             }
@@ -131,9 +131,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 6.0;
-        double kI = 18.0;
-        double kD = 0.4;
+        double kP = 5.0;
+        double kI = 22;
+        double kD = 0.35;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -151,7 +151,7 @@ namespace pid
             // calculate pid 
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < 18) integral += error / 100;
+            if(abs(error) < 8) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
@@ -164,7 +164,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 250 <= time)
+                    if(within_err_time + 170 <= time)
                         break;
                 }
             }
@@ -325,6 +325,7 @@ namespace pid
         double last_target = 0;
         bool recover = true;
         bool force_recovery = false;
+        double recover_amt = 110;
 
         int time = 0;
 
@@ -381,22 +382,25 @@ namespace pid
                 win_avg = window_sum / n_terms;
 
                 // flywheel recovery adds to target speed
-                if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target <= 385 || force_recovery)
+                if(recover)
                 {
-                    bool run_auton = flywheel_target > 385;
-                    if(recover_start == false)
+                    if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target <= 385 || force_recovery)
                     {
-                        recover_start = true;
-                        recover_start_time = time;
+                        bool run_auton = flywheel_target > 385;
+                        if(recover_start == false)
+                        {
+                            recover_start = true;
+                            recover_start_time = time;
+                        }
+                        else if(recover_start_time + run_auton ? 150 : 100 <= time)
+                        {
+                            speed += run_auton ? 110 : recover_amt;
+                        }
                     }
-                    else if(recover_start_time + run_auton ? 150 : 100 <= time)
+                    else
                     {
-                        speed += run_auton ? 85 : 110;
+                        recover_start = false;
                     }
-                }
-                else
-                {
-                    recover_start = false;
                 }
 
                 // if target speed is set to 0, reset all variables
@@ -430,7 +434,7 @@ namespace pid
                     else integral = 0;
                     derivative = (error - last_error);
 
-                    double temp_kP = error < -5 ? kP / 5 : kP;
+                    double temp_kP = error < -5 ? kP / 20 : kP;
                     
                     volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 

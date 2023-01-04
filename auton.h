@@ -20,9 +20,25 @@ void none()
     
 }
 
+void match_loads()
+{
+    pid::fw::recover_amt = 10;
+    fw_spin(360);
+    delay(1300);
+    for(int i = 0; i < 11; i++)
+    {
+        intake_vel(-127);
+        delay(130);
+        intake_vel(0);
+        delay(500);
+    }
+    fw_stop();
+    pid::fw::recover_amt = 110;
+}
+
 void test_shoot()
 {
-    fw_spin(405);
+    fw_spin(435);
     delay(1800);
     index(3, 400, 4000);
     delay(500);
@@ -76,8 +92,7 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     delay(200);
     drive(-200, 800);
     intake_dist(300);
-    turn_to(-4);
-    delay(200);
+    delay(100);
     index(2, 300, 1800);
     fw_spin(395);
 
@@ -90,7 +105,7 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     turn_to(-11.7);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 300, 1800, true);
+    index(3, 300, 1800);
     fw_spin(333);
 
     turn_to(-132, 1600);
@@ -112,41 +127,39 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    drive_const(100, 70, 200);
+    drive(100, 200);
     fw_spin(445);
     intake_dist(-200);
     delay(200);
     drive(-200, 800);
     intake_dist(300);
-    turn_to(-4);
-    delay(200);
-    index(2, 300, 1800);
-    fw_spin(395);
+    turn_to(-3, 1000);
+    index(2, 400, 1800);
+    fw_spin(430);
 
     intakeP.set(true);
-    turn_to(-127.5, 1500);
+    turn_to(-135, 1500);
     intake_vel();
-    drive(1200, 1500);
+    drive(1160, 1500);
     intakeP.set(false);
     delay(500);
-    drive(-400, 1500);
-    turn_to(-9.7);
+    drive(-450, 1500);
+    turn_to(-11);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 300, 1800, true);
-    fw_spin(390);
+    index(3, 400, 1800);
+//     fw_spin(420);
 
-    turn_to(129);
-    intake_vel();
-    drive(270);
-    intakeP.set(false);
-    delay(300);
-    intake_stop();
-    drive(-250);
-    turn_to(-13.5);
-    intake_vel(0);
-    index(3, 300, 1500, true);
-    fw_stop();
+//     turn_to(129);
+//     intake_vel();
+//     drive(600);
+//     intakeP.set(false);
+//     delay(300);
+//     drive(-250);
+//     turn_to(-9);
+//     intake_vel(0);
+//     index(3, 300, 1500);
+//     fw_stop();
 }
 
 void nml_half_awp()
@@ -179,16 +192,19 @@ void nml_half_awp()
 void skills()
 {
     // match loader 1
-    fw_spin(350);
-    delay(800);
-    for(int i = 0; i < 3; i++)
+    pid::fw::recover_amt = 10;
+    fw_spin(360);
+    turn_to(-3, 1000);
+    delay(300);
+    for(int i = 0; i < 11; i++)
     {
         intake_vel(-127);
-        delay(200);
-        intake_vel(127);
-        delay(400);
+        delay(130);
+        intake_vel(0);
+        delay(500);
     }
     fw_stop();
+    pid::fw::recover_amt = 110;
 
     
 }
@@ -197,6 +213,7 @@ void skills()
 std::vector<Auton> autons
 {
     Auton("none", none),
+    Auton("match loads", match_loads),
     Auton("test shoot", test_shoot),
     Auton("turns", turns),
     Auton("drives", drives),

@@ -30,7 +30,7 @@ namespace auf
         glb::intakeR.brake();
     }
 
-    void index(int num_discs, int delay_ms=-1, int timeout=-1, bool recover=false)
+    void index(int num_discs, int delay_ms=-1, int timeout=-1, bool recover=true)
     {
         if(delay_ms < 0) delay_ms = pid::fw_target();
         if(timeout < 0) timeout = num_discs * (delay_ms + 1000);
@@ -52,7 +52,7 @@ namespace auf
                 }
             }
 
-            if(t_since_shot > std::max(400, delay_ms))
+            if(t_since_shot > std::min(0, delay_ms))
             {
                 if(recover) pid::fw::force_recovery = false;
             }
@@ -67,8 +67,9 @@ namespace auf
             intake_dist(-2400);
         }
 
+        pros::delay(400);
         pid::fw::force_recovery = false;
-        pros::delay(500);
+        pros::delay(100);
     }
 
     void shoot(int num_discs=3)
