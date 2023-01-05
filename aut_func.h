@@ -43,7 +43,7 @@ namespace auf
         {
             if(t_since_shot >= delay_ms)
             {
-                if(abs(pid::fw_target() - pid::fw_speed()) < 2.5)
+                if(abs(pid::fw_target() - pid::fw_speed()) < 2)
                 {
                     t_since_shot = 0;
                     intake_dist(-410, -410);

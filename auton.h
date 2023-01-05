@@ -133,8 +133,8 @@ void ml_half_awp()
     delay(200);
     drive(-200, 800);
     intake_dist(300);
-    turn_to(-3, 1000);
-    index(2, 400, 1800);
+    turn_to(-4, 1000);
+    index(2, 300, 1800);
     fw_spin(430);
 
     intakeP.set(true);

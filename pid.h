@@ -384,7 +384,7 @@ namespace pid
                 // flywheel recovery adds to target speed
                 if(recover)
                 {
-                    if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target <= 385 || force_recovery)
+                    if(glb::intakeR.get_actual_velocity() > 30 || force_recovery)
                     {
                         bool run_auton = flywheel_target > 385;
                         if(recover_start == false)
@@ -392,9 +392,9 @@ namespace pid
                             recover_start = true;
                             recover_start_time = time;
                         }
-                        else if(recover_start_time + run_auton ? 150 : 100 <= time)
+                        else if(recover_start_time + run_auton ? 100 : 100 <= time)
                         {
-                            speed += run_auton ? 110 : recover_amt;
+                            speed += run_auton ? 0 : recover_amt;
                         }
                     }
                     else
@@ -435,6 +435,7 @@ namespace pid
                     derivative = (error - last_error);
 
                     double temp_kP = error < -5 ? kP / 20 : kP;
+                    temp_kP *= flywheel_target > 385 ? 2 : 1;
                     
                     volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
