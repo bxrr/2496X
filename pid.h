@@ -264,7 +264,7 @@ namespace pid
                 // flywheel recovery adds to target speed
                 if(recover)
                 {
-                    if(glb::intakeR.get_actual_velocity() > 30 || force_recovery)
+                    if(glb::intakeR.get_actual_velocity() > 30)
                     {
                         if(recover_start == false)
                         {
