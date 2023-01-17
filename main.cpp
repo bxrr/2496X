@@ -32,7 +32,6 @@ void opcontrol()
 
 	while(true)
 	{
-		pid::fw::force_recovery = false;
 		pid::fw_recover(true);
 		if(chassis_on)
 			arcade_drive();

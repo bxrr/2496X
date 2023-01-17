@@ -22,7 +22,6 @@ void none()
 
 void match_loads()
 {
-    pid::fw::recover_amt = 10;
     fw_spin(360);
     delay(1300);
     for(int i = 0; i < 11; i++)
@@ -33,12 +32,12 @@ void match_loads()
         delay(500);
     }
     fw_stop();
-    pid::fw::recover_amt = 110;
 }
 
 void test_shoot()
 {
-    fw_spin(435);
+    pid::fw_recover(false);
+    fw_spin(445);
     delay(1800);
     index(3, 400, 4000);
     delay(500);
@@ -127,39 +126,39 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    drive(100, 200);
     fw_spin(445);
+    drive(100, 200);
     intake_dist(-200);
     delay(200);
-    drive(-200, 800);
+    drive(-250, 800);
     intake_dist(300);
-    turn_to(-4, 1000);
-    index(2, 300, 1800);
+    turn_to(-3, 800);
+    index(2, 400, 1800);
     fw_spin(430);
 
     intakeP.set(true);
-    turn_to(-135, 1500);
+    turn_to(-135, 1000);
     intake_vel();
-    drive(1160, 1500);
+    drive(1160, 1300);
     intakeP.set(false);
     delay(500);
-    drive(-450, 1500);
-    turn_to(-11);
+    drive(-450, 900);
+    turn_to(-11, 1000);
     intake_vel(0);
     intakeP.set(true);
     index(3, 400, 1800);
-//     fw_spin(420);
+    fw_spin(420);
 
-//     turn_to(129);
-//     intake_vel();
-//     drive(600);
-//     intakeP.set(false);
-//     delay(300);
-//     drive(-250);
-//     turn_to(-9);
-//     intake_vel(0);
-//     index(3, 300, 1500);
-//     fw_stop();
+    turn_to(129, 1000);
+    intake_vel();
+    drive(600, 900);
+    intakeP.set(false);
+    delay(300);
+    drive(-250, 800);
+    turn_to(-9, 1000);
+    intake_vel(0);
+    index(3, 300, 1500);
+    fw_stop();
 }
 
 void nml_half_awp()
@@ -192,7 +191,6 @@ void nml_half_awp()
 void skills()
 {
     // match loader 1
-    pid::fw::recover_amt = 10;
     fw_spin(360);
     turn_to(-3, 1000);
     delay(300);
@@ -204,9 +202,6 @@ void skills()
         delay(500);
     }
     fw_stop();
-    pid::fw::recover_amt = 110;
-
-    
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR

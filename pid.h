@@ -20,9 +20,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.5;
-        double kI = 1.2;
-        double kD = 0.06;
+        double kP = (distance < 200) ? 1.0 : 0.6;
+        double kI = 3.0;
+        double kD = 0.07;
 
         double straight_kI = 0.8;
 
@@ -49,12 +49,12 @@ namespace pid
             last_error = error;
             error = distance - (glb::chas.pos() - start_pos);
 
-            if(abs(error)<70) integral += error / 100;
+            if(abs(error) < 50) integral += error / 100;
 
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 15)
+            if(abs(error) < 7)
             {
                 if(within_err == false)
                 {
@@ -63,7 +63,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 170 <= time)
+                    if(within_err_time + 200 <= time)
                         break;
                 }
             }
@@ -132,8 +132,8 @@ namespace pid
 
         // constants
         double kP = 5.0;
-        double kI = 22;
-        double kD = 0.35;
+        double kI = 18;
+        double kD = 0.37;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -151,11 +151,11 @@ namespace pid
             // calculate pid 
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < 8) integral += error / 100;
+            if(abs(error) < 18) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.3)
+            if(abs(error) <= 0.1)
             {
                 if(within_err == false)
                 {
@@ -164,7 +164,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 170 <= time)
+                    if(within_err_time + 200 <= time)
                         break;
                 }
             }
@@ -200,132 +200,12 @@ namespace pid
         turn(degree, timeout);
     }
 
-    void arc_turn(double degrees, double radius_enc, int timeout=5000, bool left_outer=true)
-    {
-        // define wheelbase information (set manually before usage of function)
-        double wheelbase_in = 12.5; // in inches
-        auto enc_conv = [](double in) { return (500 * in) / (2 * M_PI * 3.25); };
-        double wheelbase_enc = enc_conv(wheelbase_in);
-
-        // reset imu
-        glb::imu.set_heading(degrees > 0 ? 30 : 330);
-        double init_heading = glb::imu.get_heading();
-
-        // initial variablespros m
-        double right_start = glb::chas.right_pos();
-        double left_start = glb::chas.left_pos();
-
-        // define inner and outer targets
-        double inner_target = 2 * M_PI * radius_enc * degrees / 360 + right_start;
-        double outer_target = 2 * M_PI * (radius_enc + wheelbase_enc) * degrees / 360 + left_start;
-
-        // inner radius PID variables
-        double inner_error = inner_target - glb::chas.right_pos();
-        double inner_i = 0;
-        double last_inner_err;
-
-        // outer radius PID variables
-        double outer_error = outer_target - glb::chas.left_pos();
-        double outer_i = 0;
-        double last_outer_err;
-
-        // outer radius difference from ideal location based on inner distance PID variables
-        double rem_inner_deg = degrees * (inner_error / inner_target);
-        double ideal_outer_err = (rem_inner_deg / degrees) * outer_target;
-        double outer_diff_err = ideal_outer_err - outer_error;
-        double outer_diff_i = 0;
-        double last_outer_diff;
-
-        // degree difference from ideal degree based on current inner distance using imu PID variables
-        double ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
-        double deg_err = ideal_deg - (init_heading - glb::imu.get_heading());
-        double deg_i = 0;
-        double last_deg_err;
-
-        // define constants and time;
-        double kP = 0.1;
-        double kI = 0.0;
-        double kD = 0;
-
-        double diff_kP = 0;
-        double diff_kI = 0;
-        double diff_kD = 0;
-
-        double imu_kP = 1.5;
-        double imu_kI = 0;
-        double imu_kD = 0;
-
-        int time = 0;
-
-        while(time < timeout)
-        {
-            // update inner radius variables
-            last_inner_err = inner_error;
-            inner_error = inner_target - glb::chas.right_pos();
-            inner_i += inner_error / 100;
-            double inner_d = (inner_error - last_inner_err) * 100;
-
-            // update outer radius variables
-            last_outer_err = outer_error;
-            outer_error = outer_target - glb::chas.left_pos();
-            outer_i += outer_error / 100;
-            double outer_d = (outer_error - last_outer_err) * 100;
-
-            // update ideal difference variables
-            rem_inner_deg = degrees * (inner_error / inner_target);
-            ideal_outer_err = (rem_inner_deg / degrees) * outer_target;
-            last_outer_diff = outer_diff_err;
-            outer_diff_err = ideal_outer_err - outer_error; // outer_diff_err > 0 means outer side is going too fast. outer_diff_err < 0 means outer side is going too slow
-            outer_diff_i += outer_diff_err / 100;
-            double outer_diff_d = (outer_diff_err - last_outer_diff) * 100;
-
-            // update degree difference variables
-            ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
-            last_deg_err = deg_err;
-            deg_err = ideal_deg - (init_heading - glb::imu.get_heading()); // deg_err > 0 means not turning fast enough. deg_err < 0 means turning too fast
-            deg_i += deg_err / 100;
-            double deg_d = (deg_err - last_deg_err) * 100;
-
-            // check for exit condition
-            // if(abs(inner_error) < 5 && abs(glb::chas.left_speed()) < 10)
-            // {
-            //     break;
-            // }
-
-            // calculate speeds
-            auto f_ms = [](double speed) { return abs(speed) > 127 ? abs(speed) / speed * 127 : speed; }; // lambda function checking that speed does not exceed 127
-            double rspeed = kP * inner_error + inner_i * kI + inner_d * kD; rspeed = f_ms(rspeed);
-            double lspeed = kP * outer_error + outer_i * kI + outer_d * kD; lspeed = f_ms(lspeed);
-            double dist_correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
-            double imu_correction = imu_kP * deg_err + imu_kI * deg_i + imu_kD * deg_d;
-
-            if(lspeed == rspeed && lspeed == 127)
-            {
-                rspeed *= inner_target / outer_target;
-            }
-
-            // apply speed
-            glb::chas.spin_left(lspeed - dist_correction + imu_correction);
-            glb::chas.spin_right(rspeed + dist_correction - imu_correction);
-
-            // update time
-            pros::delay(10);
-            time += 10;
-        }
-
-        // stop chassis at end of loop
-        glb::chas.stop();
-        global_heading += glb::imu.get_heading() - init_heading;
-    }
-
     // flywheel ============================================================
     namespace fw
     {
         double flywheel_target = 0;
         double last_target = 0;
         bool recover = true;
-        bool force_recovery = false;
-        double recover_amt = 110;
 
         int time = 0;
 
@@ -333,7 +213,7 @@ namespace pid
         double kP = 0.5;
         double kI = 0.8;
         double kD = 0.0;
-        double kF = 0.19;
+        double kF = 0.191;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -347,13 +227,13 @@ namespace pid
 
         void fw_pid()
         {
-            // count for average speed over n iterations
-            auto f_window = [](double x, int w_s) { return pow(x+1 / w_s, 2); };
-
-            double window[25];
+            // moving average vars
+            double window[50];
             memset(window, 0, sizeof(window)); // 0 initialize window;
             int win_size = sizeof(window) / sizeof(window[0]);
             win_avg = 0;
+
+            auto f_window = [](int i, int win_size) { return pow((double) (i+1)/win_size, 2);}; // moving average weighting
 
             // recovery delay
             int recover_start_time = 0;
@@ -373,11 +253,11 @@ namespace pid
                 window[win_size-1] = actual_avg;
                 
                 double window_sum = 0;
-                int n_terms = 0;
+                double n_terms = 0;
                 for(int i = 0; i < win_size; i++)
                 {
-                    n_terms += f_window(i, win_size);
                     window_sum += window[i] * f_window(i, win_size);
+                    n_terms += f_window(i, win_size);
                 }
                 win_avg = window_sum / n_terms;
 
@@ -386,15 +266,14 @@ namespace pid
                 {
                     if(glb::intakeR.get_actual_velocity() > 30 || force_recovery)
                     {
-                        bool run_auton = flywheel_target > 385;
                         if(recover_start == false)
                         {
                             recover_start = true;
                             recover_start_time = time;
                         }
-                        else if(recover_start_time + run_auton ? 100 : 100 <= time)
+                        else if(recover_start_time + 60 <= time && recover_start_time + 1000 >= time)
                         {
-                            speed += run_auton ? 0 : recover_amt;
+                            speed += 105;
                         }
                     }
                     else

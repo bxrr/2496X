@@ -46,15 +46,9 @@ namespace auf
                 if(abs(pid::fw_target() - pid::fw_speed()) < 2)
                 {
                     t_since_shot = 0;
-                    intake_dist(-410, -410);
-                    if(recover) pid::fw::force_recovery = true;
+                    intake_dist(-410, -600);
                     discs_shot++;
                 }
-            }
-
-            if(t_since_shot > std::min(0, delay_ms))
-            {
-                if(recover) pid::fw::force_recovery = false;
             }
 
             pros::delay(10);
@@ -67,9 +61,7 @@ namespace auf
             intake_dist(-2400);
         }
 
-        pros::delay(400);
-        pid::fw::force_recovery = false;
-        pros::delay(100);
+        pros::delay(500);
     }
 
     void shoot(int num_discs=3)
