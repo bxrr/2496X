@@ -27,20 +27,18 @@ void match_loads()
     for(int i = 0; i < 11; i++)
     {
         intake_vel(-127);
-        delay(130);
+        delay(250);
         intake_vel(0);
-        delay(500);
+        delay(350);
     }
     fw_stop();
 }
 
 void test_shoot()
 {
-    pid::fw_recover(false);
-    fw_spin(445);
+    fw_spin(460);
     delay(1800);
-    index(3, 400, 4000);
-    delay(500);
+    index();
 }
 
 void turns()
@@ -92,7 +90,7 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     drive(-200, 800);
     intake_dist(300);
     delay(100);
-    index(2, 300, 1800);
+    // index(2, 300, 1800);
     fw_spin(395);
 
     intakeP.set(true);
@@ -104,7 +102,7 @@ void solo_awp()//pmuller@tustin.k12.ca.us
     turn_to(-11.7);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 300, 1800);
+    // index(3, 300, 1800);
     fw_spin(333);
 
     turn_to(-132, 1600);
@@ -133,7 +131,7 @@ void ml_half_awp()
     drive(-250, 800);
     intake_dist(300);
     turn_to(-3, 800);
-    index(2, 400, 1800);
+    // index(2, 400, 1800);
     fw_spin(430);
 
     intakeP.set(true);
@@ -146,7 +144,7 @@ void ml_half_awp()
     turn_to(-11, 1000);
     intake_vel(0);
     intakeP.set(true);
-    index(3, 400, 1800);
+    // index(3, 400, 1800);
     fw_spin(420);
 
     turn_to(129, 1000);
@@ -157,7 +155,7 @@ void ml_half_awp()
     drive(-250, 800);
     turn_to(-9, 1000);
     intake_vel(0);
-    index(3, 300, 1500);
+    // index(3, 300, 1500);
     fw_stop();
 }
 
@@ -166,7 +164,7 @@ void nml_half_awp()
     fw_spin(480);
     drive(1160, 1500);
     turn_to(99, 1500);
-    index(2, 300, 2500);
+    // index(2, 300, 2500);
     
     fw_stop();
     turn_to(90, 1300);
@@ -183,7 +181,7 @@ void nml_half_awp()
     turn_to(138.9, 2000);
     delay(500);
     intake_vel(0);
-    index(3, 300, 2500);
+    // index(3, 300, 2500);
     delay(900);
     fw_stop();
 }

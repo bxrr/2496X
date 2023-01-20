@@ -51,7 +51,7 @@ void flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    int flat_speeds[] = {340, 350};
+    int flat_speeds[] = {330, 345};
     int angle_speeds[] = {340, 355};
 
     // set speed index
@@ -104,7 +104,7 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = 100;
+    double shoot_speed = 105;
 
     pid::fw_recover(true);
     if(intake)

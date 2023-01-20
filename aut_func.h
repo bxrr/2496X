@@ -30,38 +30,16 @@ namespace auf
         glb::intakeR.brake();
     }
 
-    void index(int num_discs, int delay_ms=-1, int timeout=-1, bool recover=true)
+    void index(int num_discs=3, int ms_delay=500)
     {
-        if(delay_ms < 0) delay_ms = pid::fw_target();
-        if(timeout < 0) timeout = num_discs * (delay_ms + 1000);
-
-        int time = 0;
-        int discs_shot = 0;
-        int t_since_shot = 0;
-
-        while(time < timeout && discs_shot < num_discs)
+        for(int i = 0; i < num_discs; i++)
         {
-            if(t_since_shot >= delay_ms)
-            {
-                if(abs(pid::fw_target() - pid::fw_speed()) < 2)
-                {
-                    t_since_shot = 0;
-                    intake_dist(-410, -600);
-                    discs_shot++;
-                }
-            }
-
-            pros::delay(10);
-            t_since_shot += 10;
-            time += 10;
+            intake_vel(127);
+            delay(125);
+            intake_vel(0);
+            if(i < num_discs-1) pros::delay(ms_delay);
         }
-
-        if(discs_shot < num_discs)
-        {
-            intake_dist(-2400);
-        }
-
-        pros::delay(500);
+        pros::delay(200);
     }
 
     void shoot(int num_discs=3)

@@ -20,7 +20,7 @@ namespace glb
     #define P_INTAKE_R 1
     #define P_INTAKE_P 'A'
     #define P_ANGLE_P 'B'
-    #define P_EXPANSION_P 'C'
+    #define P_EXPANSION_P 'E'
     #define P_DISC_SENSOR_P 15
 
     #define P_IMU 7

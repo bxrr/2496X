@@ -20,7 +20,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = (distance < 200) ? 1.0 : 0.6;
+        double kP = (abs(distance) < 200) ? 1.0 : 0.6;
         double kI = 3.0;
         double kD = 0.07;
 
@@ -210,10 +210,11 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.5;
+        double kP = 0.8;
         double kI = 0.8;
         double kD = 0.0;
         double kF = 0.191;
+        double full_speed = 50;
 
         // initialize pid variables
         double actual_avg = (glb::flywheelL.get_actual_velocity() + glb::flywheelR.get_actual_velocity()) / 2;
@@ -224,6 +225,22 @@ namespace pid
         double base_speed = 0;
 
         double win_avg = 0;
+
+        void const_eq(double err)
+        {
+            if(flywheel_target < 410)
+            {
+                kP = 0.8;
+                kI = 0.8;
+                full_speed = 50;
+            }
+            else
+            {
+                kP = 5.0;
+                kI = 0.1;
+                full_speed = 30;
+            }
+        }
 
         void fw_pid()
         {
@@ -261,27 +278,6 @@ namespace pid
                 }
                 win_avg = window_sum / n_terms;
 
-                // flywheel recovery adds to target speed
-                if(recover)
-                {
-                    if(glb::intakeR.get_actual_velocity() > 30)
-                    {
-                        if(recover_start == false)
-                        {
-                            recover_start = true;
-                            recover_start_time = time;
-                        }
-                        else if(recover_start_time + 60 <= time && recover_start_time + 1000 >= time)
-                        {
-                            speed += 105;
-                        }
-                    }
-                    else
-                    {
-                        recover_start = false;
-                    }
-                }
-
                 // if target speed is set to 0, reset all variables
                 if(flywheel_target == 0)
                 {
@@ -313,12 +309,35 @@ namespace pid
                     else integral = 0;
                     derivative = (error - last_error);
 
+                    const_eq(error);
+
                     double temp_kP = error < -5 ? kP / 20 : kP;
-                    temp_kP *= flywheel_target > 385 ? 2 : 1;
                     
                     volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
+                    // flywheel recovery adds to target speed
+                    if(recover)
+                    {
+                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 410)
+                        {
+                            if(recover_start == false)
+                            {
+                                recover_start = true;
+                                recover_start_time = time;
+                            }
+                            else if(recover_start_time + 60 <= time)
+                            {
+                                volt_speed = 127;
+                            }
+                        }
+                        else
+                        {
+                            recover_start = false;
+                        }
+                    }
+
                     if(volt_speed > 127) volt_speed = 127;
+                    if(error > full_speed) volt_speed = 127;
                     if(volt_speed < 0) volt_speed = 0;
 
                     glb::flywheelL.move(volt_speed);
