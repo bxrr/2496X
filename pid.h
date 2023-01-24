@@ -232,13 +232,13 @@ namespace pid
             {
                 kP = 0.8;
                 kI = 0.8;
-                full_speed = 50;
+                full_speed = 40;
             }
             else
             {
                 kP = 5.0;
                 kI = 0.1;
-                full_speed = 30;
+                full_speed = 25;
             }
         }
 

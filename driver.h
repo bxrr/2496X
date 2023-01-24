@@ -104,7 +104,7 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = 105;
+    double shoot_speed = 127;
 
     pid::fw_recover(true);
     if(intake)
