@@ -14,10 +14,32 @@ using namespace pid;
 using namespace glb;
 using namespace auf;
 
+/* NOTES
+    Arc Turn
+        Pivot Wheel
+            0: BL
+            1: FL
+            2: FR
+            3: BR
+
+*/
+
+
 //testing !
 void none()
 {
-    
+    turn(90, 0);
+    delay(1000);
+
+    // turn(90, 1);
+    // delay(1000);
+
+    // turn(90, 2);
+    // delay(1000);
+
+    // turn(90, 3);
+    // delay(1000);
+
 }
 
 void match_loads()
