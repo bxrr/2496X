@@ -45,6 +45,28 @@ public:
         spin(0);
     }
 
+    //For Arc Turn
+    void spin_BR(double speed) 
+    {
+        right_motors[0].move(speed);
+    }
+
+    void spin_FR(double speed) 
+    {
+        right_motors[1].move(speed);
+    }
+
+    void spin_BL(double speed) 
+    {
+        left_motors[0].move(speed);
+    }
+
+    void spin_FL(double speed) 
+    {
+        left_motors[1].move(speed);
+    }
+    //End Arc Turn
+
     void reset()
     {
         for(pros::Motor motor : left_motors)

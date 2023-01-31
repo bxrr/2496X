@@ -126,7 +126,7 @@ namespace pid
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void turn(double degrees, int timeout=3500)
+    void turn(double degrees, int timeout=3500, int pivot_wheel = -1) //pivot_wheel for arc turn
     {
         int time = 0;
 
@@ -176,8 +176,42 @@ namespace pid
             // calculate speed
             double speed = kP * error + integral * kI + derivative * kD;
 
+
+            /*Arc Turn
+                Pivot Wheel
+                    0: BL
+                    1: FL
+                    2: FR
+                    3: BR
+
+
+            */
+
+            if(pivot_wheel == -1) //Regular Turn; pivot_wheel defaults -1
+            {
             glb::chas.spin_left(speed);
             glb::chas.spin_right(-speed);
+            
+            }
+            else //Arc Turn
+            {
+                if(pivot_wheel == 0) {
+                    glb::chas.spin_FL(speed);
+                    glb::chas.spin_right(-speed);
+                }
+                else if(pivot_wheel == 1) {
+                    glb::chas.spin_BL(speed);
+                    glb::chas.spin_right(-speed);
+                }
+                else if(pivot_wheel == 2) {
+                    glb::chas.spin_BR(speed);
+                    glb::chas.spin_left(-speed);
+                }
+                else if(pivot_wheel == 3) {
+                    glb::chas.spin_FR(speed);
+                    glb::chas.spin_right(-speed);
+                }
+            }
 
             // print stuff
             if(time % 50 == 0)
