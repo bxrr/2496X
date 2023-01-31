@@ -55,29 +55,23 @@ void flywheel_control(int time)
     static int first_seen = true;
     static bool unseen = true;
     static bool stopped = false;
-    int flat_speeds[] = {310, 325};
-    int angle_speeds[] = {350, 370};
+    static bool manual = false;
+    int flat_speeds[] = {310, 330, 425};
+    int angle_speeds[] = {350, 370, 425};
 
     // set speed index
-    std::vector<int> speeds;
-    if(angleP.get_status() == true)
-    {
-        for(int speed : angle_speeds)
-            speeds.push_back(speed);
-    }
-    else
-    {
-        for(int speed : flat_speeds)
-            speeds.push_back(speed);
-    }
-
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
     {
-        speed_index = 0;
+        if(speed_index > 0) speed_index--;
     }
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
     {
-        speed_index = 1;
+        if(speed_index < sizeof(flat_speeds) / sizeof(flat_speeds[0])) speed_index++;
+    }
+
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+    {
+        manual = !manual;
     }
 
 
@@ -95,28 +89,40 @@ void flywheel_control(int time)
 
         if(fly_on)
         {
-            if(glb::disc_sensor.get() < 65)
+            if(manual)
             {
-                stopped = false;
-                if(unseen)
-                {
-                    first_seen = time;
-                    unseen = false;
-                }
-                last_disc = time;
-                if(first_seen + 200 < time) pid::fw_spin(speeds[speed_index]);
+                if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
+                else pid::fw_spin(flat_speeds[speed_index]);
             }
-            else if(last_disc + 250 <= time)
+            else
             {
-                unseen = true;
-                if(pid::fw::win_avg <= 0) 
+                if(glb::disc_sensor.get() < 65)
                 {
-                    stopped = true;
-                    pid::fw_stop();
+                    stopped = false;
+                    if(unseen)
+                    {
+                        first_seen = time;
+                        unseen = false;
+                    }
+                    last_disc = time;
+                    if(first_seen + 200 < time)
+                    {
+                        if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
+                        else pid::fw_spin(flat_speeds[speed_index]);
+                    }
                 }
-                else if(!stopped)
+                else if(last_disc + 250 <= time)
                 {
-                    pid::fw_spin(-75);
+                    unseen = true;
+                    if(pid::fw::win_avg <= 0) 
+                    {
+                        stopped = true;
+                        pid::fw_stop();
+                    }
+                    else if(!stopped)
+                    {
+                        pid::fw_spin(-75);
+                    }
                 }
             }
         }
