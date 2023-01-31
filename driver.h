@@ -51,8 +51,12 @@ void flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    int flat_speeds[] = {330, 345};
-    int angle_speeds[] = {340, 355};
+    static int last_disc = 0;
+    static int first_seen = true;
+    static bool unseen = true;
+    static bool stopped = false;
+    int flat_speeds[] = {310, 325};
+    int angle_speeds[] = {350, 370};
 
     // set speed index
     std::vector<int> speeds;
@@ -91,7 +95,30 @@ void flywheel_control(int time)
 
         if(fly_on)
         {
-            pid::fw_spin(speeds[speed_index]);
+            if(glb::disc_sensor.get() < 65)
+            {
+                stopped = false;
+                if(unseen)
+                {
+                    first_seen = time;
+                    unseen = false;
+                }
+                last_disc = time;
+                if(first_seen + 200 < time) pid::fw_spin(speeds[speed_index]);
+            }
+            else if(last_disc + 250 <= time)
+            {
+                unseen = true;
+                if(pid::fw::win_avg <= 0) 
+                {
+                    stopped = true;
+                    pid::fw_stop();
+                }
+                else if(!stopped)
+                {
+                    pid::fw_spin(-75);
+                }
+            }
         }
         else
         {
@@ -104,7 +131,8 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = 127;
+    double shoot_speed = glb::angleP.get_status() ? 127 : 85;
+    //timothy tan
 
     pid::fw_recover(true);
     if(intake)
@@ -126,12 +154,6 @@ void intake_control()
     {
         intakeL.move(shoot_speed);
         intakeR.move(shoot_speed);
-    }
-    else if(con.get_digital(E_CONTROLLER_DIGITAL_B))
-    {
-        pid::fw_recover(false);
-        intakeL.move(127);
-        intakeR.move(127);
     }
     else
     {
