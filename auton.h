@@ -28,8 +28,65 @@ using namespace auf;
 //testing !
 void none()
 {
-    turn(90, 0);
-    delay(1000);
+
+    //starting shot
+    fw_spin(363);
+    delay(1800);
+    index(2);
+    
+    //get 3 discs
+    // fw_spin(50);
+    fw_stop();
+    drive(-300);
+    open_intake();
+    turn_to(90);
+    // intake_vel();
+    
+    drive(540);
+    close_intake();
+    intake_vel();
+    delay(1600);
+    // delay(200);
+    // drive(400);
+    // delay(100);
+    // drive(300);
+    // delay(100);
+
+    // intake_stop();
+    // intake_vel();
+    // delay(100);
+    intake_stop();
+
+    //shoot 3 discs
+    turn_to(9 );
+    delay(100);
+    intake_vel(-127);
+    delay(100);
+    intake_stop();
+    fw_spin(365);
+    delay(1250);
+    index(3);
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // turn(90, 0);
+    // delay(1000);
 
     // turn(90, 1);
     // delay(1000);

@@ -10,6 +10,9 @@
 
 namespace auf
 {
+    
+
+    
     void intake_vel(double speed=127)
     {
         glb::intakeL.move(-speed);
@@ -30,12 +33,21 @@ namespace auf
         glb::intakeR.brake();
     }
 
+     void open_intake() {
+        intakeP.set(true);
+        intake_vel();
+    }
+    void close_intake() {
+        intakeP.set(false);
+        intake_stop();
+    }
+
     void index(int num_discs=3, int ms_delay=500)
     {
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(125);
+            delay(175);
             intake_vel(0);
             if(i < num_discs-1) pros::delay(ms_delay);
         }
