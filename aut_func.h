@@ -10,9 +10,6 @@
 
 namespace auf
 {
-    
-
-    
     void intake_vel(double speed=127)
     {
         glb::intakeL.move(-speed);
@@ -37,6 +34,7 @@ namespace auf
         intakeP.set(true);
         intake_vel();
     }
+    
     void close_intake() {
         intakeP.set(false);
         intake_stop();
@@ -57,7 +55,7 @@ namespace auf
     void shoot(int num_discs=3)
     {
         delay(300);
-        intake_vel(70);
+        intake_vel(90);
         delay(num_discs * 250);
         intake_vel(0);
     }

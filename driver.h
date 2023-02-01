@@ -56,8 +56,9 @@ void flywheel_control(int time)
     static bool unseen = true;
     static bool stopped = false;
     static bool manual = false;
-    int flat_speeds[] = {310, 330, 425};
-    int angle_speeds[] = {350, 370, 425};
+    static bool intaken = false;
+    int flat_speeds[] = {310, 330, 350};
+    int angle_speeds[] = {350, 370, 390};
 
     // set speed index
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -66,7 +67,7 @@ void flywheel_control(int time)
     }
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
     {
-        if(speed_index < sizeof(flat_speeds) / sizeof(flat_speeds[0])) speed_index++;
+        if(speed_index < 2) speed_index++;
     }
 
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
@@ -98,6 +99,7 @@ void flywheel_control(int time)
             {
                 if(glb::disc_sensor.get() < 65)
                 {
+                    intaken = false;
                     stopped = false;
                     if(unseen)
                     {
@@ -114,14 +116,22 @@ void flywheel_control(int time)
                 else if(last_disc + 250 <= time)
                 {
                     unseen = true;
-                    if(pid::fw::win_avg <= 0) 
+                    if(glb::intakeL.get_actual_velocity() < -30 || intaken)
                     {
-                        stopped = true;
-                        pid::fw_stop();
+                        intaken = true;
+                        if(pid::fw::win_avg <= 0) 
+                        {
+                            stopped = true;
+                            pid::fw_stop();
+                        }
+                        else if(!stopped)
+                        {
+                            pid::fw_spin(-75);
+                        }
                     }
-                    else if(!stopped)
+                    else
                     {
-                        pid::fw_spin(-75);
+                        pid::fw_stop();
                     }
                 }
             }
@@ -137,7 +147,7 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? 127 : 85;
+    double shoot_speed = glb::angleP.get_status() ? 127 : 90;
     //timothy tan
 
     pid::fw_recover(true);

@@ -24,93 +24,36 @@ using namespace auf;
 
 */
 
-
 //testing !
-void none()
-{
 
+void skills()
+{
     //starting shot
-    fw_spin(363);
-    delay(1800);
-    index(2);
+    drive(200, 200);
+    intake_vel();
     
     //get 3 discs
     // fw_spin(50);
-    fw_stop();
+    fw_spin(-80);
     drive(-300);
+    fw_stop();
     open_intake();
     turn_to(90);
-    // intake_vel();
     
     drive(540);
     close_intake();
     intake_vel();
-    delay(1600);
-    // delay(200);
-    // drive(400);
-    // delay(100);
-    // drive(300);
-    // delay(100);
-
-    // intake_stop();
-    // intake_vel();
-    // delay(100);
-    intake_stop();
+    delay(900);
 
     //shoot 3 discs
-    turn_to(9 );
-    delay(100);
-    intake_vel(-127);
-    delay(100);
+    turn_to(9);
     intake_stop();
     fw_spin(365);
-    delay(1250);
-    index(3);
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // turn(90, 0);
-    // delay(1000);
-
-    // turn(90, 1);
-    // delay(1000);
-
-    // turn(90, 2);
-    // delay(1000);
-
-    // turn(90, 3);
-    // delay(1000);
-
+    shoot(3);
 }
 
-void match_loads()
+void none()
 {
-    fw_spin(360);
-    delay(1300);
-    for(int i = 0; i < 11; i++)
-    {
-        intake_vel(-127);
-        delay(250);
-        intake_vel(0);
-        delay(350);
-    }
-    fw_stop();
 }
 
 void test_shoot()
@@ -265,34 +208,17 @@ void nml_half_awp()
     fw_stop();
 }
 
-void skills()
-{
-    // match loader 1
-    fw_spin(360);
-    turn_to(-3, 1000);
-    delay(300);
-    for(int i = 0; i < 11; i++)
-    {
-        intake_vel(-127);
-        delay(130);
-        intake_vel(0);
-        delay(500);
-    }
-    fw_stop();
-}
-
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
 std::vector<Auton> autons
 {
+    Auton("skills", skills),
     Auton("none", none),
-    Auton("match loads", match_loads),
     Auton("test shoot", test_shoot),
     Auton("turns", turns),
     Auton("drives", drives),
     Auton("solo awp", solo_awp),
     Auton("ml half awp", ml_half_awp),
     Auton("nml half awp", nml_half_awp),
-    Auton("skills", skills),
 };
 
 

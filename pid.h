@@ -262,7 +262,7 @@ namespace pid
 
         void const_eq(double err)
         {
-            if(flywheel_target < 410)
+            if(flywheel_target < 440)
             {
                 kP = 0.8;
                 kI = 0.8;
@@ -270,9 +270,9 @@ namespace pid
             }
             else
             {
-                kP = 5.0;
-                kI = 0.1;
-                full_speed = 25;
+                kP = 4.0;
+                kI = 0.3;
+                full_speed = 15;
             }
         }
 
@@ -378,13 +378,13 @@ namespace pid
                     glb::flywheelR.move(volt_speed);
 
                     // print stuff
-                    if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
 
                     if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
                         glb::con.print(1, 0, "rpm: %.2lf", (win_avg));
                 }
                 
                 // update time
+                if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
                 pros::delay(10);
                 time += 10;
             }
