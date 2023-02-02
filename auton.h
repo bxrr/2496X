@@ -14,42 +14,70 @@ using namespace pid;
 using namespace glb;
 using namespace auf;
 
-/* NOTES
-    Arc Turn
-        Pivot Wheel
-            0: BL
-            1: FL
-            2: FR
-            3: BR
-
-*/
 
 //testing !
 
 void skills()
 {
-    //starting shot
-    drive(200, 200);
-    intake_vel();
+    // turn(1,500);
+    fw_spin(335);
+    delay(1250);
+    shoot(2);
+    delay(100);
+    // turn(0,500);
     
     //get 3 discs
-    // fw_spin(50);
     fw_spin(-80);
-    drive(-300);
-    fw_stop();
+    // drive(-300);
+    
     open_intake();
     turn_to(90);
+    fw_stop();
     
     drive(540);
     close_intake();
     intake_vel();
-    delay(900);
-
+    delay(850);
+   
     //shoot 3 discs
-    turn_to(9);
+    turn_to(25);
+    drive(-1500);
     intake_stop();
-    fw_spin(365);
+    fw_spin(300);
+    turn_to(-5);
     shoot(3);
+    fw_spin(-80);
+
+    //get 3
+    turn_to(90);
+    intake_vel();
+    drive_const(1000,70);
+    fw_spin(300);
+    drive(1090);
+    intake_stop();
+    
+    //shoot 3
+    turn_to(48);
+    shoot(3);
+    fw_spin(-80);
+    
+    //get 3
+    turn_to(180);
+    intake_vel();
+    drive_const(1000,70);
+    fw_spin(300);
+    drive(1000);
+    
+
+    //shoot 3
+    turn_to(90);
+    shoot(3);
+
+    
+
+
+    
+    
 }
 
 void none()

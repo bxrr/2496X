@@ -20,9 +20,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = (abs(distance) < 200) ? 1.0 : 0.6;
+        double kP = (abs(distance) < 200) ? 1.0 : 0.55;
         double kI = 3.0;
-        double kD = 0.07;
+        double kD = 0.075;
 
         double straight_kI = 0.8;
 
@@ -54,7 +54,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 7)
+            if(abs(error) < 15)
             {
                 if(within_err == false)
                 {
@@ -126,7 +126,7 @@ namespace pid
         global_heading += glb::imu.get_heading() - init_heading;
     }
 
-    void turn(double degrees, int timeout=3500, int pivot_wheel = -1) //pivot_wheel for arc turn
+    void turn(double degrees, int timeout=3500) //pivot_wheel for arc turn
     {
         int time = 0;
 
@@ -155,7 +155,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.1)
+            if(abs(error) <= 0.22)
             {
                 if(within_err == false)
                 {
@@ -176,42 +176,8 @@ namespace pid
             // calculate speed
             double speed = kP * error + integral * kI + derivative * kD;
 
-
-            /*Arc Turn
-                Pivot Wheel
-                    0: BL
-                    1: FL
-                    2: FR
-                    3: BR
-
-
-            */
-
-            if(pivot_wheel == -1) //Regular Turn; pivot_wheel defaults -1
-            {
             glb::chas.spin_left(speed);
             glb::chas.spin_right(-speed);
-            
-            }
-            else //Arc Turn
-            {
-                if(pivot_wheel == 0) {
-                    glb::chas.spin_FL(speed);
-                    glb::chas.spin_right(-speed);
-                }
-                else if(pivot_wheel == 1) {
-                    glb::chas.spin_BL(speed);
-                    glb::chas.spin_right(-speed);
-                }
-                else if(pivot_wheel == 2) {
-                    glb::chas.spin_BR(speed);
-                    glb::chas.spin_left(-speed);
-                }
-                else if(pivot_wheel == 3) {
-                    glb::chas.spin_FR(speed);
-                    glb::chas.spin_right(-speed);
-                }
-            }
 
             // print stuff
             if(time % 50 == 0)
