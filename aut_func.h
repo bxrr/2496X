@@ -30,14 +30,14 @@ namespace auf
         glb::intakeR.brake();
     }
 
-     void open_intake() {
+     void open_intake() 
+     {
         intakeP.set(true);
-        intake_vel();
     }
     
-    void close_intake() {
+    void close_intake() 
+    {
         intakeP.set(false);
-        intake_stop();
     }
 
     void index(int num_discs=3, int ms_delay=500)
@@ -52,11 +52,21 @@ namespace auf
         pros::delay(200);
     }
 
-    void shoot(int num_discs=3)
+    void shoot(int num_discs=3, double shoot_speed=-127)
     {
         delay(300);
-        intake_vel(-90);
-        delay(num_discs * 250);
+        intake_vel(shoot_speed);
+        int time = 0;
+        while(time < num_discs * 250)
+        {
+            time += 10;
+            pros::delay(10);
+            if(glb::disc_sensor.get() > 65) break;
+        }
+        if(time < num_discs * 220 - 100)
+        {
+            pros::delay(100);
+        }
         intake_vel(0);
     }
 

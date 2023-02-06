@@ -116,7 +116,7 @@ void flywheel_control(int time)
                 else if(last_disc + 250 <= time)
                 {
                     unseen = true;
-                    if(glb::intakeL.get_actual_velocity() < -30 || intaken)
+                    if(glb::intakeL.get_actual_velocity() < -100 || intaken)
                     {
                         intaken = true;
                         if(pid::fw::win_avg <= 0) 
@@ -147,7 +147,7 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? 127 : 90;
+    double shoot_speed = glb::angleP.get_status() ? 127 : 100;
     //timothy tan
 
     pid::fw_recover(true);

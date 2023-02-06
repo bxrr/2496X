@@ -19,17 +19,13 @@ using namespace auf;
 
 void skills()
 {
-    // turn(1,500);
-    fw_spin(335);
-    delay(1250);
-    shoot(2);
-    delay(100);
-    // turn(0,500);
+    // shoot 2 preloads 
+    fw_spin(320);
+    delay(1000);
+    shoot(3, -80);
     
     //get 3 discs
     fw_spin(-80);
-    // drive(-300);
-    
     open_intake();
     turn_to(90);
     fw_stop();
@@ -37,51 +33,65 @@ void skills()
     drive(540);
     close_intake();
     intake_vel();
-    delay(850);
+    delay(800);
    
     //shoot 3 discs
     turn_to(25);
     drive(-1500);
     intake_stop();
     fw_spin(300);
-    turn_to(-5);
+    turn_to(-6);
     shoot(3);
     fw_spin(-80);
 
     //get 3
     turn_to(90);
     intake_vel();
-    drive_const(1000,70);
+    drive_const(1000);
     fw_spin(300);
-    drive(1090);
+    drive(1050);
     intake_stop();
     
     //shoot 3
     turn_to(48);
-    shoot(3);
+    shoot(3, -105);
     fw_spin(-80);
     
     //get 3
     turn_to(180);
     intake_vel();
-    drive_const(1000,70);
+    fw_stop();
+    drive(2050);
     fw_spin(300);
-    drive(1000);
     
-
     //shoot 3
-    turn_to(90);
+    turn_to(100);
     shoot(3);
+    turn_to(90);
+    fw_stop();
+    intake_stop();
 
-    
+    // get roller 1
+    drive(2275);
+    turn_to(180);
+    intake_vel(-127);
+    drive(200, 1300);
 
-
-    
-    
+    // get 3
+    drive(-300);
+    turn_to(0);
+    open_intake();
+    drive(650);
+    close_intake();
+    intake_vel();
+    delay(800);
 }
 
 void none()
 {
+    intake_vel();
+    turn_to(25);
+    drive(-1500);
 }
 
 void test_shoot()

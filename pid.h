@@ -20,9 +20,9 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = (abs(distance) < 200) ? 1.0 : 0.55;
-        double kI = 3.0;
-        double kD = 0.075;
+        double kP = (abs(distance) < 200) ? 0.8 : 0.5;
+        double kI = 2.0;
+        double kD = 0.08;
 
         double straight_kI = 0.8;
 
@@ -54,7 +54,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 15)
+            if(abs(error) < 20)
             {
                 if(within_err == false)
                 {
@@ -96,6 +96,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
+        printf("d: %lf - %d\n", error, time);
         glb::chas.stop();
         global_heading += glb::imu.get_heading() - init_heading;
     }
@@ -132,8 +133,8 @@ namespace pid
 
         // constants
         double kP = 5.0;
-        double kI = 18;
-        double kD = 0.37;
+        double kI = 22;
+        double kD = 0.33;
 
         // initialize pid variables
         glb::imu.set_heading(degrees > 0 ? 30 : 330);
@@ -151,11 +152,11 @@ namespace pid
             // calculate pid 
             last_error = error;
             error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < 18) integral += error / 100;
+            if(abs(error) < 10) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.22)
+            if(abs(error) <= 0.15)
             {
                 if(within_err == false)
                 {
@@ -164,7 +165,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 200 <= time)
+                    if(within_err_time + 350 <= time)
                         break;
                 }
             }
@@ -189,6 +190,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
+        printf("t: %lf - %d - %lf\n", error, time, global_heading);
         glb::chas.stop();
         global_heading += glb::imu.get_heading() - start_pos;
     }

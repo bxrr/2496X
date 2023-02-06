@@ -18,6 +18,7 @@ void initialize()
 
 	// tasks
 	Task fw_ctrl(pid::fw::fw_pid);
+	glb::imu.set_heading(180);
 }
 
 void autonomous()
