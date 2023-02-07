@@ -81,10 +81,11 @@ void skills()
     drive(-300);
     turn_to(0);
     open_intake();
-    drive(650);
+    drive(600);
     close_intake();
     intake_vel();
     delay(800);
+    turn_to(-90);
 }
 
 void none()

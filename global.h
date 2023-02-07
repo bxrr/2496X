@@ -21,9 +21,10 @@ namespace glb
     #define P_INTAKE_P 'A'
     #define P_ANGLE_P 'B'
     #define P_EXPANSION_P 'E'
+    #define P_SIDE_EXPAND_P 'F'
     #define P_DISC_SENSOR_P 5
 
-    #define P_IMU 7
+    #define P_IMU 13
     // objects =============================
     pros::Controller con(pros::E_CONTROLLER_MASTER);
     pros::Imu imu(P_IMU);
@@ -36,6 +37,7 @@ namespace glb
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P);
     Piston expansionP(P_EXPANSION_P);
+    Piston sideExpandP(P_SIDE_EXPAND_P);
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
     Auton *auton;
 }

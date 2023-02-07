@@ -126,7 +126,7 @@ void flywheel_control(int time)
                         }
                         else if(!stopped)
                         {
-                            pid::fw_spin(-75);
+                            pid::fw_spin(-127);
                         }
                     }
                     else
@@ -203,6 +203,7 @@ void expansion(int time)
         if(first_pressed)
         {
             expansionP.toggle();
+            sideExpandP.toggle();
         }
         first_pressed = true;
         first_pressed_time = time;
