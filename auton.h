@@ -20,9 +20,9 @@ using namespace auf;
 void skills()
 {
     // shoot 2 preloads 
-    fw_spin(320);
+    fw_spin(310);
     delay(1000);
-    shoot(3, -80);
+    shoot(3, -93);
     
     //get 3 discs
     fw_spin(-80);
@@ -37,45 +37,53 @@ void skills()
    
     //shoot 3 discs
     turn_to(25);
-    drive(-1500);
+    drive(-1410);
     intake_stop();
     fw_spin(300);
     turn_to(-6);
     shoot(3);
     fw_spin(-80);
 
-    //get 3
+    //get 3 on side of barrier
     turn_to(90);
     intake_vel();
-    drive_const(1000);
+    drive_const(2035,85);
+    // drive_const(650,70);
     fw_spin(300);
-    drive(1050);
-    intake_stop();
+    // intake_stop();
+    intakeP.set(true); //prevent 4disc <SG7>
+    drive(150);
     
-    //shoot 3
+    
+    //shoot 3 at corner barrier
     turn_to(48);
+    intake_stop();
+    intakeP.set(false);
+    // delay(300);
     shoot(3, -105);
     fw_spin(-80);
     
-    //get 3
+    //get 3 on side of barrier
     turn_to(180);
     intake_vel();
     fw_stop();
     drive(2050);
     fw_spin(300);
     
-    //shoot 3
-    turn_to(100);
+    //shoot 3 from barrier tape
+    turn_to(99);
     shoot(3);
     turn_to(90);
     fw_stop();
     intake_stop();
 
     // get roller 1
-    drive(2275);
+    drive(2300);
     turn_to(180);
     intake_vel(-127);
-    drive(200, 1300);
+    drive(320, 850);
+    global_heading = 180;
+    delay(300);
 
     // get 3
     drive(-300);

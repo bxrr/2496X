@@ -22,7 +22,7 @@ namespace pid
         // constants
         double kP = (abs(distance) < 200) ? 0.8 : 0.5;
         double kI = 2.0;
-        double kD = 0.08;
+        double kD = 0.071;
 
         double straight_kI = 0.8;
 
@@ -54,7 +54,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 20)
+            if(abs(error) < 25)
             {
                 if(within_err == false)
                 {

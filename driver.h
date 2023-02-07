@@ -116,7 +116,7 @@ void flywheel_control(int time)
                 else if(last_disc + 250 <= time)
                 {
                     unseen = true;
-                    if(glb::intakeL.get_actual_velocity() < -100 || intaken)
+                    if(glb::intakeL.get_actual_velocity() < -40 || intaken)
                     {
                         intaken = true;
                         if(pid::fw::win_avg <= 0) 
@@ -147,24 +147,14 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? 127 : 100;
+    double shoot_speed = glb::angleP.get_status() ? 127 : 105;
     //timothy tan
 
     pid::fw_recover(true);
     if(intake)
     {
-        if(shoot)
-        {
-            intakeP.set(true);
-            intakeL.move(shoot_speed);
-            intakeR.move(shoot_speed);
-        }
-        else
-        {
-            intakeP.set(false);
-            intakeL.move(-127);
-            intakeR.move(-127);
-        }
+        intakeL.move(-127);
+        intakeR.move(-127);
     }
     else if(shoot)
     {
@@ -177,13 +167,9 @@ void intake_control()
         intakeR.move(0);
     }
     
-    if(con.get_digital(pros::E_CONTROLLER_DIGITAL_X))
+    if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X))
     {
-        intakeP.set(true);
-    }
-    else if(!intake && !shoot)
-    {
-        intakeP.set(false);
+        intakeP.toggle();
     }
 }
 
