@@ -37,7 +37,7 @@ void skills()
    
     //shoot 3 discs
     turn_to(25);
-    drive(-1410);
+    drive(-1425);
     intake_stop();
     fw_spin(300);
     turn_to(-6);
@@ -47,7 +47,7 @@ void skills()
     //get 3 on side of barrier
     turn_to(90);
     intake_vel();
-    drive_const(2035,85);
+    drive_const(1960,85);
     // drive_const(650,70);
     fw_spin(300);
     // intake_stop();
@@ -67,7 +67,7 @@ void skills()
     turn_to(180);
     intake_vel();
     fw_stop();
-    drive(2050);
+    drive(2080);
     fw_spin(300);
     
     //shoot 3 from barrier tape
@@ -78,7 +78,7 @@ void skills()
     intake_stop();
 
     // get roller 1
-    drive(2300);
+    drive(2220);
     turn_to(180);
     intake_vel(-127);
     drive(320, 850);
@@ -94,6 +94,14 @@ void skills()
     intake_vel();
     delay(800);
     turn_to(-90);
+
+    //get roller 2
+    // intake_vel(-127);
+    // drive(1000);
+    // delay(300);
+    // drive(-300);
+    // intake_stop();
+
 }
 
 void none()
