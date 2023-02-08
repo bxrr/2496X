@@ -147,7 +147,7 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? 127 : 105;
+    double shoot_speed = glb::angleP.get_status() ? 127 : 95;
     //timothy tan
 
     pid::fw_recover(true);
