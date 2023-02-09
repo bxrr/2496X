@@ -30,13 +30,13 @@ void skills()
     turn_to(90);
     fw_stop();
     
-    drive(540);
+    drive(560);
     close_intake();
     intake_vel();
     delay(800);
    
     //shoot 3 discs
-    turn_to(25);
+    turn_to(26);
     drive(-1425);
     intake_stop();
     fw_spin(300);
@@ -50,7 +50,7 @@ void skills()
     drive_const(1900,60);
     fw_spin(320);
     intakeP.set(true); //prevent 4disc
-    drive(210);
+    drive(250);
     
     
     //shoot 3 at corner barrier
@@ -66,22 +66,22 @@ void skills()
     fw_stop();
     intake_vel();
     drive_const(1550, 80);
-    drive(500);
+    drive(515); // brian was here 
     fw_spin(300);
     
     //shoot 3 from barrier tape
     turn_to(98);
     shoot(3);
-    turn_to(90);
+    turn_to(88);
     fw_stop();
     intake_stop();
 
     // get roller 1
     global_heading = 90;
-    drive(2400);
+    drive(2496);
     turn_to(180);
     intake_vel(127);
-    drive_const(500, 127, 1000);
+    drive_const(700, 127, 900);
     global_heading = 180;
 
     // get 3
@@ -97,34 +97,58 @@ void skills()
 
     //get roller 2
     intake_vel(127);
-    drive_const(1000, 127, 800);
-    drive_const(1000, 100, 1000);
+    drive_const(600, 127, 800);
+    drive_const(1400, 90, 800);
     global_heading = 90;
 
-    // untested past here
+   
     // shoot
-    drive(-260);
+    drive(-275);
     turn_to(180);
     intake_stop();
-    drive_const(-1000);
+    drive_const(-1020);
     fw_spin(300);
-    drive(-1000);
+    drive(-1480);
+    turn_to(170);
     shoot(3);
 
     // get 3 barrier
     turn_to(-90);
     intake_vel();
-    intake_vel();
-    drive_const(1900,60);
-    fw_spin(320);
+    drive_const(1930,60);
+    fw_spin(315);
     intakeP.set(true); //prevent 4disc
-    drive(210);
+    drive(200);
 
-    turn_to(47);
+    //shoot 3 corner shot
+    turn_to(-133);
     intake_stop();
     intakeP.set(false);
     shoot(3, -105);
     fw_spin(-80);
+
+    // //Get 3 in a line
+    // intake_vel();
+    // drive(100);
+    // turn_to(-45);
+    // drive(1700);
+
+    // //shoot 3
+    // fw_spin(315);
+    // turn_to(-106);
+    // drive(-1000);
+    // shoot(3);
+
+    //get 3 along barrier
+    turn_to(180);
+    intake_vel();
+    drive_const(-2000,60);
+    intake_stop();
+    fw_spin(315);
+    turn_to(-85);
+    shoot(3);
+
+
 }
 
 void none()

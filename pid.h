@@ -63,7 +63,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 200 <= time)
+                    if(within_err_time + 150 <= time)
                         break;
                 }
             }
@@ -132,8 +132,8 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 5.0;
-        double kI = 22;
+        double kP = 6.0;
+        double kI = 18;
         double kD = 0.33;
 
         // initialize pid variables
@@ -156,7 +156,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) <= 0.15)
+            if(abs(error) <= 0.3)
             {
                 if(within_err == false)
                 {
@@ -165,7 +165,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 350 <= time)
+                    if(within_err_time + 220 <= time)
                         break;
                 }
             }
