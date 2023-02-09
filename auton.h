@@ -20,9 +20,9 @@ using namespace auf;
 void skills()
 {
     // shoot 2 preloads 
-    fw_spin(310);
+    fw_spin(320);
     delay(1000);
-    shoot(3, -93);
+    shoot(3, -90);
     
     //get 3 discs
     fw_spin(-80);
@@ -47,16 +47,14 @@ void skills()
     //get 3 on side of barrier
     turn_to(90);
     intake_vel();
-    drive_const(1960,85);
-    // drive_const(650,70);
-    fw_spin(300);
-    // intake_stop();
-    intakeP.set(true); //prevent 4disc <SG7>
-    drive(150);
+    drive_const(1900,60);
+    fw_spin(320);
+    intakeP.set(true); //prevent 4disc
+    drive(210);
     
     
     //shoot 3 at corner barrier
-    turn_to(48);
+    turn_to(47);
     intake_stop();
     intakeP.set(false);
     // delay(300);
@@ -65,43 +63,68 @@ void skills()
     
     //get 3 on side of barrier
     turn_to(180);
-    intake_vel();
     fw_stop();
-    drive(2080);
+    intake_vel();
+    drive_const(1550, 80);
+    drive(500);
     fw_spin(300);
     
     //shoot 3 from barrier tape
-    turn_to(99);
+    turn_to(98);
     shoot(3);
     turn_to(90);
     fw_stop();
     intake_stop();
 
     // get roller 1
-    drive(2220);
+    global_heading = 90;
+    drive(2400);
     turn_to(180);
-    intake_vel(-127);
-    drive(320, 850);
+    intake_vel(127);
+    drive_const(500, 127, 1000);
     global_heading = 180;
-    delay(300);
 
     // get 3
     drive(-300);
+    intake_stop();
     turn_to(0);
     open_intake();
     drive(600);
     close_intake();
     intake_vel();
-    delay(800);
-    turn_to(-90);
+    drive(350);
+    turn_to(90);
 
     //get roller 2
-    // intake_vel(-127);
-    // drive(1000);
-    // delay(300);
-    // drive(-300);
-    // intake_stop();
+    intake_vel(127);
+    drive_const(1000, 127, 800);
+    drive_const(1000, 100, 1000);
+    global_heading = 90;
 
+    // untested past here
+    // shoot
+    drive(-260);
+    turn_to(180);
+    intake_stop();
+    drive_const(-1000);
+    fw_spin(300);
+    drive(-1000);
+    shoot(3);
+
+    // get 3 barrier
+    turn_to(-90);
+    intake_vel();
+    intake_vel();
+    drive_const(1900,60);
+    fw_spin(320);
+    intakeP.set(true); //prevent 4disc
+    drive(210);
+
+    turn_to(47);
+    intake_stop();
+    intakeP.set(false);
+    shoot(3, -105);
+    fw_spin(-80);
 }
 
 void none()
@@ -201,39 +224,15 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    fw_spin(445);
-    drive(100, 200);
+    drive_const(100, 127, 300);
+    fw_spin(495);
+    global_heading = 0;
     intake_dist(-200);
-    delay(200);
-    drive(-250, 800);
-    intake_dist(300);
-    turn_to(-3, 800);
-    // index(2, 400, 1800);
-    fw_spin(430);
-
-    intakeP.set(true);
-    turn_to(-135, 1000);
-    intake_vel();
-    drive(1160, 1300);
-    intakeP.set(false);
-    delay(500);
-    drive(-450, 900);
-    turn_to(-11, 1000);
-    intake_vel(0);
-    intakeP.set(true);
-    // index(3, 400, 1800);
-    fw_spin(420);
-
-    turn_to(129, 1000);
-    intake_vel();
-    drive(600, 900);
-    intakeP.set(false);
+    delay(100);
+    drive(-300);
+    turn_to(-12);
+    index(2, 750);
     delay(300);
-    drive(-250, 800);
-    turn_to(-9, 1000);
-    intake_vel(0);
-    // index(3, 300, 1500);
-    fw_stop();
 }
 
 void nml_half_awp()

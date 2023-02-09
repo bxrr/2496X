@@ -40,7 +40,7 @@ namespace auf
         intakeP.set(false);
     }
 
-    void index(int num_discs=3, int ms_delay=500)
+    void index(int num_discs=3, int ms_delay=600)
     {
         for(int i = 0; i < num_discs; i++)
         {
