@@ -160,7 +160,7 @@ void skills()
     drive(-1250, 1200);
     turn_to(-90, 700);
     open_intake();
-    drive(2100, 1600);
+    drive(2000, 1600);
     close_intake();
     intake_vel();
     delay(800);
@@ -173,19 +173,19 @@ void skills()
     // roller 3
     // drive_const(2000, 127, 1500);
     // intake_vel();
-    drive_const(800, 100, 700);
+    drive_const(900, 100, 700);
     open_intake();
     drive_const(1200, 40, 1100);
     global_heading = -90;
     // intake_vel(-127);
 
     //shoot 3
-    fw_spin(450);
+    fw_spin(470);
     drive_const(-300);
     intake_stop();
     drive(-400,700);
     turn_to(-101, 650);
-    shoot(4,-75);
+    shoot(4,-70);
 
     // roller 4
     turn_to(0, 700);
