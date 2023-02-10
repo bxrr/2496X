@@ -27,34 +27,34 @@ void skills()
     //get 3 discs
     fw_spin(-80);
     open_intake();
-    turn_to(90);
-    fw_stop();
+    turn_to(90, 700);
+    fw_spin(0);
     
-    drive(560);
+    drive(560, 800);
     close_intake();
     intake_vel();
     delay(800);
    
     //shoot 3 discs
-    turn_to(26);
-    drive(-1425);
+    turn_to(26, 700);
+    drive(-1425, 1200);
     intake_stop();
-    fw_spin(300);
-    turn_to(-6);
+    fw_spin(310);
+    turn_to(-6, 600);
     shoot(3);
     fw_spin(-80);
 
     //get 3 on side of barrier
-    turn_to(90);
+    turn_to(90, 700);
     intake_vel();
     drive_const(1900,60);
-    fw_spin(320);
+    fw_spin(318);
     intakeP.set(true); //prevent 4disc
-    drive(250);
+    drive(230, 400);
     
     
     //shoot 3 at corner barrier
-    turn_to(47);
+    turn_to(47, 500);
     intake_stop();
     intakeP.set(false);
     // delay(300);
@@ -62,93 +62,132 @@ void skills()
     fw_spin(-80);
     
     //get 3 on side of barrier
-    turn_to(180);
+    turn_to(180, 850);
     fw_stop();
     intake_vel();
-    drive_const(1550, 80);
-    drive(515); // brian was here 
-    fw_spin(300);
+    drive_const(1715, 80);
+    drive(350, 500); // brian was here 
+    fw_spin(295);
     
     //shoot 3 from barrier tape
-    turn_to(98);
+    turn_to(98, 700);
     shoot(3);
-    turn_to(88);
+    turn_to(85, 550);
     fw_stop();
     intake_stop();
 
     // get roller 1
     global_heading = 90;
-    drive(2496);
-    turn_to(180);
+    drive(2500, 1800);
+    turn_to(180, 800);
     intake_vel(127);
-    drive_const(700, 127, 900);
+    drive_const(700, 50, 900);
     global_heading = 180;
 
     // get 3
-    drive(-300);
+    drive(-300, 500);
     intake_stop();
-    turn_to(0);
+    turn_to(0, 1200);
     open_intake();
-    drive(600);
+    drive(600, 800);
     close_intake();
     intake_vel();
-    drive(350);
-    turn_to(90);
+    drive(350, 550);
+    turn_to(90, 700);
 
     //get roller 2
     intake_vel(127);
-    drive_const(600, 127, 800);
-    drive_const(1400, 90, 800);
+    drive_const(600, 90, 800);
+    drive_const(1340, 40, 900);
     global_heading = 90;
 
    
     // shoot
-    drive(-275);
-    turn_to(180);
+    drive(-350, 550);
+    turn_to(180, 700);
     intake_stop();
-    drive_const(-1020);
+    drive_const(-1020, 127, 1250);
     fw_spin(300);
-    drive(-1480);
-    turn_to(170);
+    drive(-1520, 1300);
     shoot(3);
 
     // get 3 barrier
-    turn_to(-90);
+    fw_spin(-60);
+    turn_to(-90, 800);
     intake_vel();
     drive_const(1930,60);
     fw_spin(315);
     intakeP.set(true); //prevent 4disc
-    drive(200);
+    drive(200, 400);
 
     //shoot 3 corner shot
-    turn_to(-133);
+    turn_to(-133, 700);
     intake_stop();
-    intakeP.set(false);
     shoot(3, -105);
     fw_spin(-80);
 
-    // //Get 3 in a line
-    // intake_vel();
-    // drive(100);
-    // turn_to(-45);
-    // drive(1700);
-
-    // //shoot 3
-    // fw_spin(315);
-    // turn_to(-106);
-    // drive(-1000);
-    // shoot(3);
-
-    //get 3 along barrier
-    turn_to(180);
+    //Get 3 in a line
+    intakeP.set(false);
     intake_vel();
-    drive_const(-2000,60);
-    intake_stop();
-    fw_spin(315);
-    turn_to(-85);
+    drive(150, 400);
+    turn_to(-45, 700);
+    drive(1700, 1500);
+
+    //shoot 3
+    fw_spin(318);
+    turn_to(-120, 700);
+    drive(-1600, 1200);
+    turn_to(-85, 700);
     shoot(3);
 
+    //get 3 along barrier
+    turn_to(180, 750);
+    intake_vel();
+    drive_const(1900, 70, 1500);
+    drive(250, 500);
+    intake_stop();
+    fw_spin(315);
+    turn_to(-128, 700);
+    shoot(3);
 
+    // get 3
+    turn_to(180, 700);
+    drive(-1100, 1000);
+    turn_to(-90, 700);
+    open_intake();
+    drive(2000, 1800);
+    close_intake();
+    intake_vel();
+    delay(800);
+
+    // shoot 3
+    fw_spin(310);
+    drive(-1900);
+    shoot(3);
+
+    // roller 3
+    drive_const(2000, 127, 1500);
+    intake_vel();
+    drive_const(1200, 60, 1000);
+    global_heading = -90;
+    drive(-800, 1000);
+    intake_vel(-127);
+
+    // roller 4
+    turn_to(0, 700);
+    drive_const(600, 90, 800);
+    drive_const(1340, 40, 900);
+    global_heading = 0;
+
+    // end game
+    drive(-1800, 1400);
+    turn_to(-45, 800);
+    for(int i = 0; i < 10; i++)
+    {
+        glb::expansionP.toggle();
+        glb::sideExpandP.toggle();
+        pros::delay(400);
+    }
 }
 
 void none()

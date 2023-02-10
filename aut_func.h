@@ -57,7 +57,7 @@ namespace auf
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 250)
+        while(time < num_discs * 255)
         {
             time += 10;
             pros::delay(10);
