@@ -37,7 +37,7 @@ void skills()
    
     //shoot 3 discs
     turn_to(26, 700);
-    drive(-1425, 1200);
+    drive(-1435, 1200);
     intake_stop();
     fw_spin(310);
     turn_to(-6, 600);
@@ -108,7 +108,8 @@ void skills()
     intake_stop();
     drive_const(-1020, 127, 1250);
     fw_spin(300);
-    drive(-1520, 1300);
+    drive(-1470, 1200);
+    turn_to(173, 700);
     shoot(3);
 
     // get 3 barrier
@@ -176,6 +177,8 @@ void skills()
     // roller 4
     turn_to(0, 700);
     drive_const(600, 90, 800);
+    intake_vel();
+    fw_stop();
     drive_const(1340, 40, 900);
     global_heading = 0;
 
