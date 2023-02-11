@@ -45,7 +45,7 @@ namespace auf
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(175);
+            delay(180);
             intake_vel(0);
             if(i < num_discs-1) pros::delay(ms_delay);
         }

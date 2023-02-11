@@ -37,7 +37,7 @@ void skills()
    
     //shoot 3 discs
     turn_to(26, 700);
-    drive(-1450, 1200);
+    drive(-1510, 1300);
     intake_stop();
     fw_spin(310);
     turn_to(-6, 600);
@@ -62,22 +62,22 @@ void skills()
     fw_spin(-80);
     
     //get 3 on side of barrier
-    turn_to(180, 850);
+    turn_to(-178, 850);
     fw_stop();
     intake_vel();
-    drive_const(1715, 80);
+    drive_const(1735, 80);
     drive(350, 500); // brian was here 
     fw_spin(295);
     
     //shoot 3 from barrier tape
-    turn_to(98, 700);
+    turn_to(94, 700);
     shoot(3);
-    turn_to(85, 550);
+    turn_to(84, 550);
     fw_stop();
     intake_stop();
 
     // get roller 1
-    drive(2433, 1800);
+    drive(2450, 1800);
     turn_to(180, 800);
     intake_vel(127);
     drive_const(700, 50, 900);
@@ -98,17 +98,17 @@ void skills()
     //get roller 2
     intake_vel(127);
     drive_const(600, 90, 800);
-    drive_const(1340, 40, 900);
+    drive_const(1370, 40, 1000);
     global_heading = 90;
    
     // shoot
-    drive(-285, 550);
+    drive(-300, 600);
     turn_to(180, 700);
     intake_stop();
     drive_const(-1020, 127, 1250);
     fw_spin(300);
     drive(-1400, 1150);
-    turn_to(173, 700);
+    turn_to(172, 700);
     shoot(3);
     close_intake();
 
@@ -125,7 +125,7 @@ void skills()
     //shoot 3 corner shot
     turn_to(-133, 700);
     intake_stop();
-    shoot(3, -105);
+    shoot(3, -109);
     fw_spin(-85);
 
     //Get 3 in a line
@@ -136,31 +136,33 @@ void skills()
     drive(1700, 1500);
 
     //shoot 3
-    fw_spin(318);
-    turn_to(-125, 700);
-    drive(-1590, 1200);
-    turn_to(-84, 700);
+    fw_spin(320);
+    turn_to(-130, 700);
+    drive(-1480, 1200);
+    turn_to(-83, 700);
     shoot(3);
+    fw_spin(-80);
 
     //get 3 along barrier
-    turn_to(180, 750);
+    turn_to(175, 700);
+    fw_stop();
     intake_vel();
-    drive_const(1840, 80, 1500);
+    drive_const(1860, 80, 1500);
     fw_spin(315);
     drive(250, 500);
     intake_stop();
 
     // shoot 3
-    turn_to(-132, 600);
-    shoot(3);
+    turn_to(-135.5, 650);
+    shoot(3, -110);
 
     // get 3
     fw_stop();
-    turn_to(180, 700);
-    drive(-1250, 1200);
+    turn_to(170, 800);
+    drive(-1360, 1200);
     turn_to(-90, 700);
     open_intake();
-    drive(2000, 1600);
+    drive(1880, 1600);
     close_intake();
     intake_vel();
     delay(800);
@@ -173,7 +175,7 @@ void skills()
     // roller 3
     // drive_const(2000, 127, 1500);
     // intake_vel();
-    drive_const(900, 100, 700);
+    drive_const(970, 100, 700);
     open_intake();
     drive_const(1200, 40, 1100);
     global_heading = -90;
@@ -183,9 +185,9 @@ void skills()
     fw_spin(470);
     drive_const(-300);
     intake_stop();
-    drive(-400,700);
-    turn_to(-101, 650);
-    shoot(4,-70);
+    drive(-800,1000);
+    turn_to(-106, 650);
+    index(3, 600);
 
     // roller 4
     turn_to(0, 700);
@@ -198,10 +200,10 @@ void skills()
     // end game
     drive(-850, 800);
     turn_to(-45, 800);
-    for(int i = 0; i < 10; i++)
+    glb::sideExpandP.toggle();
+    for(int i = 0; i < 7; i++)
     {
         glb::expansionP.toggle();
-        glb::sideExpandP.toggle();
         pros::delay(200);
     }
 }
@@ -304,14 +306,37 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 void ml_half_awp()
 {
     drive_const(100, 127, 300);
-    fw_spin(495);
+    fw_spin(500);
     global_heading = 0;
     intake_dist(-200);
     delay(100);
-    drive(-300);
-    turn_to(-12);
+    drive(-300, 500);
+    turn_to(-12, 550);
     index(2, 750);
-    delay(300);
+    delay(150);
+    open_intake();
+    turn_to(-135, 800);
+    drive(1250, 1200);
+    intake_vel();
+    close_intake();
+    delay(800);
+    fw_spin(480);
+    turn_to(-22, 700);
+    delay(500);
+    intake_stop();
+    index(3, 650);
+    turn_to(-135, 700);
+    drive(750, 900);
+    open_intake();
+    turn_to(90, 700);
+    drive(600, 900);
+    intake_vel();
+    close_intake();
+    delay(500);
+    fw_spin(490);
+    drive(-600, 900);
+    turn_to(-15, 700);
+    index(3, 700);
 }
 
 void nml_half_awp()

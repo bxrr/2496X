@@ -55,23 +55,23 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            // if(abs(error) < 15)
-            // {
-            //     if(within_err == false)
-            //     {
-            //         within_err = true;
-            //         within_err_time = time;
-            //     }
-            //     else
-            //     {
-            //         if(within_err_time + 100 <= time)
-            //             break;
-            //     }
-            // }
-            // else
-            // {
-            //     within_err = false;
-            // }
+            if(abs(error) < 10)
+            {
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 150 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
+            }
 
             // calculate correction pid variables and speed
             double speed = error * kP + integral * kI + derivative * kD;
@@ -158,23 +158,23 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            // if(abs(error) <= 0.3)
-            // {
-            //     if(within_err == false)
-            //     {
-            //         within_err = true;
-            //         within_err_time = time;
-            //     }
-            //     else
-            //     {
-            //         if(within_err_time + 150 <= time)
-            //             break;
-            //     }
-            // }
-            // else
-            // {
-            //     within_err = false;
-            // }
+            if(abs(error) <= 0.1)
+            {
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 150 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
+            }
 
             // calculate speed
             double speed = kP * error + integral * kI + derivative * kD;
