@@ -102,12 +102,12 @@ void skills()
     global_heading = 90;
    
     // shoot
-    drive(-300, 600);
+    drive(-285, 600);
     turn_to(180, 700);
     intake_stop();
     drive_const(-1020, 127, 1250);
     fw_spin(300);
-    drive(-1400, 1150);
+    drive(-1385, 1150);
     turn_to(172, 700);
     shoot(3);
     close_intake();
@@ -125,7 +125,7 @@ void skills()
     //shoot 3 corner shot
     turn_to(-133, 700);
     intake_stop();
-    shoot(3, -109);
+    shoot(3, -111);
     fw_spin(-85);
 
     //Get 3 in a line
@@ -137,9 +137,9 @@ void skills()
 
     //shoot 3
     fw_spin(320);
-    turn_to(-130, 700);
-    drive(-1480, 1200);
-    turn_to(-83, 700);
+    turn_to(-127, 700);
+    drive(-1500, 1200);
+    turn_to(-84, 700);
     shoot(3);
     fw_spin(-80);
 
@@ -147,7 +147,7 @@ void skills()
     turn_to(175, 700);
     fw_stop();
     intake_vel();
-    drive_const(1860, 80, 1500);
+    drive_const(1870, 80, 1500);
     fw_spin(315);
     drive(250, 500);
     intake_stop();
@@ -158,11 +158,11 @@ void skills()
 
     // get 3
     fw_stop();
-    turn_to(170, 800);
-    drive(-1360, 1200);
-    turn_to(-90, 700);
+    turn_to(170, 650);
+    drive(-1290, 1200);
+    turn_to(-90, 800);
     open_intake();
-    drive(1880, 1600);
+    drive(1780, 1600);
     close_intake();
     intake_vel();
     delay(800);
@@ -175,9 +175,9 @@ void skills()
     // roller 3
     // drive_const(2000, 127, 1500);
     // intake_vel();
-    drive_const(970, 100, 700);
+    drive_const(1100, 100, 700);
     open_intake();
-    drive_const(1200, 40, 1100);
+    drive_const(1100, 40, 1100);
     global_heading = -90;
     // intake_vel(-127);
 

@@ -55,7 +55,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 10)
+            if(abs(error) < 5)
             {
                 if(within_err == false)
                 {
