@@ -107,18 +107,18 @@ void flywheel_control(int time)
                         unseen = false;
                     }
                     last_disc = time;
-                    if(first_seen + 200 < time)
+                    if(first_seen + 300 < time)
                     {
                         if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
                         else pid::fw_spin(flat_speeds[speed_index]);
                     }
                 }
-                else if(last_disc + 250 <= time)
+                else if(last_disc + 200 <= time)
                 {
                     unseen = true;
-                    if(glb::intakeL.get_actual_velocity() < -40 || intaken)
-                    {
-                        intaken = true;
+                    // if(glb::intakeL.get_actual_velocity() < -40 || intaken)
+                    // {
+                    //     intaken = true;
                         if(pid::fw::win_avg <= 0) 
                         {
                             stopped = true;
@@ -126,13 +126,13 @@ void flywheel_control(int time)
                         }
                         else if(!stopped)
                         {
-                            pid::fw_spin(-127);
+                            pid::fw_spin(-110);
                         }
-                    }
-                    else
-                    {
-                        pid::fw_stop();
-                    }
+                    // }
+                    // else
+                    // {
+                    //     pid::fw_stop();
+                    // }
                 }
             }
         }
