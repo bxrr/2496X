@@ -20,7 +20,7 @@ using namespace auf;
 void skills()
 {
     // shoot 2 preloads 
-    fw_spin(320);
+    fw_spin(323);
     delay(1000);
     shoot(3, -90);
     
@@ -66,11 +66,11 @@ void skills()
     fw_stop();
     intake_vel();
     drive_const(1735, 80);
-    drive(350, 500); // brian was here 
+    drive(360, 500); // brian was here 
     fw_spin(295);
     
     //shoot 3 from barrier tape
-    turn_to(94.4, 700);
+    turn_to(94.8, 700);
     shoot(3);
     fw_stop();
     turn_to(84, 550);
@@ -78,7 +78,7 @@ void skills()
 
     // get roller 1
     intake_vel(-127);
-    drive(2400, 1800);
+    drive(2500, 1800);
     fw_stop();
     turn_to(180, 800);
     intake_vel(127);
@@ -122,7 +122,7 @@ void skills()
     drive(520, 700);
 
     //shoot 3 corner shot
-    turn_to(-131.5, 700);
+    turn_to(-134, 700);
     intake_stop();
     shoot(3, -111);
     fw_spin(-85);
@@ -139,7 +139,7 @@ void skills()
     turn_to(-124.2, 700);
     intake_stop();
     drive(-1660, 1200);
-    turn_to(-81, 700);
+    turn_to(-83, 700);
     shoot(3);
     fw_spin(-80);
 
