@@ -57,8 +57,8 @@ void flywheel_control(int time)
     static bool stopped = false;
     static bool manual = false;
     static bool intaken = false;
-    int flat_speeds[] = {310, 330, 350};
-    int angle_speeds[] = {350, 370, 390};
+    int flat_speeds[] = {310, 330, 350, 400};
+    int angle_speeds[] = {340, 360, 380, 430};
 
     // set speed index
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -67,14 +67,8 @@ void flywheel_control(int time)
     }
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
     {
-        if(speed_index < 2) speed_index++;
+        if(speed_index < 3) speed_index++;
     }
-
-    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
-    {
-        manual = !manual;
-    }
-
 
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
     {
@@ -82,7 +76,6 @@ void flywheel_control(int time)
     }
     else
     {
-    // if not manual control, run distance sensor
         if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         {
             fly_on = !fly_on;
@@ -90,49 +83,41 @@ void flywheel_control(int time)
 
         if(fly_on)
         {
-            if(manual)
+            if(glb::disc_sensor.get() < 40)
             {
-                if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
-                else pid::fw_spin(flat_speeds[speed_index]);
-            }
-            else
-            {
-                if(glb::disc_sensor.get() < 65)
+                intaken = false;
+                stopped = false;
+                if(unseen)
                 {
-                    intaken = false;
-                    stopped = false;
-                    if(unseen)
+                    first_seen = time;
+                    unseen = false;
+                }
+                last_disc = time;
+                if(first_seen + 100 < time)
+                {
+                    if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
+                    else pid::fw_spin(flat_speeds[speed_index]);
+                }
+            }
+            else if(last_disc + 200 <= time)
+            {
+                unseen = true;
+                if(glb::intakeL.get_actual_velocity() < -40 || intaken)
+                {
+                    intaken = true;
+                    if(pid::fw::win_avg <= 0) 
                     {
-                        first_seen = time;
-                        unseen = false;
+                        stopped = true;
+                        pid::fw_stop();
                     }
-                    last_disc = time;
-                    if(first_seen + 300 < time)
+                    else if(!stopped)
                     {
-                        if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
-                        else pid::fw_spin(flat_speeds[speed_index]);
+                        pid::fw_spin(-110);
                     }
                 }
-                else if(last_disc + 200 <= time)
+                else
                 {
-                    unseen = true;
-                    // if(glb::intakeL.get_actual_velocity() < -40 || intaken)
-                    // {
-                    //     intaken = true;
-                        if(pid::fw::win_avg <= 0) 
-                        {
-                            stopped = true;
-                            pid::fw_stop();
-                        }
-                        else if(!stopped)
-                        {
-                            pid::fw_spin(-110);
-                        }
-                    // }
-                    // else
-                    // {
-                    //     pid::fw_stop();
-                    // }
+                    pid::fw_stop();
                 }
             }
         }
@@ -147,8 +132,8 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? 127 : pid::fw::flywheel_target > 340 ? 90 : 105;
-    //timothy tan
+    double shoot_speed = glb::angleP.get_status() ? -(pid::fw::flywheel_target - 340) + 127 : -0.5 * (pid::fw::flywheel_target - 310) + 127;
+    if(shoot_speed < 60) shoot_speed = 60;
 
     pid::fw_recover(true);
     if(intake)
@@ -181,22 +166,37 @@ void angle_control()
 
 void expansion(int time)
 {
-    static bool first_pressed = false;
-    static int first_pressed_time = 0;
+    static bool first_pressedA = false;
+    static int first_pressed_timeA = 0;
 
     if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
     {
-        if(first_pressed)
+        if(first_pressedA)
         {
             expansionP.toggle();
-            sideExpandP.toggle();
         }
-        first_pressed = true;
-        first_pressed_time = time;
+        first_pressedA = true;
+        first_pressed_timeA = time;
     }
 
-    if(first_pressed_time + 300 < time)
-        first_pressed = false;
+    if(first_pressed_timeA + 200 < time)
+        first_pressedA = false;
+
+    static bool first_pressedB = false;
+    static int first_pressed_timeB = 0;
+
+    if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+    {
+        if(first_pressedB)
+        {
+            sideExpandP.toggle();
+        }
+        first_pressedB = true;
+        first_pressed_timeB = time;
+    }
+
+    if(first_pressed_timeB + 200 < time)
+        first_pressedB = false;
 }
 
 void print_info(int time, bool chassis_on)

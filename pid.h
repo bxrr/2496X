@@ -12,18 +12,16 @@
 
 namespace pid
 {
-    // chassis movement
     double global_heading = 0;
-    double ideal_heading = 0;
 
-    void drive(double distance, int timeout=3000)
+    void drive(double distance, int timeout=3000, double max_speed = 127)
     {
         int time = 0;
 
         // constants
         double kP = (abs(distance) < 200) ? 0.8 : 0.6;
         double kI = 3.0;
-        double kD = 0.054;
+        double kD = 0.058;
 
         double straight_kI = 0.8;
 
@@ -34,8 +32,10 @@ namespace pid
         double integral = 0;
 
         // initialize straight pid variables
-        glb::imu.set_heading(180);
-        double init_heading = 180;
+        double init_heading = global_heading;
+        double cur_heading = glb::imu.get_heading();
+        double last_heading;
+        
         double straight_i = 0;
 
         // variables for exiting if within 5 error for 100ms
@@ -43,7 +43,6 @@ namespace pid
         int within_err_time = 0;
 
         double slew = 0.1;
-        pros::delay(10);
 
         while(time < timeout)
         {
@@ -56,29 +55,46 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            // if(abs(error) < 5)
-            // {
-            //     if(within_err == false)
-            //     {
-            //         within_err = true;
-            //         within_err_time = time;
-            //     }
-            //     else
-            //     {
-            //         if(within_err_time + 150 <= time)
-            //             break;
-            //     }
-            // }
-            // else
-            // {
-            //     within_err = false;
-            // }
+            if(abs(error) < 10)
+            {
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 150 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
+            }
 
             // calculate correction pid variables and speed
             double speed = error * kP + integral * kI + derivative * kD;
-            if(abs(speed) > 127) speed = speed / abs(speed) * 127;
+            if(abs(speed) > max_speed) speed = speed / abs(speed) * max_speed;
 
-            straight_i += (glb::imu.get_heading() - init_heading) / 100;
+            // correction
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
+
+            if(cur_heading - last_heading > 100)
+            {
+                global_heading += (cur_heading - 360) - last_heading;
+            }
+            else if(cur_heading - last_heading < -100)
+            {
+                global_heading += cur_heading + (360 - last_heading);
+            }
+            else
+            {
+                global_heading += cur_heading - last_heading;
+            }
+
+            straight_i += (global_heading - init_heading) / 100;
             double correction = abs(speed) / 75 * straight_i * straight_kI;
 
             slew += slew <= 1 ? 0.1 : 0;
@@ -100,95 +116,6 @@ namespace pid
         // stop chassis at end of loop
         printf("d: %lf - %d\n", error, time);
         glb::chas.stop();
-        global_heading += glb::imu.get_heading() - init_heading;
-    }
-    
-     void id_drive(double distance, int timeout=3000)
-    {
-        int time = 0;
-
-        // constants
-        double kP = (abs(distance) < 200) ? 0.8 : 0.6;
-        double kI = 3.0;
-        double kD = 0.054;
-
-        double straight_kI = 0.8;
-        double straight_kP = 2.0;
-
-        // initialize drive pid variables
-        double start_pos = glb::chas.pos();
-        double error = distance - (glb::chas.pos() - start_pos);
-        double last_error;
-        double integral = 0;
-
-        // initialize straight pid variables
-        glb::imu.set_heading(180);
-        double init_heading = 180 - (global_heading - ideal_heading);
-        double straight_i = 0;
-
-        // variables for exiting if within 5 error for 100ms
-        bool within_err = false;
-        int within_err_time = 0;
-
-        double slew = 0.1;
-        pros::delay(10);
-
-        while(time < timeout)
-        {
-            // calculate drive pid variables
-            last_error = error;
-            error = distance - (glb::chas.pos() - start_pos);
-
-            if(abs(error) < 50) integral += error / 100;
-
-            double derivative = (error - last_error) * 100;
-
-            // check for exit condition
-            // if(abs(error) < 5)
-            // {
-            //     if(within_err == false)
-            //     {
-            //         within_err = true;
-            //         within_err_time = time;
-            //     }
-            //     else
-            //     {
-            //         if(within_err_time + 150 <= time)
-            //             break;
-            //     }
-            // }
-            // else
-            // {
-            //     within_err = false;
-            // }
-
-            // calculate correction pid variables and speed
-            double speed = error * kP + integral * kI + derivative * kD;
-            if(abs(speed) > 127) speed = speed / abs(speed) * 127;
-
-            straight_i += (glb::imu.get_heading() - init_heading) / 100;
-            double correction = abs(speed) / 75 * (straight_i * straight_kI + (glb::imu.get_heading() - init_heading) * straight_kP);
-
-            slew += slew <= 1 ? 0.1 : 0;
-            slew = slew > 1 ? 1 : slew;
-
-            // apply speed
-            glb::chas.spin_left(slew * (speed - correction));
-            glb::chas.spin_right(slew * (speed + correction));
-
-            // print stuff
-            if(time % 50 == 0)
-                glb::con.print(0, 0, "err: %.2lf c: %.2lf        ", error, within_err_time);
-
-            // update time
-            pros::delay(10);
-            time += 10;
-        }
-
-        // stop chassis at end of loop
-        printf("d: %lf - %d\n", error, time);
-        glb::chas.stop();
-        global_heading += glb::imu.get_heading() - init_heading;
     }
 
     void drive_const(double distance, int speed=127, int timeout=3000)
@@ -200,13 +127,31 @@ namespace pid
         
         double straight_kI = 0.8;
         double straight_i = 0;
-        glb::imu.set_heading(180);
-        double init_heading = glb::imu.get_heading();
+        double init_heading = global_heading;
+        double cur_heading = glb::imu.get_heading();
+        double last_heading;
 
         while((distance < 0 ? glb::chas.pos() > target : glb::chas.pos() < target) && time < timeout)
         {
-            straight_i += (glb::imu.get_heading() - init_heading) / 100;
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
+
+            if(cur_heading - last_heading > 100)
+            {
+                global_heading += (cur_heading - 360) - last_heading;
+            }
+            else if(cur_heading - last_heading < -100)
+            {
+                global_heading += cur_heading + (360 - last_heading);
+            }
+            else
+            {
+                global_heading += cur_heading - last_heading;
+            }
+
+            straight_i += (global_heading - init_heading) / 100;
             double correction = straight_i * straight_kI;
+            
             glb::chas.spin_left(s - correction);
             glb::chas.spin_right(s + correction);
             pros::delay(10);
@@ -214,32 +159,47 @@ namespace pid
         }
 
         glb::chas.stop();
-        global_heading += glb::imu.get_heading() - init_heading;
     }
-
+    
     void turn(double degrees, int timeout=2000)
     {
         int time = 0;
 
-        // constants
-        double kP = 6;
-        double kI = 15;
-        double kD = 0.34;
-        double deadband = 7;
+        double kP, kI, kD, cintegral;
 
-        if(abs(degrees) > 100)
+        // constants
+        if(abs(degrees) > 120)
         {
             kP = 5.0;
-            kI = 19;
+            kI = 0;
             kD = 0.35;
-            deadband = 7;
+            cintegral = 7;
+        }
+        else if(abs(degrees) > 70)
+        {
+            kP = 6.0;
+            kI = 0;
+            kD = 0.35;
+        }
+        else if(abs(degrees) > 20)
+        {
+            kP = 7.0;
+            kI = 0;
+            kD = 0.35;
+        }
+        else
+        {
+            kP = 9.0;
+            kD = 0.4;
         }
 
+        // inertial wrapping
+        double init_heading = global_heading;
+        double cur_heading = glb::imu.get_heading();
+        double last_heading;
+
         // initialize pid variables
-        glb::imu.set_heading(degrees > 0 ? 30 : 330);
-        pros::delay(10);
-        double start_pos = glb::imu.get_heading();
-        double error = degrees - (glb::imu.get_heading() - start_pos);
+        double error = degrees - global_heading;
         double last_error;
         double integral = 0;
 
@@ -249,30 +209,47 @@ namespace pid
 
         while(time < timeout)
         {
-            // calculate pid 
+            // inertial wrapping
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
+
+            if(cur_heading - last_heading > 100)
+            {
+                global_heading += (cur_heading - 360) - last_heading;
+            }
+            else if(cur_heading - last_heading < -100)
+            {
+                global_heading += cur_heading + (360 - last_heading);
+            }
+            else
+            {
+                global_heading += cur_heading - last_heading;
+            }
+
+            // calculate pid
             last_error = error;
-            error = degrees - (glb::imu.get_heading() - start_pos);
-            if(abs(error) < deadband) integral += error / 100;
+            error = degrees - (global_heading - init_heading);
+            if(abs(error) < cintegral) integral += error / 100;
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            // if(abs(error) <= 0.1)
-            // {
-            //     if(within_err == false)
-            //     {
-            //         within_err = true;
-            //         within_err_time = time;
-            //     }
-            //     else
-            //     {
-            //         if(within_err_time + 150 <= time)
-            //             break;
-            //     }
-            // }
-            // else
-            // {
-            //     within_err = false;
-            // }
+            if(abs(error) <= 0.15)
+            {
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 150 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
+            }
 
             // calculate speed
             double speed = kP * error + integral * kI + derivative * kD;
@@ -290,20 +267,18 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        printf("t: %lf - %d - %lf\n", error, time, global_heading);
+        printf("t: %lf - %d - %lf\n", error, time, glb::imu.get_heading());
         glb::chas.stop();
-        global_heading += glb::imu.get_heading() - start_pos;
     }
 
     void turn_to(double degree_to, int timeout=3500)
     {
         double degree = degree_to - global_heading;
-        ideal_heading = degree_to;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
         turn(degree, timeout);
     }
 
-    // flywheel ============================================================
+    // flywheel =============================================================
     namespace fw
     {
         double flywheel_target = 0;
@@ -340,7 +315,7 @@ namespace pid
             {
                 kP = 4.0;
                 kI = 0.3;
-                full_speed = 15;
+                full_speed = 10;
             }
         }
 
@@ -420,7 +395,7 @@ namespace pid
                     // flywheel recovery adds to target speed
                     if(recover)
                     {
-                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target <= 460)
+                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 440)
                         {
                             if(recover_start == false)
                             {

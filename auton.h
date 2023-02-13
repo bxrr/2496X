@@ -20,7 +20,7 @@ using namespace auf;
 void skills()
 {
     // shoot 2 preloads 
-    fw_spin(323);
+    fw_spin(320);
     delay(1000);
     shoot(3, -90);
     
@@ -47,7 +47,7 @@ void skills()
     //get 3 on side of barrier
     turn_to(90, 700);
     intake_vel();
-    drive_const(1900, 60);
+    drive_const(1850, 60);
     fw_spin(310);
     intakeP.set(true); //prevent 4disc
     drive(230, 400);
@@ -65,25 +65,26 @@ void skills()
     turn_to(-178.5, 850);
     fw_stop();
     intake_vel();
-    drive_const(1735, 80);
-    drive(360, 500); // brian was here 
-    fw_spin(295);
+    drive_const(1710, 80);
+    drive(350, 500); // brian was here 
+    fw_spin(292);
     
     //shoot 3 from barrier tape
-    turn_to(94.8, 700);
+    open_intake();
+    turn_to(98, 700);
     shoot(3);
     fw_stop();
     turn_to(84, 550);
+    close_intake();
     intake_stop();
 
     // get roller 1
     intake_vel(-127);
-    drive(2500, 1800);
+    drive(2400, 1800);
     fw_stop();
     turn_to(180, 800);
     intake_vel(127);
     drive_const(700, 50, 900);
-    global_heading = 180;
 
     // get 3
     drive(-270, 500);
@@ -101,13 +102,12 @@ void skills()
     intake_vel(127);
     drive_const(800, 100, 800);
     drive_const(1200, 40, 1000);
-    global_heading = 90;
    
     // shoot
     drive(-320, 700);
     turn(85.6, 1000);
     fw_spin(295);
-    drive(-2280, 1600);
+    drive(-2240, 1600);
     shoot(3);
     close_intake();
 
@@ -122,7 +122,7 @@ void skills()
     drive(520, 700);
 
     //shoot 3 corner shot
-    turn_to(-134, 700);
+    turn_to(-131.5, 700);
     intake_stop();
     shoot(3, -111);
     fw_spin(-85);
@@ -136,10 +136,10 @@ void skills()
 
     //shoot 3
     fw_spin(310);
-    turn_to(-124.2, 700);
+    turn_to(-126, 700);
     intake_stop();
-    drive(-1660, 1200);
-    turn_to(-83, 700);
+    drive(-1550, 1200);
+    turn_to(-81, 700);
     shoot(3);
     fw_spin(-80);
 
@@ -171,7 +171,6 @@ void skills()
     drive_const(1000, 100, 700);
     open_intake();
     drive_const(1200, 40, 1100);
-    global_heading = -90;
     // intake_vel(-127);
 
     //shoot 3
@@ -188,7 +187,6 @@ void skills()
     intake_vel();
     fw_stop();
     drive_const(1440, 40, 900);
-    global_heading = 0;
 
     // end game
     drive(-1260, 900);
@@ -204,7 +202,6 @@ void skills()
 
 void none()
 {
-    turn(180);
 }
 
 void test_shoot()
@@ -299,7 +296,6 @@ void ml_half_awp()
 {
     drive_const(100, 127, 300);
     fw_spin(500);
-    global_heading = 0;
     intake_dist(-200);
     delay(100);
     drive(-300, 500);

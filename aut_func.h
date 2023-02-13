@@ -69,15 +69,6 @@ namespace auf
         }
         intake_vel(0);
     }
-
-    void roller()
-    {
-        pid::drive_const(320, 70, 300);
-        imu.set_heading(180);
-        intake_dist(400);
-        delay(600);
-        pid::global_heading += imu.get_heading() - 180;
-    }
 }
 
 
