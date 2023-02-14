@@ -57,15 +57,15 @@ void flywheel_control(int time)
     static bool stopped = false;
     static bool manual = false;
     static bool intaken = false;
-    int flat_speeds[] = {310, 330, 350, 400};
-    int angle_speeds[] = {340, 360, 380, 430};
+    int flat_speeds[] = {330, 360, 390, 420};
+    int angle_speeds[] = {380, 410, 440, 470};
 
     // set speed index
-    if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
     {
         if(speed_index > 0) speed_index--;
     }
-    if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))
+    if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT))
     {
         if(speed_index < 3) speed_index++;
     }
@@ -93,13 +93,13 @@ void flywheel_control(int time)
                     unseen = false;
                 }
                 last_disc = time;
-                if(first_seen + 100 < time)
+                if(first_seen + 300 < time)
                 {
                     if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
                     else pid::fw_spin(flat_speeds[speed_index]);
                 }
             }
-            else if(last_disc + 200 <= time)
+            else if(last_disc + 400 <= time)
             {
                 unseen = true;
                 if(glb::intakeL.get_actual_velocity() < -40 || intaken)
@@ -132,8 +132,8 @@ void intake_control()
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? -(pid::fw::flywheel_target - 340) + 127 : -0.5 * (pid::fw::flywheel_target - 310) + 127;
-    if(shoot_speed < 60) shoot_speed = 60;
+    double shoot_speed = glb::angleP.get_status() ? -2 * (pid::fw::flywheel_target - 380) + 127 : -0.8 * (pid::fw::flywheel_target - 340) + 55;
+    if(shoot_speed < 35) shoot_speed = 35;
 
     pid::fw_recover(true);
     if(intake)

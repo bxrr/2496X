@@ -402,7 +402,7 @@ namespace pid
                                 recover_start = true;
                                 recover_start_time = time;
                             }
-                            else if(recover_start_time + 70 <= time)
+                            else if(recover_start_time + 0 <= time)
                             {
                                 volt_speed = 127;
                             }
