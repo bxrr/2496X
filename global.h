@@ -22,7 +22,8 @@ namespace glb
     #define P_ANGLE_P 'B'
     #define P_EXPANSION_P 'E'
     #define P_SIDE_EXPAND_P 'F'
-    #define P_DISC_SENSOR_P 5
+    #define P_DISC_SENSOR1_P 16
+    #define P_DISC_SENSOR2_P 5
 
     #define P_IMU 13
     // objects =============================
@@ -31,11 +32,12 @@ namespace glb
     pros::Motor flywheelR(P_FLY_R, pros::E_MOTOR_GEARSET_06, false);
     pros::Motor intakeL(P_INTAKE_L, pros::E_MOTOR_GEARSET_06, true);
     pros::Motor intakeR(P_INTAKE_R, pros::E_MOTOR_GEARSET_06, false);
-    pros::Distance disc_sensor(P_DISC_SENSOR_P);
+    pros::Distance disc_sensor1(P_DISC_SENSOR1_P);
+    pros::Distance disc_sensor2(P_DISC_SENSOR2_P);
     pros::Imu imu(P_IMU);
 
     Piston intakeP(P_INTAKE_P);
-    Piston angleP(P_ANGLE_P);
+    Piston angleP(P_ANGLE_P, false, true);
     Piston expansionP(P_EXPANSION_P);
     Piston sideExpandP(P_SIDE_EXPAND_P);
     Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);

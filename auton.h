@@ -22,15 +22,15 @@ void skills()
     // shoot 2 preloads 
     fw_spin(320);
     delay(1000);
-    shoot(3, -90);
+    shoot(3, -40);
     
     //get 3 discs
     fw_spin(-80);
     open_intake();
-    turn_to(90, 700);
+    turn_to(90, 1500);
     fw_spin(0);
     
-    drive(560, 800);
+    drive(560, 0);
     close_intake();
     intake_vel();
     delay(800);
@@ -58,7 +58,7 @@ void skills()
     intake_stop();
     intakeP.set(false);
     // delay(300);
-    shoot(3, -107);
+    shoot(3, -80);
     fw_spin(-80);
     
     //get 3 on side of barrier
@@ -124,7 +124,7 @@ void skills()
     //shoot 3 corner shot
     turn_to(-131.5, 700);
     intake_stop();
-    shoot(3, -111);
+    shoot(3, -80);
     fw_spin(-85);
 
     //Get 3 in a line
@@ -155,7 +155,7 @@ void skills()
     // shoot 3 at corner
     open_intake();
     turn_to(-136, 650);
-    shoot(3, -110);
+    shoot(3, -90);
 
     // get 3
     fw_stop();
@@ -179,7 +179,7 @@ void skills()
     intake_stop();
     drive(-1050,900);
     turn_to(-103, 650);
-    shoot(4, -90);
+    shoot(3, -50);
 
     // roller 4
     turn_to(0, 700);
@@ -206,14 +206,14 @@ void none()
 
 void test_shoot()
 {
-    fw_spin(460);
-    delay(1800);
+    fw_spin(470);
+    delay(2500);
     index();
 }
 
 void turns()
 {
-    turn_to(180);
+    turn_to(-180);
     turn_to(0);
     delay(500);
     turn_to(135);

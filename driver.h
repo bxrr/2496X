@@ -13,11 +13,8 @@ using namespace pros;
 
 void arcade_drive()
 {
-    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
-    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
-
-    auto turn_curve = [](double val) { return (val / abs(val) * 0.08873565094 * pow(abs(val), 1.5)); };
-    if(right) right = turn_curve(right);
+    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
+    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
 
     if(left || right)
     {
@@ -33,8 +30,8 @@ void arcade_drive()
 
 void tank_drive()
 {
-    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
-    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) > 10 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y) : 0;
+    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
+    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_Y) : 0;
 
     if(left || right)
     {
@@ -47,18 +44,18 @@ void tank_drive()
     }
 }
 
-void flywheel_control(int time)
+int flywheel_control(int time)
 {
     static int speed_index = 0;
     static bool fly_on = false;
-    static int last_disc = 0;
-    static int first_seen = true;
-    static bool unseen = true;
-    static bool stopped = false;
-    static bool manual = false;
-    static bool intaken = false;
-    int flat_speeds[] = {330, 360, 390, 420};
-    int angle_speeds[] = {380, 410, 440, 470};
+    static bool first_disc;
+    static int first_time;
+    static bool second_disc;
+    static int second_time;
+    static int last_seen = 0;
+    static bool start_reverse;
+    int flat_speeds[] = {360, 330};
+    int angle_speeds[] = {370, 360};
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -67,7 +64,7 @@ void flywheel_control(int time)
     }
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_LEFT))
     {
-        if(speed_index < 3) speed_index++;
+        if(speed_index < 1) speed_index++;
     }
 
     if(glb::con.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
@@ -78,62 +75,115 @@ void flywheel_control(int time)
     {
         if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         {
+            first_disc = false;
+            second_disc = false;
             fly_on = !fly_on;
         }
 
         if(fly_on)
         {
-            if(glb::disc_sensor.get() < 40)
+            if(glb::disc_sensor1.get() < 7)
             {
-                intaken = false;
-                stopped = false;
-                if(unseen)
+                if(first_disc == false)
                 {
-                    first_seen = time;
-                    unseen = false;
-                }
-                last_disc = time;
-                if(first_seen + 300 < time)
-                {
-                    if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
-                    else pid::fw_spin(flat_speeds[speed_index]);
+                    first_disc = true;
+                    first_time = time;
                 }
             }
-            else if(last_disc + 400 <= time)
+            else
             {
-                unseen = true;
-                if(glb::intakeL.get_actual_velocity() < -40 || intaken)
+                first_disc = false;
+            }
+            if(first_disc && first_time + 300 < time)
+            {
+                last_seen = time;
+                if(angleP.get_status())
                 {
-                    intaken = true;
-                    if(pid::fw::win_avg <= 0) 
-                    {
-                        stopped = true;
-                        pid::fw_stop();
-                    }
-                    else if(!stopped)
-                    {
-                        pid::fw_spin(-110);
-                    }
+                    pid::fw_spin(angle_speeds[speed_index]);
                 }
                 else
                 {
-                    pid::fw_stop();
+                    pid::fw_spin(flat_speeds[speed_index]);
                 }
             }
-        }
-        else
+            // if(glb::disc_sensor1.get() < 6)
+            // {
+            //     last_seen = time;
+            //     if(!first_disc) first_time = time;
+            //     first_disc = true;
+            // }
+            // else
+            // {
+            //     first_disc = false;
+            // }
+            // if(glb::disc_sensor2.get() < 40 && first_disc && !second_disc && first_time < time + 300)
+            // {
+            //     if(!second_disc) second_time = time;
+            //     second_disc = true;
+            // }
+            // else
+            // {
+            //     second_disc = false;
+            // }
+
+            // if(second_time < time + 100 && second_disc)
+            // {
+            //     start_reverse = false;
+            //     if(angleP.get_status())
+            //     {
+            //         pid::fw_spin(angle_speeds[speed_index]);
+            //     }
+            //     else
+            //     {
+            //         pid::fw_spin(flat_speeds[speed_index]);
+            //     }
+            // }
+            // else if(first_disc == false && last_seen + 200 <= time)
+            // {
+            //     if(glb::intakeL.get_actual_velocity() < -50)
+            //     {
+            //         start_reverse = true;
+            //     }
+
+            //     if(pid::fw::win_avg >= 0 && start_reverse)
+            //     {
+            //         pid::fw_spin(-70);
+            //     }
+            //     else
+            //     {
+            //         pid::fw_stop();
+            //     }
+            // }
+            else if(last_seen + 200 < time)
         {
-            pid::fw_stop();
+            if(pid::fw::win_avg >= 100 && glb::intakeL.get_actual_velocity() < -50)
+            {
+                pid::fw_spin(-50);
+            }
+            else
+            {
+                pid::fw_stop();
+            }
+        }
         }
     }
+
+    return speed_index;
 }
 
-void intake_control()
+void intake_control(int speed_index)
 {
     bool shoot = con.get_digital(E_CONTROLLER_DIGITAL_L2);
     bool intake = con.get_digital(E_CONTROLLER_DIGITAL_L1);
-    double shoot_speed = glb::angleP.get_status() ? -2 * (pid::fw::flywheel_target - 380) + 127 : -0.8 * (pid::fw::flywheel_target - 340) + 55;
-    if(shoot_speed < 35) shoot_speed = 35;
+    double shoot_speed;
+    if(angleP.get_status())
+    {
+        shoot_speed = speed_index == 0 ? 127 : 90;
+    }
+    else
+    {
+        shoot_speed = speed_index == 0 ? 127 : 85;
+    }
 
     pid::fw_recover(true);
     if(intake)
@@ -179,7 +229,7 @@ void expansion(int time)
         first_pressed_timeA = time;
     }
 
-    if(first_pressed_timeA + 200 < time)
+    if(first_pressed_timeA + 250 < time)
         first_pressedA = false;
 
     static bool first_pressedB = false;
@@ -195,7 +245,7 @@ void expansion(int time)
         first_pressed_timeB = time;
     }
 
-    if(first_pressed_timeB + 200 < time)
+    if(first_pressed_timeB + 250 < time)
         first_pressedB = false;
 }
 

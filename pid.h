@@ -13,6 +13,7 @@
 namespace pid
 {
     double global_heading = 0;
+    double last_heading = glb::imu.get_heading();
 
     void drive(double distance, int timeout=3000, double max_speed = 127)
     {
@@ -34,7 +35,6 @@ namespace pid
         // initialize straight pid variables
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
-        double last_heading;
         
         double straight_i = 0;
 
@@ -129,7 +129,6 @@ namespace pid
         double straight_i = 0;
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
-        double last_heading;
 
         while((distance < 0 ? glb::chas.pos() > target : glb::chas.pos() < target) && time < timeout)
         {
@@ -165,38 +164,37 @@ namespace pid
     {
         int time = 0;
 
-        double kP, kI, kD, cintegral;
+        double kP, kI, kD;
 
         // constants
         if(abs(degrees) > 120)
-        {
-            kP = 5.0;
-            kI = 0;
-            kD = 0.35;
-            cintegral = 7;
-        }
-        else if(abs(degrees) > 70)
         {
             kP = 6.0;
             kI = 0;
             kD = 0.35;
         }
+        else if(abs(degrees) > 70)
+        {
+            kP = 6.5;
+            kI = 0;
+            kD = 0.35;
+        }
         else if(abs(degrees) > 20)
         {
-            kP = 7.0;
+            kP = 8.0;
             kI = 0;
             kD = 0.35;
         }
         else
         {
-            kP = 9.0;
+            kP = 10.0;
+            kI = 0;
             kD = 0.4;
         }
 
         // inertial wrapping
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
-        double last_heading;
 
         // initialize pid variables
         double error = degrees - global_heading;
@@ -229,8 +227,8 @@ namespace pid
             // calculate pid
             last_error = error;
             error = degrees - (global_heading - init_heading);
-            if(abs(error) < cintegral) integral += error / 100;
             double derivative = (error - last_error) * 100;
+            if(abs(derivative) < 10) integral += error / 100;
 
             // check for exit condition
             if(abs(error) <= 0.15)
@@ -309,11 +307,11 @@ namespace pid
             {
                 kP = 0.8;
                 kI = 0.8;
-                full_speed = 40;
+                full_speed = 30;
             }
             else
             {
-                kP = 4.0;
+                kP = 2.0;
                 kI = 0.3;
                 full_speed = 10;
             }
@@ -395,14 +393,14 @@ namespace pid
                     // flywheel recovery adds to target speed
                     if(recover)
                     {
-                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 440)
+                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420)
                         {
                             if(recover_start == false)
                             {
                                 recover_start = true;
                                 recover_start_time = time;
                             }
-                            else if(recover_start_time + 0 <= time)
+                            else if(recover_start_time + 45 <= time)
                             {
                                 volt_speed = 127;
                             }

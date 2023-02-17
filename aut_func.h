@@ -45,7 +45,7 @@ namespace auf
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(180);
+            delay(140);
             intake_vel(0);
             if(i < num_discs-1) pros::delay(ms_delay);
         }
@@ -57,11 +57,11 @@ namespace auf
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 255)
+        while(time < num_discs * 90)
         {
             time += 10;
             pros::delay(10);
-            if(glb::disc_sensor.get() > 65) break;
+            if(glb::disc_sensor1.get() > 15) break;
         }
         if(time < num_discs * 220 - 100)
         {

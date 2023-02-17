@@ -18,7 +18,7 @@ void initialize()
 
 	// tasks
 	Task fw_ctrl(pid::fw::fw_pid);
-	imu.set_heading(53);
+	imu.set_heading(54);
 }
 
 void autonomous()
@@ -36,10 +36,10 @@ void opcontrol()
 		pid::fw_recover(true);
 		if(chassis_on)
 			arcade_drive();
-			// tank_drive();
-		intake_control();
+		else
+			chas.stop();
+		intake_control(flywheel_control(time));
 		angle_control();
-		flywheel_control(time);
 		expansion(time);
 		print_info(time, chassis_on);
 
@@ -48,7 +48,7 @@ void opcontrol()
 		if(con.get_digital(E_CONTROLLER_DIGITAL_UP) && chassis_on)
 			autonomous();
 		
-		delay(10);
-		time += 10;
+		delay(5);
+		time += 5;
 	}
 }
