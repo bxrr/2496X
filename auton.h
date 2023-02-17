@@ -206,9 +206,11 @@ void none()
 
 void test_shoot()
 {
-    fw_spin(470);
+    fw_spin(500);
     delay(2500);
     index();
+    fw_stop();
+    turn(180);
 }
 
 void turns()
@@ -295,36 +297,36 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 void ml_half_awp()
 {
     drive_const(100, 127, 300);
-    fw_spin(500);
     intake_dist(-200);
     delay(100);
     drive(-300, 500);
-    turn_to(-12, 550);
-    index(2, 750);
-    delay(150);
-    open_intake();
-    turn_to(-135, 800);
-    drive(1250, 1200);
-    intake_vel();
-    close_intake();
-    delay(800);
-    fw_spin(480);
-    turn_to(-22, 700);
-    delay(500);
-    intake_stop();
-    index(3, 650);
-    turn_to(-135, 700);
-    drive(750, 900);
-    open_intake();
-    turn_to(90, 700);
-    drive(600, 900);
-    intake_vel();
-    close_intake();
-    delay(500);
-    fw_spin(490);
-    drive(-600, 900);
-    turn_to(-15, 700);
-    index(3, 700);
+    // fw_spin(500);
+    // index(2, 1000);
+    // index(2, 600);
+    // delay(150);
+    // open_intake();
+    // turn_to(-135, 1500);
+    // drive(1250, 1200);
+    // intake_vel();
+    // close_intake();
+    // delay(800);
+    // fw_spin(480);
+    // turn_to(-22, 1100);
+    // delay(500);
+    // intake_stop();
+    // index(3, 600);
+    // turn_to(-135, 1100);
+    // drive(750, 900);
+    // open_intake();
+    // turn_to(90, 1100);
+    // drive(600, 900);
+    // intake_vel();
+    // close_intake();
+    // delay(500);
+    // fw_spin(490);
+    // drive(-600, 900);
+    // turn_to(-15, 1100);
+    // index(3, 500);
 }
 
 void nml_half_awp()

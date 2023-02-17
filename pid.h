@@ -170,25 +170,25 @@ namespace pid
         if(abs(degrees) > 120)
         {
             kP = 6.0;
-            kI = 0;
+            kI = 18;
             kD = 0.35;
         }
         else if(abs(degrees) > 70)
         {
             kP = 6.5;
-            kI = 0;
+            kI = 18;
             kD = 0.35;
         }
         else if(abs(degrees) > 20)
         {
             kP = 8.0;
-            kI = 0;
+            kI = 18;
             kD = 0.35;
         }
         else
         {
             kP = 10.0;
-            kI = 0;
+            kI = 18;
             kD = 0.4;
         }
 
@@ -228,7 +228,7 @@ namespace pid
             last_error = error;
             error = degrees - (global_heading - init_heading);
             double derivative = (error - last_error) * 100;
-            if(abs(derivative) < 10) integral += error / 100;
+            if(abs(error) < 5) integral += error / 100;
 
             // check for exit condition
             if(abs(error) <= 0.15)
