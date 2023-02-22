@@ -165,10 +165,15 @@ namespace pid
         int time = 0;
 
         double kP, kI, kD;
-
         // constants
+        
+        double a = 4.92973;
+        double b = 0.985783;
+        double c = 5.61611;
 
-        kP = degrees >= 30 ? 4.92973*pow(0.985783,degrees)+5.61611 : 10;
+        //Exponential Model; kP = ab^x + c
+
+        kP = degrees >= 30 ? a*pow(b,degrees)+c : 10;
         kI = 8;
         kD = degrees >= 30 ? 0.44 : 0.31;
 
