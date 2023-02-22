@@ -167,30 +167,41 @@ namespace pid
         double kP, kI, kD;
 
         // constants
-        if(abs(degrees) > 120)
-        {
-            kP = 6.0;
-            kI = 18;
-            kD = 0.35;
-        }
-        else if(abs(degrees) > 70)
-        {
-            kP = 6.5;
-            kI = 18;
-            kD = 0.35;
-        }
-        else if(abs(degrees) > 20)
-        {
-            kP = 8.0;
-            kI = 18;
-            kD = 0.35;
-        }
-        else
-        {
-            kP = 10.0;
-            kI = 18;
-            kD = 0.4;
-        }
+
+        kP = degrees >= 30 ? 4.92973*pow(0.985783,degrees)+5.61611 : 10;
+        kI = 8;
+        kD = degrees >= 30 ? 0.44 : 0.31;
+
+        // if(abs(degrees) > 120)
+        // {
+        //     kP = 6.0;
+        //     kI = 8; //18
+        //     kD = 0.44; //0.4
+        // }
+        // else if(abs(degrees) > 90) //70
+        // {
+        //     kP = 6.47;
+        //     kI = 8; //18
+        //     kD = 0.44; //.35
+        // }
+        // else if(abs(degrees) > 45) //testing
+        // {
+        //     kP = 7;
+        //     kI = 8; //18
+        //     kD = 0.44; //.35
+        // }
+        // else if(abs(degrees) > 20)
+        // {
+        //     kP = 8.2;
+        //     kI = 8;
+        //     kD = 0.44;
+        // }
+        // else
+        // {
+        //     kP = 10.0;
+        //     kI = 18;
+        //     kD = 0.4;
+        // }
 
         // inertial wrapping
         double init_heading = global_heading;

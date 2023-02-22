@@ -202,9 +202,7 @@ void skills()
 
 void none()
 {
-    fw_spin(310);
-    delay(800);
-    shoot(3);
+    turn(15);
 }
 
 void test_shoot()
