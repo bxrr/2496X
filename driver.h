@@ -43,7 +43,51 @@ void tank_drive()
         chas.stop();
     }
 }
+void hood_control(int time)
+{
+    static bool active = true;
+    static int init_sight_time = 0;
+    if(active && glb::disc_sensor3.get() < 35 && time - init_sight_time > 350)
+    {
+        init_sight_time = time;
+    }
+    if (time - init_sight_time > 300 && glb::disc_sensor3.get() < 35)
+    {
+        active = false;
+    }
+    else if (!active && glb::disc_sensor1.get() > 80)
+    {
+        active = true;
+    }
+    hoodP.set(active);
+/*     static bool active = true;
+    static bool check_sight = false;
+    static int init_sight_time = -500;
 
+    if (check_sight && time - init_sight_time < 500)
+    {
+        if (glb::disc_sensor3.get() < 35) check_sight = false;
+
+    }
+    else if (check_sight && time - init_sight_time >= 500)
+    {
+
+        check_sight = false;
+        active = false;
+    }
+    else if(!check_sight && active && glb::disc_sensor3.get() < 35)
+    {
+        init_sight_time = time;
+        check_sight = true;
+    }
+    if (!active && glb::disc_sensor1.get() > 80)
+    {
+        active = true;
+    }
+
+    hoodP.set(active);
+    */
+}
 int flywheel_control(int time)
 {
     static int speed_index = 0;

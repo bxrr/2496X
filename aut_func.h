@@ -12,12 +12,14 @@ namespace auf
 {
     void intake_vel(double speed=127)
     {
+        hoodP.set(true);
         glb::intakeL.move(-speed);
         glb::intakeR.move(-speed);
     }
 
     void intake_dist(double distance, double speed=600)
     {
+        hoodP.set(true);
         glb::intakeL.move(0);
         glb::intakeR.move(0);
         glb::intakeL.move_relative(-distance, speed);
@@ -42,6 +44,7 @@ namespace auf
 
     void index(int num_discs=3, int ms_delay=600)
     {
+        hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
@@ -54,6 +57,7 @@ namespace auf
 
     void shoot(int num_discs=3, double shoot_speed=-127)
     {
+        hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
