@@ -46,8 +46,8 @@ void tank_drive()
 void hood_control(int time)
 {
     static bool active = true;
-    static int init_sight_time = 0;
-    if(active && glb::disc_sensor3.get() < 35 && time - init_sight_time > 350)
+    static int init_sight_time = -500;
+    if(active && glb::disc_sensor3.get() < 35 && time - init_sight_time > 500)
     {
         init_sight_time = time;
     }
@@ -99,8 +99,8 @@ int flywheel_control(int time)
     static int last_seen = 0;
     static bool start_reverse;
     static bool reversed = false;
-    int flat_speeds[] = {330, 310}; //330, 310
-    int angle_speeds[] = {370, 360};
+    int flat_speeds[] = {340, 320}; //330, 310
+    int angle_speeds[] = {385, 360}; //370, 360
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -127,31 +127,32 @@ int flywheel_control(int time)
 
         if(fly_on)
         {
-            // if(glb::disc_sensor1.get() < 11)
-            // {
-            //     if(first_disc == false)
-            //     {
-            //         first_disc = true;
-            //         first_time = time;
-            //     }
-            // }
-            // else
-            // {
-            //     first_disc = false;
-            // }
-            // if(first_disc && first_time + 300 < time)
-            // {
-            //     reversed = false;
-            //     last_seen = time;
-            if(angleP.get_status())
+            //if(glb::disc_sensor1.get() < 11)
+            if (glb::disc_sensor2.get() < 30)
             {
-                pid::fw_spin(angle_speeds[speed_index]);
+                if(first_disc == false)
+                {
+                    first_disc = true;
+                    first_time = time;
+                }
             }
-            else
+            else if (glb::disc_sensor1.get() > 11)
             {
-                pid::fw_spin(flat_speeds[speed_index]);
+                first_disc = false;
             }
-            // }
+            if(first_disc && first_time + 300 < time)
+            {
+                reversed = false;
+                last_seen = time;
+                if(angleP.get_status())
+                {
+                    pid::fw_spin(angle_speeds[speed_index]);
+                }
+                else
+                {
+                    pid::fw_spin(flat_speeds[speed_index]);
+                }
+            }
             // if(glb::disc_sensor1.get() < 6)
             // {
             //     last_seen = time;
@@ -250,11 +251,13 @@ void intake_control(int speed_index)
     pid::fw_recover(true);
     if(intake)
     {
+        hoodP.set(true);
         intakeL.move(-127);
         intakeR.move(-127);
     }
     else if(shoot)
     {
+        hoodP.set(false);
         intakeL.move(shoot_speed);
         intakeR.move(shoot_speed);
     }

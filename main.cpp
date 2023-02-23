@@ -40,7 +40,7 @@ void opcontrol()
 			chas.stop();
 		intake_control(flywheel_control(time));
 		angle_control();
-		hood_control(time);
+		//hood_control(time);
 		expansion(time);
 		print_info(time, chassis_on);
 
