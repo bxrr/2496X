@@ -20,7 +20,7 @@ using namespace auf;
 void skills()
 {
     // shoot 2 preloads 
-    fw_spin(340);
+    fw_spin(355);
     delay(1000);
     shoot(3); //was set to -40
     
@@ -36,11 +36,11 @@ void skills()
     delay(800);
    
     //shoot 3 discs
-    turn_to(25.7, 700);
+    turn_to(26, 700);
     drive(-1500, 1100);
     intake_stop();
     fw_spin(300);
-    turn_to(-6, 550);
+    turn_to(-3, 550);
     shoot(3);
     fw_spin(-80);
 
@@ -54,27 +54,27 @@ void skills()
     
     
     //shoot 3 at corner barrier
-    turn_to(47, 500);
+    turn_to(50, 500);
     intake_stop();
     intakeP.set(false);
     // delay(300);
-    shoot(3, -80);
+    shoot(3);
     fw_spin(-80);
     
     //get 3 on side of barrier
     turn_to(-178.5, 850);
     fw_stop();
     intake_vel();
-    drive_const(1710, 80);
+    drive_const(1750, 80);
     drive(350, 500); // brian was here 
     fw_spin(292);
     
     //shoot 3 from barrier tape
     open_intake();
-    turn_to(98, 700);
+    turn_to(99, 700);
     shoot(3);
     fw_stop();
-    turn_to(84, 550);
+    turn_to(83, 550);
     close_intake();
     intake_stop();
 
@@ -103,13 +103,13 @@ void skills()
     drive_const(800, 100, 800);
     drive_const(1200, 40, 1000);
    
-    // // shoot
-    // drive(-320, 700);
-    // turn(85.6, 1000);
-    // fw_spin(295);
-    // drive(-2240, 1600);
-    // shoot(3);
-    // close_intake();
+    // shoot
+    drive(-320, 700);
+    turn(83, 1000);
+    fw_spin(295);
+    drive(-2240, 1600);
+    shoot(3);
+    close_intake();
 
     // // get 3 barrier
     // fw_spin(-70);
@@ -124,7 +124,7 @@ void skills()
     // //shoot 3 corner shot
     // turn_to(-131.5, 700);
     // intake_stop();
-    // shoot(3, -80);
+    // shoot(3);
     // fw_spin(-85);
 
     // //Get 3 in a line

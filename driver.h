@@ -138,127 +138,28 @@ int flywheel_control(int time)
         }
         
         //Turn on flywheel if R1 or automatically if we possess >1 disc
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) || (second_disc && first_disc))
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         {
             // first_disc = false;
             // second_disc = false;
             fly_on = !fly_on;
         }
 
+        // if(first_disc && second_disc) fly_on = true; //Toggle if you want autoturnon
+
         if(fly_on)
         {
-           
-            //Run flywheel as long as there is one disc still present
+        //    pid::fw_spin(flat_speeds[speed_index]);
+            // //Run flywheel as long as there is one disc still present
             if(first_disc)
             {
                 reversed = false;
                 last_seen = time;
                 pid::fw_spin(flat_speeds[speed_index]);
             } 
-            //If a full second has passed since the last disc has left, turn off flywheel
+            // //If a full second has passed since the last disc has left, turn off flywheel
             else if(first_time + 1000 < time) fly_on = false;
 
-
-            //Aayush
-            //if(glb::disc_sensor1.get() < 11)
-            // if (glb::disc_sensor2.get() < 30)
-            // {
-            //     if(first_disc == false)
-            //     {
-            //         first_disc = true;
-            //         first_time = time;
-            //     }
-            // }
-            // else if (glb::disc_sensor1.get() > 11)
-            // {
-            //     first_disc = false;
-            // }
-            // if(first_disc && first_time + 300 < time)
-            // {
-            //     reversed = false;
-            //     last_seen = time;
-            //     if(angleP.get_status())
-            //     {
-            //         pid::fw_spin(angle_speeds[speed_index]);
-            //     }
-            //     else
-            //     {
-            //         pid::fw_spin(flat_speeds[speed_index]);
-            //     }
-            // }
-
-
-            // if(glb::disc_sensor1.get() < 6)
-            // {
-            //     last_seen = time;
-            //     if(!first_disc) first_time = time;
-            //     first_disc = true;
-            // }
-            // else
-            // {
-            //     first_disc = false;
-            // }
-            // if(glb::disc_sensor2.get() < 40 && first_disc && !second_disc && first_time < time + 300)
-            // {
-            //     if(!second_disc) second_time = time;
-            //     second_disc = true;
-            // }
-            // else
-            // {
-            //     second_disc = false;
-            // }
-
-            // if(second_time < time + 100 && second_disc)
-            // {
-            //     start_reverse = false;
-            //     if(angleP.get_status())
-            //     {
-            //         pid::fw_spin(angle_speeds[speed_index]);
-            //     }
-            //     else
-            //     {
-            //         pid::fw_spin(flat_speeds[speed_index]);
-            //     }
-            // }
-            // else if(first_disc == false && last_seen + 200 <= time)
-            // {
-            //     if(glb::intakeL.get_actual_velocity() < -50)
-            //     {
-            //         start_reverse = true;
-            //     }
-
-            //     if(pid::fw::win_avg >= 0 && start_reverse)
-            //     {
-            //         pid::fw_spin(-70);
-            //     }
-            //     else
-            //     {
-            //         pid::fw_stop();
-            //     }
-            // }
-            // else if(last_seen + 300 < time)
-            // {
-            //     if(pid::fw::win_avg >= 0)
-            //     {
-            //         if(glb::intakeL.get_actual_velocity() < -50 && reversed == false)
-            //         {
-            //             pid::fw_spin(-80);
-            //         }
-            //         else
-            //         {
-            //             pid::fw_stop();
-            //         }
-            //     }
-            //     else
-            //     {
-            //         reversed = true;
-            //     }
-
-            //     if(reversed)
-            //     {
-            //         pid::fw_stop();
-            //     }
-            // }
         }
         else
         {
