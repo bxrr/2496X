@@ -61,11 +61,11 @@ namespace auf
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 90) //work needed here
+        while(time < num_discs * 255) //work needed here
         {
             time += 10;
             pros::delay(10);
-            if(glb::disc_sensor1.get() > 15) break;
+            if(glb::disc_sensor1.get() > 65) break;
         }
         if(time < num_discs * 220 - 100)
         {
