@@ -118,41 +118,76 @@ int flywheel_control(int time)
     }
     else
     {
-        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
-        {
+
+        //Check if we possess first disc
+        if(!first_disc && glb::disc_sensor1.get() < 50) {
+            first_disc = true;
+            first_time = time;
+        }
+        else if(glb::disc_sensor1.get() > 50) {
             first_disc = false;
+        }
+
+        //Check if we possess second disc
+        if(!second_disc && glb::disc_sensor2.get() < 50) {
+            second_disc = true;
+            second_time = time;
+        }
+        else if(glb::disc_sensor2.get() > 50) {
             second_disc = false;
+        }
+        
+        //Turn on flywheel if R1 or automatically if we possess >1 disc
+        if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1) || (second_disc && first_disc))
+        {
+            // first_disc = false;
+            // second_disc = false;
             fly_on = !fly_on;
         }
 
         if(fly_on)
         {
-            //if(glb::disc_sensor1.get() < 11)
-            if (glb::disc_sensor2.get() < 30)
-            {
-                if(first_disc == false)
-                {
-                    first_disc = true;
-                    first_time = time;
-                }
-            }
-            else if (glb::disc_sensor1.get() > 11)
-            {
-                first_disc = false;
-            }
-            if(first_disc && first_time + 300 < time)
+           
+            //Run flywheel as long as there is one disc still present
+            if(first_disc)
             {
                 reversed = false;
                 last_seen = time;
-                if(angleP.get_status())
-                {
-                    pid::fw_spin(angle_speeds[speed_index]);
-                }
-                else
-                {
-                    pid::fw_spin(flat_speeds[speed_index]);
-                }
-            }
+                pid::fw_spin(flat_speeds[speed_index]);
+            } 
+            //If a full second has passed since the last disc has left, turn off flywheel
+            else if(first_time + 1000 < time) fly_on = false;
+
+
+            //Aayush
+            //if(glb::disc_sensor1.get() < 11)
+            // if (glb::disc_sensor2.get() < 30)
+            // {
+            //     if(first_disc == false)
+            //     {
+            //         first_disc = true;
+            //         first_time = time;
+            //     }
+            // }
+            // else if (glb::disc_sensor1.get() > 11)
+            // {
+            //     first_disc = false;
+            // }
+            // if(first_disc && first_time + 300 < time)
+            // {
+            //     reversed = false;
+            //     last_seen = time;
+            //     if(angleP.get_status())
+            //     {
+            //         pid::fw_spin(angle_speeds[speed_index]);
+            //     }
+            //     else
+            //     {
+            //         pid::fw_spin(flat_speeds[speed_index]);
+            //     }
+            // }
+
+
             // if(glb::disc_sensor1.get() < 6)
             // {
             //     last_seen = time;
