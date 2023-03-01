@@ -151,14 +151,15 @@ int flywheel_control(int time)
         {
         //    pid::fw_spin(flat_speeds[speed_index]);
             // //Run flywheel as long as there is one disc still present
-            if(first_disc)
-            {
-                reversed = false;
-                last_seen = time;
-                pid::fw_spin(flat_speeds[speed_index]);
-            } 
-            // //If a full second has passed since the last disc has left, turn off flywheel
-            else if(first_time + 1000 < time) fly_on = false;
+            // if(first_disc)
+            // {
+            //     reversed = false;
+            //     last_seen = time;
+                if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
+                else pid::fw_spin(flat_speeds[speed_index]);
+            // } 
+            // // //If a full second has passed since the last disc has left, turn off flywheel
+            // else if(first_time + 1000 < time) fly_on = false;
 
         }
         else
