@@ -55,7 +55,7 @@ namespace auf
         pros::delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-127)
+    void shoot(int num_discs=3, double shoot_speed=-95)
     {
         hoodP.set(false);
         delay(300);
