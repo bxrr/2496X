@@ -202,7 +202,7 @@ void skills()
 
 void none()
 {
-    turn(15);
+    drive(1700);
 }
 
 void test_shoot()

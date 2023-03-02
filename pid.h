@@ -167,15 +167,15 @@ namespace pid
         double kP, kI, kD;
         // constants
         
-        double a = 4.92973;
-        double b = 0.985783;
-        double c = 5.61611;
+        double a = 2.83798;
+        double b = 0.994173;
+        double c = 3.99262;
 
         //Exponential Model; kP = ab^x + c
 
-        kP = degrees >= 30 ? a*pow(b,degrees)+c : 10;
-        kI = 8;
-        kD = degrees >= 30 ? 0.44 : 0.31;
+        kP = degrees >=30 ? a*pow(b,degrees)+c : 6.3;
+        kI = 0.75;
+        kD = 0.34;
 
         // if(abs(degrees) > 120)
         // {
@@ -244,7 +244,7 @@ namespace pid
             last_error = error;
             error = degrees - (global_heading - init_heading);
             double derivative = (error - last_error) * 100;
-            if(abs(error) < 5) integral += error / 100;
+            if(abs(error) < 5) integral += error;
 
             // check for exit condition
             if(abs(error) <= 0.15)
