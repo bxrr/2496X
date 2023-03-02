@@ -77,10 +77,7 @@ namespace pid
             double speed = error * kP + integral * kI + derivative * kD;
             if(abs(speed) > max_speed) speed = speed / abs(speed) * max_speed;
 
-            // correction
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
-
+            // inertial wrapping
             if(cur_heading - last_heading > 100)
             {
                 global_heading += (cur_heading - 360) - last_heading;
@@ -93,6 +90,9 @@ namespace pid
             {
                 global_heading += cur_heading - last_heading;
             }
+
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
 
             straight_i += (global_heading - init_heading) / 100;
             double correction = abs(speed) / 75 * straight_i * straight_kI;
@@ -132,9 +132,7 @@ namespace pid
 
         while((distance < 0 ? glb::chas.pos() > target : glb::chas.pos() < target) && time < timeout)
         {
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
-
+            // inertial wrapping
             if(cur_heading - last_heading > 100)
             {
                 global_heading += (cur_heading - 360) - last_heading;
@@ -147,6 +145,9 @@ namespace pid
             {
                 global_heading += cur_heading - last_heading;
             }
+
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
 
             straight_i += (global_heading - init_heading) / 100;
             double correction = straight_i * straight_kI;
@@ -172,41 +173,9 @@ namespace pid
         double c = 3.99262;
 
         //Exponential Model; kP = ab^x + c
-
         kP = degrees >=30 ? a*pow(b,degrees)+c : 6.3;
         kI = 0.75;
         kD = 0.34;
-
-        // if(abs(degrees) > 120)
-        // {
-        //     kP = 6.0;
-        //     kI = 8; //18
-        //     kD = 0.44; //0.4
-        // }
-        // else if(abs(degrees) > 90) //70
-        // {
-        //     kP = 6.47;
-        //     kI = 8; //18
-        //     kD = 0.44; //.35
-        // }
-        // else if(abs(degrees) > 45) //testing
-        // {
-        //     kP = 7;
-        //     kI = 8; //18
-        //     kD = 0.44; //.35
-        // }
-        // else if(abs(degrees) > 20)
-        // {
-        //     kP = 8.2;
-        //     kI = 8;
-        //     kD = 0.44;
-        // }
-        // else
-        // {
-        //     kP = 10.0;
-        //     kI = 18;
-        //     kD = 0.4;
-        // }
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -224,9 +193,6 @@ namespace pid
         while(time < timeout)
         {
             // inertial wrapping
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
-
             if(cur_heading - last_heading > 100)
             {
                 global_heading += (cur_heading - 360) - last_heading;
@@ -239,6 +205,9 @@ namespace pid
             {
                 global_heading += cur_heading - last_heading;
             }
+
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
 
             // calculate pid
             last_error = error;
@@ -297,6 +266,7 @@ namespace pid
     {
         double flywheel_target = 0;
         bool recover = true;
+        bool force_recover = false;
 
         int time = 0;
 
@@ -390,6 +360,18 @@ namespace pid
                     integral = 0;
                     derivative = 0;
                 }
+                else if(force_recover)
+                {
+                    glb::flywheelL = flywheel_target;
+                    glb::flywheelR = flywheel_target;
+                    memset(window, 0, sizeof(window));
+                    error = 0;
+                    last_error = 0;
+                    integral = 0;
+                    derivative = 0;
+                    glb::flywheelL.move(127);
+                    glb::flywheelR.move(127);
+                }
                 else
                 {
                     // calculate pid variables (different calculations for auton and not autonomous)
@@ -416,7 +398,7 @@ namespace pid
                                 recover_start = true;
                                 recover_start_time = time;
                             }
-                            else if(recover_start_time + 45 <= time)
+                            else if(recover_start_time + 65 <= time)
                             {
                                 volt_speed = 127;
                             }

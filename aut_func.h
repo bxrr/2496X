@@ -44,15 +44,23 @@ namespace auf
 
     void index(int num_discs=3, int ms_delay=600)
     {
-        hoodP.set(false);
+        // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(140);
+            delay(50);
+            force_recovery = true;
+            delay(100);
             intake_vel(0);
-            if(i < num_discs-1) pros::delay(ms_delay);
+            if(i < num_discs-1) 
+            {
+                pros::delay(150);
+                force_recovery = false;
+                pros::delay(ms_delay - 150);
+            }
         }
-        pros::delay(200);
+        force_recovery = false;
+        delay(50);
     }
 
     void shoot(int num_discs=3, double shoot_speed=-95)
