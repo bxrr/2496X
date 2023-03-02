@@ -49,17 +49,17 @@ namespace auf
         {
             intake_vel(-127);
             delay(50);
-            force_recovery = true;
+            pid::fw::force_recover = true;
             delay(100);
             intake_vel(0);
             if(i < num_discs-1) 
             {
                 pros::delay(150);
-                force_recovery = false;
+                pid::fw::force_recover = false;
                 pros::delay(ms_delay - 150);
             }
         }
-        force_recovery = false;
+        pid::fw::force_recover = false;
         delay(50);
     }
 
