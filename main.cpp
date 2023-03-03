@@ -18,11 +18,12 @@ void initialize()
 
 	// tasks
 	Task fw_ctrl(pid::fw::fw_pid);
-	imu.set_heading(54);
+	imu.set_heading(0);
 }
 
 void autonomous()
 {
+	imu.set_heading(0);
 	(*auton).run();
 }
 

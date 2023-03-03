@@ -216,7 +216,7 @@ namespace pid
             if(abs(error) < 5) integral += error;
 
             // check for exit condition
-            if(abs(error) <= 0.15)
+            if(abs(error) <= 0.2)
             {
                 if(within_err == false)
                 {
@@ -360,52 +360,44 @@ namespace pid
                     integral = 0;
                     derivative = 0;
                 }
-                else if(force_recover)
-                {
-                    glb::flywheelL = flywheel_target;
-                    glb::flywheelR = flywheel_target;
-                    memset(window, 0, sizeof(window));
-                    error = 0;
-                    last_error = 0;
-                    integral = 0;
-                    derivative = 0;
-                    glb::flywheelL.move(127);
-                    glb::flywheelR.move(127);
-                }
                 else
                 {
                     // calculate pid variables (different calculations for auton and not autonomous)
                     double volt_speed = 0;
-                    last_error = error;
-                    error = speed - win_avg;
-                    if(abs(error) < 20) integral += error / 100;
-                    else integral = 0;
-                    derivative = (error - last_error);
-
-                    const_eq(error);
-
-                    double temp_kP = error < -5 ? kP / 20 : kP;
-                    
-                    volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
-
-                    // flywheel recovery adds to target speed
-                    if(recover)
+                    if(force_recover) volt_speed = 127;
+                    else
                     {
-                        if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420)
+                        last_error = error;
+                        error = speed - win_avg;
+                        if(abs(error) < 20) integral += error / 100;
+                        else integral = 0;
+                        derivative = (error - last_error);
+
+                        const_eq(error);
+
+                        double temp_kP = error < -5 ? kP / 20 : kP;
+                        
+                        volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
+
+                        // flywheel recovery adds to target speed
+                        if(recover)
                         {
-                            if(recover_start == false)
+                            if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420)
                             {
-                                recover_start = true;
-                                recover_start_time = time;
+                                if(recover_start == false)
+                                {
+                                    recover_start = true;
+                                    recover_start_time = time;
+                                }
+                                else if(recover_start_time + 65 <= time)
+                                {
+                                    volt_speed = 127;
+                                }
                             }
-                            else if(recover_start_time + 65 <= time)
+                            else
                             {
-                                volt_speed = 127;
+                                recover_start = false;
                             }
-                        }
-                        else
-                        {
-                            recover_start = false;
                         }
                     }
 
@@ -420,10 +412,10 @@ namespace pid
 
                     if(time % 100 == 0 && time % 1600 != 0 && win_avg > 150)
                         glb::con.print(1, 0, "rpm: %.2lf", (win_avg));
+                    if(speed != 0) printf("[%lf, %lf], ", win_avg, volt_speed / 127 * 600);
                 }
                 
                 // update time
-                if(speed != 0) printf("[%lf, %lf], ", win_avg, actual_avg);
                 pros::delay(10);
                 time += 10;
             }

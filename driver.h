@@ -100,7 +100,7 @@ int flywheel_control(int time)
     static bool start_reverse;
     static bool reversed = false;
     int flat_speeds[] = {340, 320}; //330, 310
-    int angle_speeds[] = {385, 360}; //370, 360
+    int angle_speeds[] = {360, 385}; //370, 360
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))

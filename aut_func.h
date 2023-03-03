@@ -25,6 +25,13 @@ namespace auf
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
     }
+    void roller(double distance, double speed = 127)
+    {
+        chas.spin(40);
+        glb::intakeL.move_relative(-distance, speed);
+        glb::intakeR.move_relative(-distance, speed);
+        chas.stop();
+    }
 
     void intake_stop()
     {
@@ -42,13 +49,13 @@ namespace auf
         intakeP.set(false);
     }
 
-    void index(int num_discs=3, int ms_delay=600)
+    void index(int num_discs=3, int ms_delay=700)
     {
         // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(50);
+            delay(60);
             pid::fw::force_recover = true;
             delay(100);
             intake_vel(0);
@@ -69,7 +76,7 @@ namespace auf
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 255) //work needed here
+        while(time < num_discs * 507) //work needed here
         {
             time += 10;
             pros::delay(10);
