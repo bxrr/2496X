@@ -211,11 +211,10 @@ void none()
 
 void test_shoot()
 {
-    fw_spin(500);
-    delay(2500);
+    fw_spin(460);
+    delay(1500);
     index();
     fw_stop();
-    turn(180);
 }
 
 void turns()

@@ -274,7 +274,7 @@ namespace pid
         double kP = 0.8;
         double kI = 0.8;
         double kD = 0.0;
-        double kF = 0.191;
+        double kF = 0.199;
         double full_speed = 50;
 
         // initialize pid variables
@@ -289,17 +289,17 @@ namespace pid
 
         void const_eq(double err)
         {
-            if(flywheel_target < 440)
+            if(flywheel_target < 420)
             {
-                kP = 0.8;
-                kI = 0.8;
-                full_speed = 30;
+                kP = 0.6;
+                kI = 0.5;
+                full_speed = 100;
             }
             else
             {
-                kP = 2.0;
-                kI = 0.3;
-                full_speed = 10;
+                kP = 1.0;
+                kI = 0.25;
+                full_speed = 20;
             }
         }
 
@@ -367,6 +367,26 @@ namespace pid
                     if(force_recover) volt_speed = 127;
                     else
                     {
+                        if(recover)
+                        {
+                            if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420 && glb::disc_sensor1.get() <= 35)
+                            {
+                                if(recover_start == false)
+                                {
+                                    recover_start = true;
+                                    recover_start_time = time;
+                                }
+                                else if(recover_start_time + 100 < time)
+                                {
+                                    speed += 80;
+                                }
+                            }
+                            else
+                            {
+                                recover_start = false;
+                            }
+                        }
+
                         last_error = error;
                         error = speed - win_avg;
                         if(abs(error) < 20) integral += error / 100;
@@ -380,25 +400,6 @@ namespace pid
                         volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 
                         // flywheel recovery adds to target speed
-                        if(recover)
-                        {
-                            if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420)
-                            {
-                                if(recover_start == false)
-                                {
-                                    recover_start = true;
-                                    recover_start_time = time;
-                                }
-                                else if(recover_start_time + 65 <= time)
-                                {
-                                    volt_speed = 127;
-                                }
-                            }
-                            else
-                            {
-                                recover_start = false;
-                            }
-                        }
                     }
 
                     if(volt_speed > 127) volt_speed = 127;

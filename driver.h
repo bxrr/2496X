@@ -100,7 +100,7 @@ int flywheel_control(int time)
     static bool start_reverse;
     static bool reversed = false;
     int flat_speeds[] = {340, 320}; //330, 310
-    int angle_speeds[] = {360, 385}; //370, 360
+    int angle_speeds[] = {360, 360}; //370, 360
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -178,23 +178,24 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 100 : 90;
+        shoot_speed = speed_index == 0 ? 93 : 83;
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 100 : 90;
+        shoot_speed = speed_index == 0 ? 93 : 83;
     }
 
     pid::fw_recover(true);
     if(intake)
     {
-        hoodP.set(true);
+        // hoodP.set(true);
         intakeL.move(-127);
         intakeR.move(-127);
     }
     else if(shoot)
     {
-        hoodP.set(false);
+        // hoodP.set(false);
+        if(glb::disc_sensor1.get() > 35) shoot_speed = 127; 
         intakeL.move(shoot_speed);
         intakeR.move(shoot_speed);
     }

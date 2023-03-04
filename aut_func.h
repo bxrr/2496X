@@ -49,21 +49,17 @@ namespace auf
         intakeP.set(false);
     }
 
-    void index(int num_discs=3, int ms_delay=700)
+    void index(int num_discs=3, int ms_delay=pid::fw::flywheel_target / 500 * 650)
     {
         // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
             intake_vel(-127);
-            delay(60);
-            pid::fw::force_recover = true;
-            delay(100);
+            pros::delay(160);
             intake_vel(0);
             if(i < num_discs-1) 
             {
-                pros::delay(150);
-                pid::fw::force_recover = false;
-                pros::delay(ms_delay - 150);
+                pros::delay(ms_delay);
             }
         }
         pid::fw::force_recover = false;
