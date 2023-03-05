@@ -114,7 +114,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        printf("d: %lf - %d\n", error, time);
+        // printf("d: %lf - %d\n", error, time);
         glb::chas.stop();
     }
 
@@ -189,7 +189,7 @@ namespace pid
         // variables for exiting if within 0.1 error for 250ms
         bool within_err = false;
         int within_err_time = 0;
-
+        // printf("t: %lf - %d - %lf\n", error, time, global_heading);
         while(time < timeout)
         {
             // inertial wrapping
@@ -250,12 +250,19 @@ namespace pid
         }
 
         // stop chassis at end of loop
-        printf("t: %lf - %d - %lf\n", error, time, glb::imu.get_heading());
         glb::chas.stop();
     }
 
     void turn_to(double degree_to, int timeout=3500)
     {
+        if(global_heading >= 360) 
+        {
+            global_heading -= 360;
+        }
+        else if(global_heading <= -360)
+        {
+            global_heading += 360;
+        }
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
         turn(degree, timeout);
@@ -369,7 +376,7 @@ namespace pid
                     {
                         if(recover)
                         {
-                            if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420 && glb::disc_sensor1.get() <= 35)
+                            if(glb::intakeR.get_actual_velocity() > 30 && flywheel_target < 420)
                             {
                                 if(recover_start == false)
                                 {
@@ -378,7 +385,7 @@ namespace pid
                                 }
                                 else if(recover_start_time + 100 < time)
                                 {
-                                    speed += 80;
+                                    speed += 85;
                                 }
                             }
                             else

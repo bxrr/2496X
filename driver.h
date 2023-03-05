@@ -178,11 +178,11 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 93 : 83;
+        shoot_speed = speed_index == 0 ? 90 : 80;
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 93 : 83;
+        shoot_speed = speed_index == 0 ? 90 : 80;
     }
 
     pid::fw_recover(true);
@@ -195,7 +195,7 @@ void intake_control(int speed_index)
     else if(shoot)
     {
         // hoodP.set(false);
-        if(glb::disc_sensor1.get() > 35) shoot_speed = 127; 
+        if(glb::disc_sensor1.get() > 40) shoot_speed = 127; 
         intakeL.move(shoot_speed);
         intakeR.move(shoot_speed);
     }
@@ -232,7 +232,7 @@ void expansion(int time)
         first_pressed_timeA = time;
     }
 
-    if(first_pressed_timeA + 250 < time)
+    if(first_pressed_timeA + 500 < time)
         first_pressedA = false;
 
     static bool first_pressedB = false;

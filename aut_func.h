@@ -10,6 +10,15 @@
 
 namespace auf
 {
+    void auton_expand()
+    {
+        glb::sideExpandP.toggle();
+        for(int i = 0; i < 5; i++)
+        {
+            glb::expansionP.toggle();
+            pros::delay(200);
+        }
+    }
     void intake_vel(double speed=127)
     {
         hoodP.set(true);
@@ -25,11 +34,12 @@ namespace auf
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
     }
-    void roller(double distance, double speed = 127)
+    inline void roller(double distance, double speed = 600)
     {
         chas.spin(40);
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
+        delay(distance);
         chas.stop();
     }
 
@@ -66,7 +76,7 @@ namespace auf
         delay(50);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-95)
+    void shoot(int num_discs=3, double shoot_speed=-84)
     {
         hoodP.set(false);
         delay(300);
@@ -76,11 +86,14 @@ namespace auf
         {
             time += 10;
             pros::delay(10);
-            if(glb::disc_sensor1.get() > 65) break;
+            if(glb::disc_sensor1.get() > 65) 
+            {
+                break;
+            }
         }
-        if(time < num_discs * 220 - 100)
+        if(time < num_discs * 507)
         {
-            pros::delay(100);
+            pros::delay(180);
         }
         intake_vel(0);
     }
