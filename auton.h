@@ -274,7 +274,7 @@ void test_shoot()
 {
     fw_spin(460);
     delay(1500);
-    index();
+    pid_index();
     fw_stop();
 }
 

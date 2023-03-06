@@ -305,7 +305,7 @@ namespace pid
             else
             {
                 kP = 1.0;
-                kI = 0.25;
+                kI = 1.5;
                 full_speed = 20;
             }
         }
@@ -383,9 +383,9 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 100 < time)
+                                else if(recover_start_time + 60 < time && recover_start_time + 800 > time)
                                 {
-                                    speed += 85;
+                                    speed = 600;
                                 }
                             }
                             else

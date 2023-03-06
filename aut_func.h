@@ -64,25 +64,52 @@ namespace auf
         // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
-            intake_vel(-127);
-            pros::delay(160);
-            intake_vel(0);
+            intake_dist(num_discs == 0 ? -360 : -320);
+            pid::fw::force_recover = true;
+            pros::delay(150);
+            pid::fw::force_recover = false;
             if(i < num_discs-1) 
             {
                 pros::delay(ms_delay);
             }
         }
         pid::fw::force_recover = false;
-        delay(50);
+        delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-84)
+    void pid_index(int num_discs=3, int timeout=4000)
+    {
+        int time = 0;
+        int shot = 0;
+        int last_time = -507;
+
+        // hoodP.set(false);
+        while(time < timeout && shot < num_discs)
+        {
+            if(abs(pid::fw::error) < 2 && time - last_time > 350)
+            {
+                intake_dist(num_discs == 0 ? -360 : -320);
+                last_time = time;
+                pid::fw::force_recover = true;
+                pros::delay(150);
+                pid::fw::force_recover = false;
+                time += 150;
+                shot++;
+            }
+            time += 10;
+            pros::delay(10);
+        }
+        pid::fw::force_recover = false;
+        delay(200);
+    }
+
+    void shoot(int num_discs=3, double shoot_speed=-87)
     {
         hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 507) //work needed here
+        while(time < num_discs * 300) //work needed here
         {
             time += 10;
             pros::delay(10);
@@ -91,10 +118,7 @@ namespace auf
                 break;
             }
         }
-        if(time < num_discs * 507)
-        {
-            pros::delay(180);
-        }
+        delay(200);
         intake_vel(0);
     }
 }
