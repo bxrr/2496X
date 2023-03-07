@@ -13,8 +13,41 @@
 namespace pid
 {
     double global_heading = 0;
+    double unltd_glb_head = 0;
     double last_heading = glb::imu.get_heading();
     double ideal_heading = 0;
+
+    void limit_heading()
+    {
+        if(global_heading >= 360) 
+        {
+            global_heading -= 360;
+        }
+        else if(global_heading <= -360)
+        {
+            global_heading += 360;
+        }
+    }
+
+    void imu_wrap(double cur_heading)
+    {
+        if(cur_heading - last_heading > 100)
+        {
+            global_heading += (cur_heading - 360) - last_heading;
+            unltd_glb_head += (cur_heading - 360) - last_heading;
+        }
+        else if(cur_heading - last_heading < -100)
+        {
+            global_heading += cur_heading + (360 - last_heading);
+            unltd_glb_head += cur_heading + (360 - last_heading);
+        }
+        else
+        {
+            global_heading += cur_heading - last_heading;
+        }
+
+        last_heading = cur_heading;
+    }
 
     void drive(double distance, int timeout=3000, double max_speed = 127)
     {
@@ -35,19 +68,8 @@ namespace pid
         double integral = 0;
 
         // initialize straight pid variables
-        if(global_heading >= 360) 
-        {
-            global_heading -= 360;
-        }
-        else if(global_heading <= -360)
-        {
-            global_heading += 360;
-        }        
-        double init_heading = global_heading;
-        double cur_heading = glb::imu.get_heading();
-        
         double straight_i = 0;
-        
+        limit_heading();
 
         // variables for exiting if within 5 error for 100ms
         bool within_err = false;
@@ -89,23 +111,9 @@ namespace pid
             if(abs(speed) > max_speed) speed = speed / abs(speed) * max_speed;
 
             // inertial wrapping
-            if(cur_heading - last_heading > 100)
-            {
-                global_heading += (cur_heading - 360) - last_heading;
-            }
-            else if(cur_heading - last_heading < -100)
-            {
-                global_heading += cur_heading + (360 - last_heading);
-            }
-            else
-            {
-                global_heading += cur_heading - last_heading;
-            }
+            imu_wrap(glb::imu.get_heading());
 
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
-
-            double straight_error = global_heading - init_heading;
+            double straight_error = ideal_heading - unltd_glb_head;
             straight_i += (straight_error) / 100;
             double correction = abs(speed) / 75 * (straight_i * straight_kI + straight_kP * straight_error);
 
@@ -137,32 +145,20 @@ namespace pid
         double target = start_pos + distance;
         double s = distance / fabs(distance) * abs(speed);
         
+        double straight_kP = 3.0;
         double straight_kI = 0.8;
         double straight_i = 0;
-        double init_heading = global_heading;
-        double cur_heading = glb::imu.get_heading();
+        double init_heading = ideal_heading - global_heading;
+        limit_heading();
 
         while((distance < 0 ? glb::chas.pos() > target : glb::chas.pos() < target) && time < timeout)
         {
             // inertial wrapping
-            if(cur_heading - last_heading > 100)
-            {
-                global_heading += (cur_heading - 360) - last_heading;
-            }
-            else if(cur_heading - last_heading < -100)
-            {
-                global_heading += cur_heading + (360 - last_heading);
-            }
-            else
-            {
-                global_heading += cur_heading - last_heading;
-            }
+            imu_wrap(glb::imu.get_heading());
 
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
-
-            straight_i += (global_heading - init_heading) / 100;
-            double correction = straight_i * straight_kI;
+            double straight_error = ideal_heading - unltd_glb_head;
+            straight_i += straight_error / 100;
+            double correction = straight_i * straight_kI + straight_error * straight_kP;
             
             glb::chas.spin_left(s - correction);
             glb::chas.spin_right(s + correction);
@@ -175,6 +171,7 @@ namespace pid
     
     void turn(double degrees, int timeout=2000)
     {
+        ideal_heading += degrees;
         int time = 0;
 
         double kP, kI, kD;
@@ -191,10 +188,9 @@ namespace pid
 
         // inertial wrapping
         double init_heading = global_heading;
-        double cur_heading = glb::imu.get_heading();
 
         // initialize pid variables
-        double error = degrees - global_heading;
+        double error = degrees - (global_heading - init_heading);
         double last_error;
         double integral = 0;
 
@@ -205,21 +201,7 @@ namespace pid
         while(time < timeout)
         {
             // inertial wrapping
-            if(cur_heading - last_heading > 100)
-            {
-                global_heading += (cur_heading - 360) - last_heading;
-            }
-            else if(cur_heading - last_heading < -100)
-            {
-                global_heading += cur_heading + (360 - last_heading);
-            }
-            else
-            {
-                global_heading += cur_heading - last_heading;
-            }
-
-            last_heading = cur_heading;
-            cur_heading = glb::imu.get_heading();
+            imu_wrap(glb::imu.get_heading());
 
             // calculate pid
             last_error = error;
@@ -267,14 +249,7 @@ namespace pid
 
     void turn_to(double degree_to, int timeout=3500)
     {
-        if(global_heading >= 360) 
-        {
-            global_heading -= 360;
-        }
-        else if(global_heading <= -360)
-        {
-            global_heading += 360;
-        }
+        limit_heading();
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
         turn(degree, timeout);
