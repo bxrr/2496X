@@ -39,7 +39,7 @@ namespace auf
         chas.spin(40);
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
-        delay(distance);
+        delay(abs(distance));
         chas.stop();
     }
 
@@ -64,7 +64,7 @@ namespace auf
         // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
-            intake_dist(num_discs == 0 ? -360 : -320);
+            intake_dist(num_discs == 0 ? -370 : -370);
             pid::fw::force_recover = true;
             pros::delay(150);
             pid::fw::force_recover = false;
@@ -88,7 +88,7 @@ namespace auf
         {
             if(abs(pid::fw::error) < 2 && time - last_time > 350)
             {
-                intake_dist(num_discs == 0 ? -360 : -320);
+                intake_dist(num_discs == 0 ? -370 : -370);
                 last_time = time;
                 pid::fw::force_recover = true;
                 pros::delay(150);
@@ -103,17 +103,17 @@ namespace auf
         delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-87)
+    void shoot(int num_discs=3, double shoot_speed=-88)
     {
         hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 300) //work needed here
+        while(time < num_discs * 500) //work needed here
         {
             time += 10;
             pros::delay(10);
-            if(glb::disc_sensor1.get() > 65) 
+            if(glb::disc_sensor1.get() > 75) 
             {
                 break;
             }

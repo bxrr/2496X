@@ -14,6 +14,7 @@ namespace pid
 {
     double global_heading = 0;
     double last_heading = glb::imu.get_heading();
+    double ideal_heading = 0;
 
     void drive(double distance, int timeout=3000, double max_speed = 127)
     {
@@ -23,7 +24,8 @@ namespace pid
         double kP = (abs(distance) < 200) ? 0.8 : 0.6;
         double kI = 3.0;
         double kD = 0.058;
-
+        
+        double straight_kP = 3.0;
         double straight_kI = 0.8;
 
         // initialize drive pid variables
@@ -33,10 +35,19 @@ namespace pid
         double integral = 0;
 
         // initialize straight pid variables
+        if(global_heading >= 360) 
+        {
+            global_heading -= 360;
+        }
+        else if(global_heading <= -360)
+        {
+            global_heading += 360;
+        }        
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
         
         double straight_i = 0;
+        
 
         // variables for exiting if within 5 error for 100ms
         bool within_err = false;
@@ -94,8 +105,9 @@ namespace pid
             last_heading = cur_heading;
             cur_heading = glb::imu.get_heading();
 
-            straight_i += (global_heading - init_heading) / 100;
-            double correction = abs(speed) / 75 * straight_i * straight_kI;
+            double straight_error = global_heading - init_heading;
+            straight_i += (straight_error) / 100;
+            double correction = abs(speed) / 75 * (straight_i * straight_kI + straight_kP * straight_error);
 
             slew += slew <= 1 ? 0.1 : 0;
             slew = slew > 1 ? 1 : slew;
@@ -225,7 +237,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 150 <= time)
+                    if(within_err_time + 200 <= time)
                         break;
                 }
             }
@@ -266,6 +278,7 @@ namespace pid
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
         turn(degree, timeout);
+        ideal_heading = degree_to;
     }
 
     // flywheel =============================================================

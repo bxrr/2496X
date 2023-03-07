@@ -168,9 +168,9 @@ void skills()
     drive_const(200, 50, 500);
     roller(430);
     delay(200);
-    drive(-425, 1500);
+    drive(-525, 1500);
     turn_to(-45);
-    drive(-150);
+    drive(-350);
     auton_expand();
    
 
