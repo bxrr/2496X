@@ -16,8 +16,93 @@ using namespace auf;
 
 
 //testing !
-
 void skills()
+{
+    fw_spin(310);
+    delay(1000);
+    shoot(3); 
+    fw_stop();
+
+   
+    //get 3 on side of barrier
+    turn_to(94, 3000);
+    intake_vel();
+    drive_const(1790, 60);
+    fw_spin(330);
+    intakeP.set(true); //prevent 4disc
+    drive(190, 1000);
+    
+    
+    // shoot 3 at corner barrier
+    turn_to(47, 2000);
+    intake_stop();
+    shoot(3);
+    fw_stop();
+
+    // get line
+    intakeP.set(false);
+    intake_vel();
+    drive(360);
+    turn_to(135);
+    fw_spin(340);
+    drive(1800);
+
+    // shoot
+    turn_to(80);
+    drive(-1000);
+    shoot(3);
+    fw_stop();
+    // get 3 stack
+    turn_to(78);
+    intakeP.set(true);
+    drive(1570, 5000);
+    intake_vel();
+    intakeP.set(false);
+    delay(550);
+    drive(500);
+
+    // roller 1
+    turn_to(90);
+    intake_stop();
+    intakeP.set(true);
+    drive(1180);
+    drive_const(400, 40, 300);
+    roller(430);
+    drive(-800);
+
+    // roller 2
+    turn_to(180);
+    drive(1200);
+    drive_const(400, 40, 300);
+    roller(430);
+    drive(-400);
+
+    // shootn 3
+    turn_to(-175.5);
+    fw_spin(335);
+    drive(-3150, 6000);
+    shoot(3);
+    fw_stop();
+
+    // get 2nd stack
+    turn_to(-146.5);
+    intakeP.set(true);
+    intake_vel();
+    drive(1050);
+    intakeP.set(false);
+    delay(750);
+
+    // shoot stack
+    fw_spin(335);
+    turn_to(-167);
+    drive(-700);
+    shoot(3);
+    fw_stop();
+
+
+
+}
+void skills2()
 {
     // shoot 2 preloads 
     fw_spin(349);
@@ -168,9 +253,9 @@ void skills()
     drive_const(200, 50, 500);
     roller(430);
     delay(200);
-    drive(-525, 1500);
+    drive(-425, 1500);
     turn_to(-45);
-    drive(-350);
+    drive(-150);
     auton_expand();
    
 
@@ -361,11 +446,55 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 
 void ml_half_awp()
 {
-    drive_const(100, 127, 300);
-    intake_dist(-200);
-    delay(100);
-    drive(-300, 500);
-    // fw_spin(500);
+    // drive_const(100, 127, 200);
+    roller(-310, 200);
+    delay(150);
+    // fw_spin(485);
+    drive(-300, 700);
+
+    // // shoot 2 preload
+    // intake_vel();
+    // turn_to(-11);
+    // intake_stop();
+    // // delay(800);
+    // pid_index(3);
+    // fw_stop();
+    // // turn_to(4);
+    
+    // get 3 stack
+    turn_to(-128, 1200);
+    intakeP.set(true);
+    intake_vel();
+    fw_spin(462.2);
+    drive(970, 1350);
+    intakeP.set(false);
+    delay(750);
+
+    // shoot 3 stack
+    turn_to(-22.4);
+    intake_stop();
+    pid_index(3);
+    delay(150);
+    // fw_stop();
+
+    // get 2nd 3 stack
+    turn_to(45);
+    intakeP.set(true);
+    drive(700);
+    turn_to(140);
+    intake_vel();
+    fw_spin(462.8);
+    drive(400);
+    intakeP.set(false);
+    delay(750);
+
+    // shoot 3 
+    turn_to(-14);
+    pid_index(3);
+    delay(500);
+
+
+    //ak fw_spin(500);_v
     // index(2, 1000);
     // index(2, 600);
     // delay(150);
