@@ -99,7 +99,7 @@ int flywheel_control(int time)
     static int last_seen = 0;
     static bool start_reverse;
     static bool reversed = false;
-    int flat_speeds[] = {335, 335}; //330, 310
+    int flat_speeds[] = {340, 340}; //330, 310
     int angle_speeds[] = {360, 360}; //370, 360
 
     // set speed index
@@ -178,11 +178,11 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 88 : 75;
+        shoot_speed = speed_index == 0 ? 90 : 75;
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 88 : 75;
+        shoot_speed = speed_index == 0 ? 85 : 75;
     }
 
     pid::fw_recover(true);
