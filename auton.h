@@ -18,7 +18,7 @@ using namespace auf;
 //testing !
 void skills()
 {
-    fw_spin(310);
+    fw_spin(320);
     delay(1000);
     shoot(3); 
     fw_stop();
@@ -28,9 +28,9 @@ void skills()
     turn_to(94, 3000);
     intake_vel();
     drive_const(1790, 60);
-    fw_spin(330);
+    fw_spin(327);
     intakeP.set(true); //prevent 4disc
-    drive(190, 1000);
+    drive(210, 1000);
     
     
     // shoot 3 at corner barrier
@@ -42,9 +42,9 @@ void skills()
     // get line
     intakeP.set(false);
     intake_vel();
-    drive(360);
+    drive(340);
     turn_to(135);
-    fw_spin(340);
+    fw_spin(338);
     drive(1800);
 
     // shoot
@@ -55,11 +55,11 @@ void skills()
     // get 3 stack
     turn_to(78);
     intakeP.set(true);
-    drive(1570, 5000);
+    drive(1620, 5000);
     intake_vel();
     intakeP.set(false);
     delay(550);
-    drive(500);
+    drive(490);
 
     // roller 1
     turn_to(90);
@@ -76,28 +76,58 @@ void skills()
     drive_const(400, 40, 300);
     roller(430);
     drive(-400);
-
-    // shootn 3
-    turn_to(-175.5);
+    // drive(10000000000000); frfr grrr hello from the other side this is evana helllo from the other side i must have called you a thousand times to tell you that im sorry for bla blah idrk any of the lyrics...if you delete this then. nothing would happen! 
+    // shoot 3
+    turn_to(180);
+    // turn_to(-176);
     fw_spin(335);
-    drive(-3150, 6000);
+    drive(-3070, 6000);
+    turn_to(-173.7);
     shoot(3);
     fw_stop();
 
     // get 2nd stack
-    turn_to(-146.5);
+    turn_to(-150);
     intakeP.set(true);
     intake_vel();
-    drive(1050);
+    drive(800);
     intakeP.set(false);
     delay(750);
 
-    // shoot stack
+    // shoot 2nd stack
     fw_spin(335);
-    turn_to(-167);
-    drive(-700);
+    turn_to(-164.5);
+    drive(-590);
     shoot(3);
     fw_stop();
+
+    // get 3 line again
+    drive(900);
+    turn_to(-45);
+    intake_vel();
+    drive(3400, 7000);
+    // shoot
+    turn_to(-104);
+    fw_spin(320);
+    drive(-850);
+    intake_stop(); // hi yousef, is that your wumpus? wampus? hippo pig monkey looking discord creature?
+    shoot(3);
+    fw_stop();
+
+    // get 3 stack last
+    turn_to(-104, 1000);
+    intakeP.set(true);
+    intake_vel();
+    drive(1730, 4000);
+    intakeP.set(false);
+    delay(800);
+
+    // shoot last 3 
+    fw_spin(330);
+    drive(-1730, 4000);
+    turn_to(-104, 1000);
+    shoot(3);
+
 
 
 
