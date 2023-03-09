@@ -55,7 +55,7 @@ void skills()
     // get 3 stack
     turn_to(78);
     intakeP.set(true);
-    drive(1620, 5000);
+    drive(1630, 5000);
     intake_vel();
     intakeP.set(false);
     delay(550);
@@ -65,7 +65,7 @@ void skills()
     turn_to(90);
     intake_stop();
     intakeP.set(true);
-    drive(1180);
+    drive(1170);
     drive_const(400, 40, 300);
     roller(430);
     drive(-800);
@@ -77,12 +77,13 @@ void skills()
     roller(430);
     drive(-400);
     // drive(10000000000000); frfr grrr hello from the other side this is evana helllo from the other side i must have called you a thousand times to tell you that im sorry for bla blah idrk any of the lyrics...if you delete this then. nothing would happen! 
+    
     // shoot 3
     turn_to(180);
     // turn_to(-176);
     fw_spin(335);
     drive(-3070, 6000);
-    turn_to(-173.7);
+    turn_to(-173);
     shoot(3);
     fw_stop();
 
@@ -90,7 +91,7 @@ void skills()
     turn_to(-150);
     intakeP.set(true);
     intake_vel();
-    drive(800);
+    drive(790);
     intakeP.set(false);
     delay(750);
 
@@ -103,13 +104,13 @@ void skills()
 
     // get 3 line again
     drive(900);
-    turn_to(-45);
+    turn_to(-46);
     intake_vel();
     drive(3400, 7000);
     // shoot
     turn_to(-104);
     fw_spin(320);
-    drive(-850);
+    drive(-800);
     intake_stop(); // hi yousef, is that your wumpus? wampus? hippo pig monkey looking discord creature?
     shoot(3);
     fw_stop();
@@ -118,9 +119,9 @@ void skills()
     turn_to(-104, 1000);
     intakeP.set(true);
     intake_vel();
-    drive(1730, 4000);
+    drive(1740, 4000);
     intakeP.set(false);
-    delay(800);
+    delay(1000);
 
     // shoot last 3 
     fw_spin(330);
@@ -382,7 +383,11 @@ void skills2()
 
 void none()
 {
-    roller(430);
+    // roller(430);
+    pid::global_heading = 0;
+    imu.set_heading(0);
+    delay(400);
+    turn_to(5, 7000);
 }
 
 void test_shoot()

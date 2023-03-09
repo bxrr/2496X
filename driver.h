@@ -99,7 +99,7 @@ int flywheel_control(int time)
     static int last_seen = 0;
     static bool start_reverse;
     static bool reversed = false;
-    int flat_speeds[] = {340, 340}; //330, 310
+    int flat_speeds[] = {335, 340}; //330, 310
     int angle_speeds[] = {360, 360}; //370, 360
 
     // set speed index

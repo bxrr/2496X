@@ -185,9 +185,9 @@ namespace pid
         double c = 3.99262;
 
         //Exponential Model; kP = ab^x + c
-        kP = degrees >=30 ? a*pow(b,degrees)+c : 6.3;
-        kI = 0.75;
-        kD = 0.36; // 0.34
+        kP = degrees >=0 ? a*pow(b,degrees)+c : 6.3;
+        kI = degrees >= 20 ? 0.75 : degrees >=10 ? 0.2 : 0.1;
+        kD = degrees >= 20 ? 0.36 : 0.46; // 0.34
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -237,7 +237,7 @@ namespace pid
                 }
                 else
                 {
-                    if(within_err_time + 200 <= time)
+                    if(within_err_time + 150 <= time)
                         break;
                 }
             }

@@ -104,17 +104,17 @@ namespace auf
         delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-85)
+    void shoot(int num_discs=3, double shoot_speed=-82)
     {
         hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 507) //work needed here
+        while(time < num_discs * 555) //work needed here
         {
             time += 10;
             pros::delay(10);
-            if(glb::disc_sensor1.get() > 65) 
+            if(glb::disc_sensor1.get() > 85) 
             {
                 break;
             }
