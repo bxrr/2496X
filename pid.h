@@ -25,8 +25,8 @@ namespace pid
         double kI = 3.0;
         double kD = 0.058;
         
-        double straight_kP = 3.0;
-        double straight_kI = 0.8;
+        double straight_kP = 3.5;
+        double straight_kI = 1.0;
 
         // initialize drive pid variables
         double start_pos = glb::chas.pos();
@@ -137,7 +137,8 @@ namespace pid
         double target = start_pos + distance;
         double s = distance / fabs(distance) * abs(speed);
         
-        double straight_kI = 0.8;
+        double straight_kP = 3.5;
+        double straight_kI = 1.0;
         double straight_i = 0;
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
@@ -162,7 +163,7 @@ namespace pid
             cur_heading = glb::imu.get_heading();
 
             straight_i += (global_heading - init_heading) / 100;
-            double correction = straight_i * straight_kI;
+            double correction = straight_i * straight_kI + (global_heading - init_heading) * straight_kP;
             
             glb::chas.spin_left(s - correction);
             glb::chas.spin_right(s + correction);
@@ -187,7 +188,7 @@ namespace pid
         //Exponential Model; kP = ab^x + c
         kP = degrees >=0 ? a*pow(b,degrees)+c : 6.3;
         kI = degrees >= 20 ? 0.75 : degrees >=10 ? 0.2 : 0.1;
-        kD = degrees >= 20 ? 0.36 : 0.46; // 0.34
+        kD = degrees >= 20 ? 0.353 : 0.46; // 0.34
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -228,7 +229,7 @@ namespace pid
             if(abs(error) < 5) integral += error;
 
             // check for exit condition
-            if(abs(error) <= 0.2)
+            if(abs(error) <= 0.3)
             {
                 if(within_err == false)
                 {
@@ -396,7 +397,7 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 60 < time && recover_start_time + 800 > time)
+                                else if(recover_start_time + 60 < time && recover_start_time + 1100 > time)
                                 {
                                     speed = 600;
                                 }

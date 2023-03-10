@@ -99,8 +99,8 @@ int flywheel_control(int time)
     static int last_seen = 0;
     static bool start_reverse;
     static bool reversed = false;
-    int flat_speeds[] = {335, 340}; //330, 310
-    int angle_speeds[] = {360, 360}; //370, 360
+    int flat_speeds[] = {330, 320}; //330, 310
+    int angle_speeds[] = {360, 345}; //370, 360
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -178,7 +178,7 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 90 : 75;
+        shoot_speed = speed_index == 0 ? 85 : 80;
     }
     else
     {
@@ -219,6 +219,7 @@ void angle_control()
 
 void expansion(int time)
 {
+    // yes
     static bool first_pressedA = false;
     static int first_pressed_timeA = 0;
 
@@ -227,6 +228,17 @@ void expansion(int time)
         if(first_pressedA)
         {
             expansionP.toggle();
+        if ((*auton).get_name() == "skills")
+        {
+            glb::sideExpandP.set(true);
+            glb::expansionP.set(true);
+            for(int i = 0; i < 7; i++)
+            {
+                glb::expansionP.toggle();
+                glb::sideExpandP.toggle();
+                pros::delay(200);
+            }
+        }
         }
         first_pressedA = true;
         first_pressed_timeA = time;
@@ -250,8 +262,7 @@ void expansion(int time)
 
     if(first_pressed_timeB + 250 < time)
         first_pressedB = false;
-}
-
+    }
 void print_info(int time, bool chassis_on)
 {
     if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0)

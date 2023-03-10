@@ -21,117 +21,125 @@ void skills()
     fw_spin(320);
     delay(1000);
     shoot(3); 
-    fw_stop();
-
    
     //get 3 on side of barrier
     turn_to(94, 3000);
     intake_vel();
-    drive_const(1790, 60);
-    fw_spin(327);
+    drive_const(1700, 60);
+    fw_spin(325);
     intakeP.set(true); //prevent 4disc
-    drive(210, 1000);
-    
+    drive(300, 1000);
     
     // shoot 3 at corner barrier
-    turn_to(47, 2000);
+    turn_to(47, 1400);
     intake_stop();
     shoot(3);
-    fw_stop();
 
     // get line
     intakeP.set(false);
     intake_vel();
     drive(340);
     turn_to(135);
-    fw_spin(338);
+    fw_spin(325);
     drive(1800);
 
     // shoot
-    turn_to(80);
+    turn_to(80, 1100);
     drive(-1000);
     shoot(3);
-    fw_stop();
+
     // get 3 stack
-    turn_to(78);
+    // turn_to(78);
     intakeP.set(true);
-    drive(1630, 5000);
+    drive(1680, 5000);
+    // turn_to(76);
     intake_vel();
     intakeP.set(false);
     delay(550);
-    drive(490);
+    drive(600);
 
     // roller 1
-    turn_to(90);
+    turn_to(89);
     intake_stop();
     intakeP.set(true);
-    drive(1170);
+    drive_const(950, 115);
     drive_const(400, 40, 300);
     roller(430);
-    drive(-800);
+    drive(-670);
 
     // roller 2
     turn_to(180);
-    drive(1200);
-    drive_const(400, 40, 300);
+    drive(1050);
+    drive_const(500, 40, 300);
     roller(430);
     drive(-400);
     // drive(10000000000000); frfr grrr hello from the other side this is evana helllo from the other side i must have called you a thousand times to tell you that im sorry for bla blah idrk any of the lyrics...if you delete this then. nothing would happen! 
     
     // shoot 3
+    fw_spin(320);
     turn_to(180);
-    // turn_to(-176);
-    fw_spin(335);
     drive(-3070, 6000);
-    turn_to(-173);
     shoot(3);
-    fw_stop();
 
     // get 2nd stack
-    turn_to(-150);
+    turn_to(-145);
     intakeP.set(true);
     intake_vel();
-    drive(790);
+    drive(827);
     intakeP.set(false);
-    delay(750);
+    delay(400);
+    drive(300);
 
     // shoot 2nd stack
-    fw_spin(335);
-    turn_to(-164.5);
-    drive(-590);
+    fw_spin(320);
+    turn_to(-168);
+    drive(-900);
     shoot(3);
-    fw_stop();
 
     // get 3 line again
-    drive(900);
-    turn_to(-46);
+    drive(930);
+    turn_to(-50.5);
     intake_vel();
-    drive(3400, 7000);
+    drive(3700, 3000, 115);
     // shoot
-    turn_to(-104);
-    fw_spin(320);
-    drive(-800);
+    turn_to(-103);
+    drive(-710);
     intake_stop(); // hi yousef, is that your wumpus? wampus? hippo pig monkey looking discord creature?
     shoot(3);
-    fw_stop();
 
     // get 3 stack last
-    turn_to(-104, 1000);
+    turn_to(-103, 1000);
     intakeP.set(true);
     intake_vel();
-    drive(1740, 4000);
+    drive(1420, 4000);
     intakeP.set(false);
-    delay(1000);
+    delay(400);
+    drive(300);
 
     // shoot last 3 
-    fw_spin(330);
-    drive(-1730, 4000);
-    turn_to(-104, 1000);
+    drive(-1960, 4000);
+    turn_to(-101.5, 1000);
     shoot(3);
 
+    // roller 3
+    turn_to(-91);
+    fw_stop();
+    intakeP.set(true);
+    drive_const(2900, 110, 3000);
+    drive_const(400, 40, 300);
+    roller(430);
+    drive(-790);
 
+    // roller 4
+    turn_to(0);
+    drive_const(500, 105, 1500);
+    drive_const(400, 40, 300);
+    roller(430);
+    drive(-730);
 
-
+    // endgame
+    turn_to(-45, 1000);
+    drive(-200, 800);
 }
 void skills2()
 {
@@ -497,13 +505,13 @@ void ml_half_awp()
     // // turn_to(4);
     
     // get 3 stack
-    turn_to(-128, 1200);
+    turn_to(-128, 1000);
     intakeP.set(true);
     intake_vel();
     fw_spin(462.2);
     drive(970, 1350);
     intakeP.set(false);
-    delay(750);
+    delay(600);
 
     // shoot 3 stack
     turn_to(-22.4);
@@ -518,13 +526,13 @@ void ml_half_awp()
     drive(700);
     turn_to(140);
     intake_vel();
-    fw_spin(462.8);
+    // fw_spin(462.8);
     drive(400);
     intakeP.set(false);
-    delay(750);
+    delay(600);
 
     // shoot 3 
-    turn_to(-14);
+    turn_to(-14, 1000);
     pid_index(3);
     delay(500);
 

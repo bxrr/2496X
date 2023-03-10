@@ -91,9 +91,9 @@ namespace auf
             {
                 intake_dist(num_discs == 0 ? -360 : -320);
                 last_time = time;
-                pid::fw::force_recover = true;
+                // pid::fw::force_recover = true;
                 pros::delay(150);
-                pid::fw::force_recover = false;
+                // pid::fw::force_recover = false;
                 time += 150;
                 shot++;
             }
@@ -104,13 +104,13 @@ namespace auf
         delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-82)
+    void shoot(int num_discs=3, double shoot_speed=-80)
     {
         hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;
-        while(time < num_discs * 555) //work needed here
+        while(time < num_discs * 350)
         {
             time += 10;
             pros::delay(10);
