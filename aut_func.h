@@ -37,7 +37,7 @@ namespace auf
     inline void roller(double distance, double tdelay = 0, double speed = 600)
     {
         if (tdelay == 0) tdelay = abs(distance);
-        chas.spin(40);
+        chas.spin(25);
         glb::intakeL.move_relative(-distance, speed);
         glb::intakeR.move_relative(-distance, speed);
         delay(tdelay);
@@ -104,7 +104,7 @@ namespace auf
         delay(200);
     }
 
-    void shoot(int num_discs=3, double shoot_speed=-80)
+    void shoot(int num_discs=3, double shoot_speed=-79)
     {
         hoodP.set(false);
         delay(300);
@@ -119,7 +119,7 @@ namespace auf
                 break;
             }
         }
-        delay(400);
+        delay(200);
         intake_vel(0);
     }
 }

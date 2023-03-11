@@ -26,12 +26,12 @@ void skills()
     turn_to(94, 3000);
     intake_vel();
     drive_const(1700, 60);
-    fw_spin(325);
+    fw_spin(320);
     intakeP.set(true); //prevent 4disc
-    drive(300, 1000);
+    drive(340, 1000);
     
     // shoot 3 at corner barrier
-    turn_to(47, 1400);
+    turn_to(47, 1000);
     intake_stop();
     shoot(3);
 
@@ -62,27 +62,26 @@ void skills()
     turn_to(89);
     intake_stop();
     intakeP.set(true);
-    drive_const(950, 115);
+    drive_const(950, 105);
     drive_const(400, 40, 300);
     roller(430);
-    drive(-670);
+    drive(-680);
 
     // roller 2
     turn_to(180);
-    drive(1050);
-    drive_const(500, 40, 300);
+    drive_const(1420, 90, 900);
     roller(430);
     drive(-400);
     // drive(10000000000000); frfr grrr hello from the other side this is evana helllo from the other side i must have called you a thousand times to tell you that im sorry for bla blah idrk any of the lyrics...if you delete this then. nothing would happen! 
     
     // shoot 3
     fw_spin(320);
-    turn_to(180);
-    drive(-3070, 6000);
+    turn_to(-179);
+    drive(-3070, 3500, 110);
     shoot(3);
 
     // get 2nd stack
-    turn_to(-145);
+    turn_to(-139);
     intakeP.set(true);
     intake_vel();
     drive(827);
@@ -92,7 +91,7 @@ void skills()
 
     // shoot 2nd stack
     fw_spin(320);
-    turn_to(-168);
+    turn_to(-168, 1400);
     drive(-900);
     shoot(3);
 
@@ -108,38 +107,39 @@ void skills()
     shoot(3);
 
     // get 3 stack last
-    turn_to(-103, 1000);
+    turn_to(-101.8, 1200);
     intakeP.set(true);
     intake_vel();
-    drive(1420, 4000);
+    drive(1390, 4000);
     intakeP.set(false);
-    delay(400);
-    drive(300);
+    delay(500);
+    drive(300, 1500, 80);
 
     // shoot last 3 
     drive(-1960, 4000);
-    turn_to(-101.5, 1000);
+    turn_to(-100.5, 1100);
     shoot(3);
 
     // roller 3
-    turn_to(-91);
+    turn_to(-90, 1300);
     fw_stop();
     intakeP.set(true);
     drive_const(2900, 110, 3000);
     drive_const(400, 40, 300);
     roller(430);
-    drive(-790);
+    drive(-700);
 
     // roller 4
     turn_to(0);
-    drive_const(500, 105, 1500);
+    drive_const(500, 105, 1000);
     drive_const(400, 40, 300);
     roller(430);
-    drive(-730);
+    drive(-750);
 
     // endgame
     turn_to(-45, 1000);
-    drive(-200, 800);
+    drive_const(-200, 65, 150);
+    auton_expand();
 }
 void skills2()
 {
@@ -400,9 +400,11 @@ void none()
 
 void test_shoot()
 {
-    fw_spin(460);
+    fw_spin(330);
     delay(1500);
-    pid_index();
+    // pid_index();
+    shoot(3);
+    delay(500);
     fw_stop();
 }
 

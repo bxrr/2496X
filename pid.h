@@ -188,7 +188,7 @@ namespace pid
         //Exponential Model; kP = ab^x + c
         kP = degrees >=0 ? a*pow(b,degrees)+c : 6.3;
         kI = degrees >= 20 ? 0.75 : degrees >=10 ? 0.2 : 0.1;
-        kD = degrees >= 20 ? 0.353 : 0.46; // 0.34
+        kD = degrees >= 20 ? 0.346 : 0.44; // 0.34
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -229,7 +229,7 @@ namespace pid
             if(abs(error) < 5) integral += error;
 
             // check for exit condition
-            if(abs(error) <= 0.3)
+            if(abs(error) <= 0.35)
             {
                 if(within_err == false)
                 {
@@ -397,7 +397,7 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 60 < time && recover_start_time + 1100 > time)
+                                else if(recover_start_time + 110 < time && recover_start_time + 1100 > time)
                                 {
                                     speed = 600;
                                 }

@@ -11,7 +11,7 @@ for element in log.y:
 x = range(len(speed))
 plt.plot(x,speed,linewidth = 2, color = "#333555")
  
-x = range(len(voltage))
+x = range(0, len(voltage) * 10, 10)
 plt.plot(x,voltage, color = "#aaaaaa", linewidth = 2)
  
 plt.show()
