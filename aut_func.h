@@ -89,7 +89,7 @@ namespace auf
         {
             if(abs(pid::fw::error) < 2 && time - last_time > 350)
             {
-                intake_dist(num_discs == 0 ? -360 : -320);
+                intake_dist(num_discs == 0 ? -340 : -320);
                 last_time = time;
                 // pid::fw::force_recover = true;
                 pros::delay(150);

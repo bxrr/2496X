@@ -51,7 +51,7 @@ void skills()
     // get 3 stack
     // turn_to(78);
     intakeP.set(true);
-    drive(1680, 5000);
+    drive(1610, 5000);
     // turn_to(76);
     intake_vel();
     intakeP.set(false);
@@ -62,7 +62,7 @@ void skills()
     turn_to(89);
     intake_stop();
     intakeP.set(true);
-    drive_const(950, 105);
+    drive_const(860, 105);
     drive_const(400, 40, 300);
     roller(430);
     drive(-680);
@@ -102,7 +102,7 @@ void skills()
     drive(3700, 3000, 115);
     // shoot
     turn_to(-103);
-    drive(-710);
+    drive(-790);
     intake_stop(); // hi yousef, is that your wumpus? wampus? hippo pig monkey looking discord creature?
     shoot(3);
 
@@ -391,11 +391,12 @@ void skills2()
 
 void none()
 {
-    // roller(430);
-    pid::global_heading = 0;
-    imu.set_heading(0);
-    delay(400);
-    turn_to(5, 7000);
+//     // roller(430);
+//     pid::global_heading = 0;
+//     imu.set_heading(0);
+//     delay(400);
+//     turn_to(5, 7000);
+// 
 }
 
 void test_shoot()
@@ -492,6 +493,7 @@ void solo_awp()//pmuller@tustin.k12.ca.us
 void ml_half_awp()
 {
     // drive_const(100, 127, 200);
+    drive_const(100, 100, 150);
     roller(-310, 200);
     delay(150);
     // fw_spin(485);
@@ -510,10 +512,10 @@ void ml_half_awp()
     turn_to(-128, 1000);
     intakeP.set(true);
     intake_vel();
-    fw_spin(462.2);
+    fw_spin(465);
     drive(970, 1350);
     intakeP.set(false);
-    delay(600);
+    delay(700);
 
     // shoot 3 stack
     turn_to(-22.4);
@@ -525,16 +527,17 @@ void ml_half_awp()
     // get 2nd 3 stack
     turn_to(45);
     intakeP.set(true);
-    drive(700);
+    drive(540);
     turn_to(140);
     intake_vel();
     // fw_spin(462.8);
-    drive(400);
+    drive(490);
+    fw_spin(460);
     intakeP.set(false);
     delay(600);
 
     // shoot 3 
-    turn_to(-14, 1000);
+    turn_to(-15, 1200);
     pid_index(3);
     delay(500);
 
@@ -570,29 +573,29 @@ void ml_half_awp()
 
 void nml_half_awp()
 {
-    fw_spin(480);
-    drive(1160, 1500);
-    turn_to(99, 1500);
-    // index(2, 300, 2500);
+    fw_spin(487);
+    drive(960, 1500);
+    turn_to(96, 1500);
+    pid_index(3);
     
     fw_stop();
     turn_to(90, 1300);
     drive_const(300, 70, 300);
-    intake_dist(-250);
+    roller(-310);
     delay(400);
 
     drive(-150, 1000);
-    turn_to(-144);
-    intake_vel();
-    drive(3550);
+    // turn_to(-144);
+    // intake_vel();
+    // drive(3550);
 
-    fw_spin(440);
-    turn_to(138.9, 2000);
-    delay(500);
-    intake_vel(0);
-    // index(3, 300, 2500);
-    delay(900);
-    fw_stop();
+    // fw_spin(440);
+    // turn_to(138.9, 2000);
+    // delay(500);
+    // intake_vel(0);
+    // // index(3, 300, 2500);
+    // delay(900);
+    // fw_stop();
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
