@@ -14,16 +14,15 @@ namespace pid
 {
     double global_heading = 0;
     double last_heading = glb::imu.get_heading();
-    double ideal_heading = 0;
 
-    void drive(double distance, int timeout=3000, double max_speed = 127)
+    void drive(double distance, int timeout=3000)
     {
         int time = 0;
 
         // constants
-        double kP = (abs(distance) < 200) ? 0.8 : 0.6;
+        double kP = 0.8;
         double kI = 3.0;
-        double kD = 0.058;
+        double kD = 0.065;
         
         double straight_kP = 3.5;
         double straight_kI = 1.0;
@@ -176,19 +175,13 @@ namespace pid
     
     void turn(double degrees, int timeout=2000)
     {
-        int time = 0; //yousef was here
+        int time = 0;
 
-        double kP, kI, kD;
         // constants
-        
-        double a = 2.83798;
-        double b = 0.994173;
-        double c = 3.99262;
-
-        //Exponential Model; kP = ab^x + c
-        kP = degrees >=0 ? a*pow(b,degrees)+c : 6.3;
-        kI = degrees >= 20 ? 0.75 : degrees >=10 ? 0.2 : 0.1;
-        kD = degrees >= 20 ? 0.346 : 0.44; // 0.34
+        double kP, kI, kD;
+        kP = 5.5;
+        kI = 14;
+        kD = 0.34;
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -226,7 +219,8 @@ namespace pid
             last_error = error;
             error = degrees - (global_heading - init_heading);
             double derivative = (error - last_error) * 100;
-            if(abs(error) < 5) integral += error;
+            if(abs(error) < 5) integral += (error / 100);
+            else integral = 0;
 
             // check for exit condition
             if(abs(error) <= 0.35)
@@ -279,7 +273,6 @@ namespace pid
         double degree = degree_to - global_heading;
         degree = (degree > 180) ? -(360 - degree) : ((degree < -180) ? (360 + degree) : (degree)); // optimize the turn direction
         turn(degree, timeout);
-        ideal_heading = degree_to;
     }
 
     // flywheel =============================================================
