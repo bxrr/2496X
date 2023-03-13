@@ -219,7 +219,8 @@ namespace pid
             last_error = error;
             error = degrees - (global_heading - init_heading);
             double derivative = (error - last_error) * 100;
-            if(abs(error) < 5) (integral += error) / 100;
+            if(abs(error) < 5) integral += (error / 100);
+            else integral = 0;
 
             // check for exit condition
             if(abs(error) <= 0.35)
