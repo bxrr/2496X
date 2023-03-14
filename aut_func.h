@@ -12,7 +12,6 @@ namespace auf
 {
     void auton_expand()
     {
-        glb::sideExpandP.toggle();
         for(int i = 0; i < 5; i++)
         {
             glb::expansionP.toggle();
@@ -21,14 +20,12 @@ namespace auf
     }
     void intake_vel(double speed=127)
     {
-        hoodP.set(true);
         glb::intakeL.move(-speed);
         glb::intakeR.move(-speed);
     }
 
     void intake_dist(double distance, double speed=600)
     {
-        hoodP.set(true);
         glb::intakeL.move(0);
         glb::intakeR.move(0);
         glb::intakeL.move_relative(-distance, speed);
@@ -62,7 +59,6 @@ namespace auf
 
     void index(int num_discs=3, int ms_delay=pid::fw::flywheel_target / 500 * 650)
     {
-        // hoodP.set(false);
         for(int i = 0; i < num_discs; i++)
         {
             intake_dist(num_discs == 0 ? -360 : -320);
@@ -84,7 +80,6 @@ namespace auf
         int shot = 0;
         int last_time = -507;
 
-        // hoodP.set(false);
         while(time < timeout && shot < num_discs)
         {
             if(abs(pid::fw::error) < 2 && time - last_time > 350)
@@ -106,7 +101,6 @@ namespace auf
 
     void shoot(int num_discs=3, double shoot_speed=-79)
     {
-        hoodP.set(false);
         delay(300);
         intake_vel(shoot_speed);
         int time = 0;

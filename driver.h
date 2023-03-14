@@ -13,8 +13,8 @@ using namespace pros;
 
 void arcade_drive()
 {
-    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
-    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 15 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
+    double left = abs(con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y)) > 20 ? con.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) : 0;
+    double right = abs(con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X)) > 20 ? con.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) : 0;
 
     if(left || right)
     {
@@ -43,64 +43,13 @@ void tank_drive()
         chas.stop();
     }
 }
-void hood_control(int time)
-{
-    static bool active = true;
-    static int init_sight_time = -500;
-    if(active && glb::disc_sensor3.get() < 35 && time - init_sight_time > 500)
-    {
-        init_sight_time = time;
-    }
-    if (time - init_sight_time > 300 && glb::disc_sensor3.get() < 35)
-    {
-        active = false;
-    }
-    else if (!active && glb::disc_sensor1.get() > 80)
-    {
-        active = true;
-    }
-    hoodP.set(active);
-/*     static bool active = true;
-    static bool check_sight = false;
-    static int init_sight_time = -500;
 
-    if (check_sight && time - init_sight_time < 500)
-    {
-        if (glb::disc_sensor3.get() < 35) check_sight = false;
-
-    }
-    else if (check_sight && time - init_sight_time >= 500)
-    {
-
-        check_sight = false;
-        active = false;
-    }
-    else if(!check_sight && active && glb::disc_sensor3.get() < 35)
-    {
-        init_sight_time = time;
-        check_sight = true;
-    }
-    if (!active && glb::disc_sensor1.get() > 80)
-    {
-        active = true;
-    }
-
-    hoodP.set(active);
-    */
-}
 int flywheel_control(int time)
 {
-    static int speed_index = 0;
     static bool fly_on = false;
-    static bool first_disc;
-    static int first_time;
-    static bool second_disc;
-    static int second_time;
-    static int last_seen = 0;
-    static bool start_reverse;
-    static bool reversed = false;
     int flat_speeds[] = {330, 330}; //330, 310
     int angle_speeds[] = {360, 345}; //370, 360
+    int speed_index = 0;
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -117,50 +66,17 @@ int flywheel_control(int time)
         pid::fw_spin(-127);
     }
     else
-    {
-
-        //Check if we possess first disc
-        if(!first_disc && glb::disc_sensor1.get() < 50) {
-            first_disc = true;
-            first_time = time;
-        }
-        else if(glb::disc_sensor1.get() > 50) {
-            first_disc = false;
-        }
-
-        //Check if we possess second disc
-        if(!second_disc && glb::disc_sensor2.get() < 50) {
-            second_disc = true;
-            second_time = time;
-        }
-        else if(glb::disc_sensor2.get() > 50) {
-            second_disc = false;
-        }
-        
-        //Turn on flywheel if R1 or automatically if we possess >1 disc
+    {   
         if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1))
         {
-            // first_disc = false;
-            // second_disc = false;
             fly_on = !fly_on;
         }
 
-        // if(first_disc && second_disc) fly_on = true; //Toggle if you want autoturnon
-
         if(fly_on)
         {
-        //    pid::fw_spin(flat_speeds[speed_index]);
-            // //Run flywheel as long as there is one disc still present
-            // if(first_disc)
-            // {
-            //     reversed = false;
-            //     last_seen = time;
-                if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
-                else pid::fw_spin(flat_speeds[speed_index]);
-            // } 
-            // // //If a full second has passed since the last disc has left, turn off flywheel
-            // else if(first_time + 1000 < time) fly_on = false;
-
+    
+            if(glb::angleP.get_status()) pid::fw_spin(angle_speeds[speed_index]);
+            else pid::fw_spin(flat_speeds[speed_index]);
         }
         else
         {
@@ -230,12 +146,10 @@ void expansion(int time)
             expansionP.toggle();
         if ((*auton).get_name() == "skills")
         {
-            glb::sideExpandP.set(true);
             glb::expansionP.set(true);
             for(int i = 0; i < 7; i++)
             {
                 glb::expansionP.toggle();
-                glb::sideExpandP.toggle();
                 pros::delay(200);
             }
         }
@@ -246,23 +160,7 @@ void expansion(int time)
 
     if(first_pressed_timeA + 500 < time)
         first_pressedA = false;
-
-    static bool first_pressedB = false;
-    static int first_pressed_timeB = 0;
-
-    if(con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
-    {
-        if(first_pressedB)
-        {
-            sideExpandP.toggle();
-        }
-        first_pressedB = true;
-        first_pressed_timeB = time;
-    }
-
-    if(first_pressed_timeB + 250 < time)
-        first_pressedB = false;
-    }
+}
 void print_info(int time, bool chassis_on)
 {
     if(time % 50 == 0 && time % 500 != 0 && time % 150 != 0 && time % 1600 != 0)

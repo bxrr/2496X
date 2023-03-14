@@ -85,7 +85,7 @@ namespace pid
 
             // calculate correction pid variables and speed
             double speed = error * kP + integral * kI + derivative * kD;
-            if(abs(speed) > max_speed) speed = speed / abs(speed) * max_speed;
+            if(abs(speed) > 127) speed = speed / abs(speed) * 127;
 
             // inertial wrapping
             if(cur_heading - last_heading > 100)
@@ -275,6 +275,165 @@ namespace pid
         turn(degree, timeout);
     }
 
+    void arc_turn(double degrees, double radius_enc, int timeout=3000)
+    {
+        // define wheelbase information (set manually before usage of function)
+        double width_enc = 367.2806379;
+        double ratio = (radius_enc + width_enc/2) / (radius_enc - width_enc/2);
+
+        // // initial variables
+        // double right_start = glb::chas.right_pos();
+        // double left_start = glb::chas.left_pos();
+
+        // // define inner and outer targets
+        // double inner_target = 2 * M_PI * radius_enc * degrees / 360 + right_start;
+        // double outer_target = 2 * M_PI * (radius_enc + wheelbase_enc) * degrees / 360 + left_start;
+
+        // // inner radius PID variables
+        // double inner_error = inner_target - glb::chas.right_pos();
+        // double inner_i = 0;
+        // double last_inner_err;
+
+        // // outer radius PID variables
+        // double outer_error = outer_target - glb::chas.left_pos();
+        // double outer_i = 0;
+        // double last_outer_err;
+
+        // // outer radius difference from ideal location based on inner distance PID variables
+        // double rem_inner_deg = degrees * (inner_error / inner_target);
+        // double ideal_outer_err = (rem_inner_deg / degrees) * outer_target;
+        // double outer_diff_err = ideal_outer_err - outer_error;
+        // double outer_diff_i = 0;
+        // double last_outer_diff;
+
+        // degree difference from ideal degree based on current inner distance using imu PID variables
+        // double ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
+        // inertial wrapping
+        double init_heading = global_heading;
+        double cur_heading = glb::imu.get_heading();
+
+        // initialize pid variables
+        double error = degrees - global_heading;
+        double last_error;
+        double integral = 0;
+
+        // variables for exiting if within 0.1 error for 250ms
+        bool within_err = false;
+        int within_err_time = 0;
+
+        // define constants and time;
+        // double kP = 0.8;
+        // double kI = 1.0;
+        // double kD = 0.35;
+
+        // double diff_kP = 0.2;
+        // double diff_kI = 0;
+        // double diff_kD = 0;
+
+        double kP = 3.5;
+        double kI = 12;
+        double kD = 0.35;
+
+        int time = 0;
+
+        while(time < timeout)
+        {
+            if(cur_heading - last_heading > 100)
+            {
+                global_heading += (cur_heading - 360) - last_heading;
+            }
+            else if(cur_heading - last_heading < -100)
+            {
+                global_heading += cur_heading + (360 - last_heading);
+            }
+            else
+            {
+                global_heading += cur_heading - last_heading;
+            }
+
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
+
+            // // update inner radius variables
+            // last_inner_err = inner_error;
+            // inner_error = inner_target - glb::chas.right_pos();
+            // inner_i += inner_error / 100;
+            // double inner_d = (inner_error - last_inner_err) * 100;
+
+            // // update outer radius variables
+            // last_outer_err = outer_error;
+            // outer_error = outer_target - glb::chas.left_pos();
+            // outer_i += outer_error / 100;
+            // double outer_d = (outer_error - last_outer_err) * 100;
+
+            // // update ideal difference variables
+            // rem_inner_deg = degrees * (inner_error / inner_target);
+            // ideal_outer_err = (rem_inner_deg / degrees) * outer_target;
+            // last_outer_diff = outer_diff_err;
+            // outer_diff_err = ideal_outer_err - outer_error; // outer_diff_err > 0 means outer side is going too fast. outer_diff_err < 0 means outer side is going too slow
+            // outer_diff_i += outer_diff_err / 100;
+            // double outer_diff_d = (outer_diff_err - last_outer_diff) * 100;
+
+            // update degree difference variables
+            // ideal_deg = degrees * ((inner_target - inner_error) / inner_target);
+            last_error = error;
+            error = degrees - (global_heading - init_heading);
+            double derivative = (error - last_error) * 100;
+            if(abs(error) < 5) integral += (error / 100);
+            else integral = 0;
+
+            if(abs(error) <= 0.35)
+            {
+                if(within_err == false)
+                {
+                    within_err = true;
+                    within_err_time = time;
+                }
+                else
+                {
+                    if(within_err_time + 150 <= time)
+                        break;
+                }
+            }
+            else
+            {
+                within_err = false;
+            }
+
+            double vel = error * kP + integral * kI + derivative * kD;
+            if(abs(vel > 127)) vel = 127 * abs(vel) / vel;
+
+            double left_speed = ratio * vel;
+            double right_speed = 2 * vel / (ratio+1);
+
+            // check for exit condition
+            // if(abs(inner_error) < 5 && abs(glb::chas.left_speed()) < 10)
+            // {
+            //     break;
+            // }
+
+            // calculate speeds
+            // double f_ms = [](double speed) { return abs(speed) > 127 ? abs(speed) / speed) * 127 : speed; }; // lambda function checking that speed does not exceed 127
+            // double rspeed = kP * inner_error + inner_i * kI + inner_d * kD; rspeed = f_ms(rspeed);
+            // double lspeed = kP * outer_error + outer_i * kI + outer_d * kD; lspeed = f_ms(rspeed);
+            // double dist_correction = diff_kP * outer_diff_err + diff_kI * outer_diff_i + outer_diff_d * diff_kD;
+            // double imu_correction = imu_kP * deg_err + imu_kI * deg_i + imu_kD * deg_d;
+
+            // apply speed
+            // glb::chas.spin_left(lspeed - dist_correction + imu_correction);
+            // glb::chas.spin_right(rspeed + dist_correction - imu_correction);
+            glb::chas.spin_left(left_speed);
+            glb::chas.spin_right(right_speed);
+
+            // update time
+            pros::delay(10);
+            time += 10;
+        }
+
+        // stop chassis at end of loop
+        glb::chas.stop();
+    }
+
     // flywheel =============================================================
     namespace fw
     {
@@ -285,10 +444,10 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.8;
-        double kI = 0.8;
+        double kP = 0.9;
+        double kI = 1.5;
         double kD = 0.0;
-        double kF = 0.199;
+        double kF = 0.21;
         double full_speed = 50;
 
         // initialize pid variables
@@ -305,14 +464,14 @@ namespace pid
         {
             if(flywheel_target < 420)
             {
-                kP = 0.6;
-                kI = 0.5;
+                kP = 0.9;
+                kI = 1.5;
                 full_speed = 100;
             }
             else
             {
-                kP = 1.0;
-                kI = 1.5;
+                kP = 2.0;
+                kI = 3.0;
                 full_speed = 20;
             }
         }
@@ -390,9 +549,9 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 110 < time && recover_start_time + 1100 > time)
+                                else if(recover_start_time + 110 < time && recover_start_time + 700 > time)
                                 {
-                                    speed = 600;
+                                    speed += 20;
                                 }
                             }
                             else
