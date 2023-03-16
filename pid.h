@@ -172,6 +172,106 @@ namespace pid
 
         glb::chas.stop();
     }
+
+    void const_vel(double distance, double enc_vel, double timeout=3000)
+    {
+        int time = 0;
+
+        // constants
+        double straight_kP = 3.5;
+        double straight_kI = 1.0;
+
+        double dkF = 0.1;
+        double dkP = 0.4;
+        double dkI = 9.0;
+        double dKp = 0.04;
+
+        // initialize variables
+        double start_pos = glb::chas.pos();
+        double error = distance - (glb::chas.pos() - start_pos);
+        double last_error;
+
+        double deriv_error = enc_vel;
+        double deriv_integral = 0;
+        double last_deriv_error;
+
+        // initialize straight pid variables
+        if(global_heading >= 360) 
+        {
+            global_heading -= 360;
+        }
+        else if(global_heading <= -360)
+        {
+            global_heading += 360;
+        }        
+        double init_heading = global_heading;
+        double cur_heading = glb::imu.get_heading();
+        
+        double straight_i = 0;
+        
+
+        // variables for exiting if within 5 error for 100ms
+        bool within_err = false;
+        int within_err_time = 0;
+
+        double slew = 0.1;
+
+        while(time < timeout)
+        {
+            // calculate drive pid variables
+            last_error = error;
+            error = distance - (glb::chas.pos() - start_pos);
+            double derivative = (error - last_error) * 100;
+
+            last_deriv_error = deriv_error;
+            deriv_error = enc_vel - derivative;
+            if(abs(deriv_error) < 15) deriv_integral += deriv_error / 100;
+            double deriv_derivative = (deriv_error - last_deriv_error) * 100;
+            
+            // calculate correction pid variables and speed
+            double speed = dkF * enc_vel + deriv_error * dkP + deriv_integral * dkI + deriv_derivative;
+
+            // inertial wrapping
+            if(cur_heading - last_heading > 100)
+            {
+                global_heading += (cur_heading - 360) - last_heading;
+            }
+            else if(cur_heading - last_heading < -100)
+            {
+                global_heading += cur_heading + (360 - last_heading);
+            }
+            else
+            {
+                global_heading += cur_heading - last_heading;
+            }
+
+            last_heading = cur_heading;
+            cur_heading = glb::imu.get_heading();
+
+            double straight_error = global_heading - init_heading;
+            straight_i += (straight_error) / 100;
+            double correction = abs(speed) / 75 * (straight_i * straight_kI + straight_kP * straight_error);
+
+            slew += slew <= 1 ? 0.1 : 0;
+            slew = slew > 1 ? 1 : slew;
+
+            // apply speed
+            glb::chas.spin_left(slew * (speed - correction));
+            glb::chas.spin_right(slew * (speed + correction));
+
+            // print stuff
+            if(time % 50 == 0)
+                glb::con.print(0, 0, "err: %.2lf c: %.2lf        ", error, within_err_time);
+
+            // update time
+            pros::delay(10);
+            time += 10;
+        }
+
+        // stop chassis at end of loop
+        // printf("d: %lf - %d\n", error, time);
+        glb::chas.stop();
+    }
     
     void turn(double degrees, int timeout=2000)
     {
@@ -186,6 +286,8 @@ namespace pid
         // inertial wrapping
         double init_heading = global_heading;
         double cur_heading = glb::imu.get_heading();
+        double left_chas_s = glb::chas.left_pos();
+        double right_chas_s = glb::chas.right_pos();
 
         // initialize pid variables
         double error = degrees - global_heading;
@@ -257,6 +359,7 @@ namespace pid
         }
 
         // stop chassis at end of loop
+        printf("[%lf, %lf]\n", (glb::chas.left_pos() - left_chas_s)/(degrees*M_PI/180), (glb::chas.right_pos() - right_chas_s)/(degrees*M_PI/180));
         glb::chas.stop();
     }
 
@@ -278,8 +381,7 @@ namespace pid
     void arc_turn(double degrees, double radius_enc, int timeout=3000)
     {
         // define wheelbase information (set manually before usage of function)
-        double width_enc = 367.2806379;
-        double ratio = (radius_enc + width_enc/2) / (radius_enc - width_enc/2);
+        double ratio = (radius_enc + 343.1062261999999) / (radius_enc - 263.7834026);
 
         // // initial variables
         // double right_start = glb::chas.right_pos();
@@ -444,10 +546,10 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.9;
+        double kP = 0.5;
         double kI = 1.5;
         double kD = 0.0;
-        double kF = 0.21;
+        double kF = 0.19;
         double full_speed = 50;
 
         // initialize pid variables
@@ -464,14 +566,14 @@ namespace pid
         {
             if(flywheel_target < 420)
             {
-                kP = 0.9;
-                kI = 1.5;
+                kP = 0.6;
+                kI = 1.0;
                 full_speed = 100;
             }
             else
             {
-                kP = 2.0;
-                kI = 3.0;
+                kP = 1.5;
+                kI = 2.0;
                 full_speed = 20;
             }
         }
@@ -549,9 +651,9 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 110 < time && recover_start_time + 700 > time)
+                                else if(recover_start_time + 130 < time && recover_start_time + 1000 > time)
                                 {
-                                    speed += 20;
+                                    speed = 600;
                                 }
                             }
                             else
@@ -568,7 +670,7 @@ namespace pid
 
                         const_eq(error);
 
-                        double temp_kP = error < -5 ? kP / 20 : kP;
+                        double temp_kP = error < -5 ? kP / 30 : kP;
                         
                         volt_speed = speed * kF + error * temp_kP + integral * kI + derivative * kD;
 

@@ -47,9 +47,9 @@ void tank_drive()
 int flywheel_control(int time)
 {
     static bool fly_on = false;
-    int flat_speeds[] = {330, 330}; //330, 310
-    int angle_speeds[] = {360, 345}; //370, 360
-    int speed_index = 0;
+    int flat_speeds[] = {320, 420};
+    int angle_speeds[] = {360, 345};
+    static int speed_index = 0;
 
     // set speed index
     if(glb::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_DOWN))
@@ -94,11 +94,11 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 87 : 70;
+        shoot_speed = speed_index == 0 ? 85 : 75;
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 85 : 70;
+        shoot_speed = speed_index == 0 ? 85 : 60;
     }
 
     pid::fw_recover(true);

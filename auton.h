@@ -21,24 +21,24 @@ void none()
 
 void test_shoot()
 {
-    fw_spin(440);
+    fw_spin(470);
     delay(2000);
     pid_index();
 }
 
 void turns()
 {
-    arc_turn(90, 500);
+    for(int i = 0; i < 10; i++) turn(90);
 }
 
 void nml_half_awp()
 {
-
+    const_vel(600, 150);
 }
 
 void ml_half_awp()
 {
-
+    arc_turn(180, 350);
 }
 
 void solo_awp()
