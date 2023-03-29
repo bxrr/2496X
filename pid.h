@@ -279,9 +279,9 @@ namespace pid
 
         // constants
         double kP, kI, kD;
-        kP = 5.5;
+        kP = 6.0;
         kI = 14;
-        kD = 0.34;
+        kD = 0.4;
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -381,7 +381,7 @@ namespace pid
     void arc_turn(double degrees, double radius_enc, int timeout=3000)
     {
         // define wheelbase information (set manually before usage of function)
-        double ratio = (radius_enc + 343.1062261999999) / (radius_enc - 263.7834026);
+        double ratio = (radius_enc + 303.4448144) / (radius_enc - 303.4448144);
 
         // // initial variables
         // double right_start = glb::chas.right_pos();
@@ -506,7 +506,7 @@ namespace pid
             if(abs(vel > 127)) vel = 127 * abs(vel) / vel;
 
             double left_speed = ratio * vel;
-            double right_speed = 2 * vel / (ratio+1);
+            double right_speed = vel / (ratio+1);
 
             // check for exit condition
             // if(abs(inner_error) < 5 && abs(glb::chas.left_speed()) < 10)
@@ -546,10 +546,10 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.5;
-        double kI = 1.5;
+        double kP = 0.8;
+        double kI = 0.8;
         double kD = 0.0;
-        double kF = 0.19;
+        double kF = 0.199;
         double full_speed = 50;
 
         // initialize pid variables
@@ -567,7 +567,7 @@ namespace pid
             if(flywheel_target < 420)
             {
                 kP = 0.6;
-                kI = 1.0;
+                kI = 0.5;
                 full_speed = 100;
             }
             else
@@ -651,9 +651,9 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 130 < time && recover_start_time + 1000 > time)
+                                else if(recover_start_time + 130 < time && recover_start_time + 1100 > time)
                                 {
-                                    speed = 600;
+                                    speed = 60000;
                                 }
                             }
                             else

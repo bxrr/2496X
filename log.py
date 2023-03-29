@@ -9,13 +9,8 @@ y=[[317.991576, -295.391574],
 [340.273268, -261.969036],
 [351.732424, -251.146500]]
 
-lsum = 0
-rsum = 0
+sum = 0
 for val in y:
-   lsum += val[0]
-   rsum += val[1]
+   sum += (val[0] + abs(val[1])) /2
 
-lsum = sum([val[0] for val in y]) / 10
-rsum = sum([val[1] for val in y]) / 10
-print(lsum/10)
-print(rsum/10)
+print(sum/10)

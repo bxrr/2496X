@@ -86,9 +86,9 @@ namespace auf
             {
                 intake_dist(num_discs == 0 ? -340 : -320);
                 last_time = time;
-                // pid::fw::force_recover = true;
+                pid::fw::force_recover = true;
                 pros::delay(150);
-                // pid::fw::force_recover = false;
+                pid::fw::force_recover = false;
                 time += 150;
                 shot++;
             }
