@@ -67,7 +67,7 @@ namespace auf
             pid::fw::force_recover = false;
             if(i < num_discs-1) 
             {
-                pros::delay(ms_delay);
+                pros::delay(ms_delay-150);
             }
         }
         pid::fw::force_recover = false;
@@ -86,9 +86,9 @@ namespace auf
             {
                 intake_dist(num_discs == 0 ? -340 : -320);
                 last_time = time;
-                pid::fw::force_recover = true;
+                // pid::fw::force_recover = true;
                 pros::delay(150);
-                pid::fw::force_recover = false;
+                // pid::fw::force_recover = false;
                 time += 150;
                 shot++;
             }
@@ -96,7 +96,7 @@ namespace auf
             pros::delay(10);
         }
         pid::fw::force_recover = false;
-        delay(200);
+        delay(250);
     }
 
     void shoot(int num_discs=3, double shoot_speed=-79)

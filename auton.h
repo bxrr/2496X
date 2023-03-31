@@ -28,12 +28,17 @@ void test_shoot()
 
 void turns()
 {
-    turn(5, 2100);
+    turn(5);
+    turn_to(0);
+    turn_to(90);
+    turn_to(0);
+    turn_to(180);
+    turn_to(21);
 }
 
 void nml_half_awp()
 {
-    const_vel(600, 150);
+    arc_turn(180, 300);
 }
 
 void ml_half_awp()
@@ -44,13 +49,29 @@ void ml_half_awp()
     fw_spin(495);
     intake_dist(300);
     drive(-300, 1500);
-    turn_to(-10, 1400);
-    pid_index(2, 2500);
+    turn_to(-13, 1400);
+    delay(600);
+    shoot(2);
     turn_to(-130);
     intakeP.set(true);
-    drive(800);
+    drive(900);
+    fw_spin(440);
     intake_vel();
     intakeP.set(false);
+    drive_const(200, 60, 1500);
+    drive(400);
+    turn_to(-29);
+    drive(-350);
+    index(3);
+    arc_turn(180-29, 345, 1500);
+    fw_spin(440);
+    intakeP.set(true);
+    drive(700);
+    intakeP.set(false);
+    intake_vel();
+    delay(500);
+    turn_to(-13.5);
+    index(3);
 }
 
 void solo_awp()
