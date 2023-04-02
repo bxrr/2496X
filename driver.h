@@ -48,7 +48,7 @@ int flywheel_control(int time)
 {
     static bool fly_on = false;
     int flat_speeds[] = {320, 330};
-    int angle_speeds[] = {330, 350};
+    int angle_speeds[] = {340, 350};
     static int speed_index = 0;
 
     // set speed index
