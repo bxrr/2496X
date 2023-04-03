@@ -94,11 +94,11 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 85 : 70;
+        shoot_speed = speed_index == 0 ? 90 : 75;
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 85 : 70;
+        shoot_speed = speed_index == 0 ? 90 : 75;
     }
 
     pid::fw_recover(true);
