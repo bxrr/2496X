@@ -538,7 +538,7 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 2000 > time)
+                                else if(recover_start_time + 0 < time && recover_start_time + 1500 > time)
                                 {
                                     speed = 600;
                                 }
