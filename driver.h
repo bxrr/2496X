@@ -47,8 +47,8 @@ void tank_drive()
 int flywheel_control(int time)
 {
     static bool fly_on = false;
-    int flat_speeds[] = {320, 330};
-    int angle_speeds[] = {340, 350};
+    int flat_speeds[] = {300, 320};
+    int angle_speeds[] = {325, 340};
     static int speed_index = 0;
 
     // set speed index
@@ -98,7 +98,7 @@ void intake_control(int speed_index)
     }
     else
     {
-        shoot_speed = speed_index == 0 ? 90 : 75;
+        shoot_speed = speed_index == 0 ? 80 : 80;
     }
 
     pid::fw_recover(true);
@@ -169,7 +169,7 @@ void print_info(int time, bool chassis_on)
         else con.print(0, 0, "CHAS OFF (right)     ");
     }
     if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0  && (pid::fw_speed()) <= 150) 
-        con.print(1, 0, "imu: %.2f            ", glb::imu.get_heading());
+        con.print(1, 0, "imu: %.2f            ", chas.speed());
     if(time % 150 == 0 && time % 1600 != 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }

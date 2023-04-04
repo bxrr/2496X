@@ -447,7 +447,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.8;
+        double kP = 0.5;
         double kI = 0.8;
         double kD = 0.0;
         double kF = 0.199;
@@ -466,7 +466,7 @@ namespace pid
         void fw_pid()
         {
             // moving average vars
-            double window[25];
+            double window[50];
             memset(window, 0, sizeof(window)); // 0 initialize window;
             int win_size = sizeof(window) / sizeof(window[0]);
             win_avg = 0;
@@ -481,6 +481,8 @@ namespace pid
 
             while(true) // defined as a task; always running
             {
+                if(flywheel_target > 400) full_speed = 20;
+                else full_speed = 50;
                 double speed = flywheel_target;
 
                 // calculate average speed
@@ -536,7 +538,7 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 60 < time && recover_start_time + 1100 > time)
+                                else if(recover_start_time + 2000 > time)
                                 {
                                     speed = 600;
                                 }
