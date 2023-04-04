@@ -36,7 +36,7 @@ namespace glb
     Piston intakeP(P_INTAKE_P);
     Piston angleP(P_ANGLE_P, false, true);
     Piston expansionP(P_EXPANSION_P);
-    Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_18, false);
+    Chassis chas({P_BL, -P_FL}, {P_BR, -P_FR}, pros::E_MOTOR_GEARSET_06, false);
     Auton *auton;
 }
 

@@ -61,8 +61,8 @@ namespace auf
     {
         for(int i = 0; i < num_discs; i++)
         {
-            intake_dist(num_discs == 0 ? -360 : -320);
             pid::fw::force_recover = true;
+            intake_dist(num_discs == 0 ? -360 : -320);
             pros::delay(150);
             pid::fw::force_recover = false;
             if(i < num_discs-1) 

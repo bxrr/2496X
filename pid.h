@@ -22,7 +22,7 @@ namespace pid
         // constants
         double kP = 0.8;
         double kI = 3.0;
-        double kD = 0.065;
+        double kD = 0.07;
         
         double straight_kP = 3.5;
         double straight_kI = 1.0;
@@ -447,7 +447,7 @@ namespace pid
         int time = 0;
 
         // constants
-        double kP = 0.8;
+        double kP = 0.5;
         double kI = 0.8;
         double kD = 0.0;
         double kF = 0.199;
@@ -462,22 +462,6 @@ namespace pid
         double base_speed = 0;
 
         double win_avg = 0;
-
-        void const_eq(double err)
-        {
-            if(flywheel_target < 420)
-            {
-                kP = 0.6;
-                kI = 0.5;
-                full_speed = 100;
-            }
-            else
-            {
-                kP = 1.5;
-                kI = 2.0;
-                full_speed = 20;
-            }
-        }
 
         void fw_pid()
         {
@@ -497,6 +481,8 @@ namespace pid
 
             while(true) // defined as a task; always running
             {
+                if(flywheel_target > 400) full_speed = 20;
+                else full_speed = 50;
                 double speed = flywheel_target;
 
                 // calculate average speed
@@ -552,9 +538,9 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 130 < time && recover_start_time + 1100 > time)
+                                else if(recover_start_time + 0 < time && recover_start_time + 1500 > time)
                                 {
-                                    speed = 60000;
+                                    speed = 600;
                                 }
                             }
                             else
@@ -568,8 +554,6 @@ namespace pid
                         if(abs(error) < 20) integral += error / 100;
                         else integral = 0;
                         derivative = (error - last_error);
-
-                        const_eq(error);
 
                         double temp_kP = error < -5 ? kP / 30 : kP;
                         
