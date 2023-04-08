@@ -65,7 +65,7 @@ namespace pid
             double derivative = (error - last_error) * 100;
 
             // check for exit condition
-            if(abs(error) < 10)
+            if(abs(error) < 15)
             {
                 if(within_err == false)
                 {
@@ -179,9 +179,9 @@ namespace pid
 
         // constants
         double kP, kI, kD;
-        kP = 7.0;
-        kI = 14;
-        kD = 0.45;
+        kP = 7.2;
+        kI = 22;
+        kD = 0.52;
 
         // inertial wrapping
         double init_heading = global_heading;
@@ -281,8 +281,9 @@ namespace pid
     void arc_turn(double degrees, double radius_enc, int timeout=3000)
     {
         // define wheelbase information (set manually before usage of function)
-        double ratio = (radius_enc + 343.1062262) / (radius_enc - 263.7834026);
-        if(radius_enc < 0) ratio = (radius_enc + 343.1062262) / (radius_enc - 263.7834026);
+        double inner = degrees > 0 ? 343.1062262 : 263.7834026;
+        double outer = degrees > 0 ? 263.7834026 : 343.1062262;
+        double ratio = (radius_enc + inner) / (radius_enc - outer);
 
         // // initial variables
         // double right_start = glb::chas.right_pos();
@@ -333,9 +334,9 @@ namespace pid
         // double diff_kI = 0;
         // double diff_kD = 0;
 
-        double kP = 3.5;
-        double kI = 12;
-        double kD = 0.4;
+        double kP = 2.5;
+        double kI = 0;
+        double kD = 0.1;
 
         int time = 0;
 
@@ -406,8 +407,8 @@ namespace pid
             double vel = error * kP + integral * kI + derivative * kD;
             if(abs(vel > 127)) vel = 127 * abs(vel) / vel;
 
-            double left_speed = degrees > 0 ? ratio * vel : vel / (ratio + 1);
-            double right_speed = degrees > 0 ? vel / (ratio+1) : ratio * vel;
+            double left_speed = (ratio * vel) * radius_enc / abs(radius_enc);
+            double right_speed = (vel / (ratio+1)) * radius_enc / abs(radius_enc);
 
             // check for exit condition
             // if(abs(inner_error) < 5 && abs(glb::chas.left_speed()) < 10)
@@ -538,7 +539,7 @@ namespace pid
                                     recover_start = true;
                                     recover_start_time = time;
                                 }
-                                else if(recover_start_time + 0 < time && recover_start_time + 1500 > time)
+                                else if(recover_start_time + (glb::angleP.get_status() ? 0 : 0) < time && recover_start_time + 1500 > time)
                                 {
                                     speed = 600;
                                 }
