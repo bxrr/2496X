@@ -21,7 +21,9 @@ void none()
 
 void test_shoot()
 {
-    arc_turn(-175, -290);
+    fw_spin(440);
+    delay(1500);
+    index(3);
 }
 
 void turns()
