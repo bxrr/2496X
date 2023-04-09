@@ -67,6 +67,16 @@ void ml_half_awp()
     index(3);
 }
 
+void nml_safe_awp()
+{
+    fw_spin(440);
+    intake_vel();
+    drive(1400);
+    turn_to(-141);
+    index(3);
+    intakeP.set(true);
+}
+
 void nml_half_awp()
 {
     fw_spin(440);
@@ -77,22 +87,22 @@ void nml_half_awp()
     intakeP.set(true);
     arc_turn(-160, -260, 1500);
     intake_vel();
-    drive(640);
+    drive(600);
     intakeP.set(false);
     delay(700);
     drive(-110);
-    turn_to(-168);
+    turn_to(-169.5);
     index(3);
-    turn_to(176);
-    drive(1000);
-    drive_const(150, 80, 100);
+    turn_to(174);
+    drive(800);
+    drive_const(240, 80, 300);
     intake_dist(-300);
     delay(300);
 }
 
 void solo_awp()
 {
-
+    
 }
 
 // AUTON LIST: CREATE AUTON OBJECTS WITH (NAME, FUNCTION) AS PARAMETERS TO BE USED IN AUTON SELECTOR
@@ -103,6 +113,7 @@ std::vector<Auton> autons
     Auton("turns", turns),
     Auton("solo awp", solo_awp),
     Auton("ml half awp", ml_half_awp),
+    Auton("nml safe awp", nml_safe_awp),
     Auton("nml half awp", nml_half_awp),
 };
 
