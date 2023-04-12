@@ -48,7 +48,7 @@ int flywheel_control(int time)
 {
     static bool fly_on = false;
     int flat_speeds[] = {290, 300};
-    int angle_speeds[] = {310, 320};
+    int angle_speeds[] = {310, 310};
     static int speed_index = 0;
 
     // set speed index
@@ -95,7 +95,7 @@ void intake_control(int speed_index)
     double shoot_speed;
     if(angleP.get_status())
     {
-        shoot_speed = speed_index == 0 ? 100 : 80;
+        shoot_speed = speed_index == 0 ? 100 : 85;
     }
     else
     {
@@ -170,7 +170,7 @@ void print_info(int time, bool chassis_on)
         else con.print(0, 0, "CHAS OFF (right)     ");
     }
     if(time % 500 == 0 && time % 150 != 0 && time % 1600 != 0  && (pid::fw_speed()) <= 150) 
-        con.print(1, 0, "imu: %.2f            ", chas.speed());
+        con.print(1, 0, "vel: %.2f            ", glb::intakeL.get_actual_velocity() + intakeR.get_actual_velocity());
     if(time % 150 == 0 && time % 1600 != 0)
         con.print(2, 0, "auton: %s         ", (*auton).get_name());
 }

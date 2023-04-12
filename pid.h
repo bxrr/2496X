@@ -24,7 +24,7 @@ namespace pid
         double kI = 3.0;
         double kD = 0.07;
         
-        double straight_kP = 3.5;
+        double straight_kP = 4.0;
         double straight_kI = 1.0;
 
         // initialize drive pid variables
