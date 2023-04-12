@@ -45,7 +45,7 @@ void ml_half_awp()
     turn_to(0);
     drive(-900);
     intake_dist(300);
-    turn_to(-61, 1400);
+    turn_to(-64, 1400);
     index(2);
     intakeP.set(true);
     fw_spin(460);
@@ -56,7 +56,7 @@ void ml_half_awp()
     intakeP.set(false);
     delay(750);
     drive(-150);
-    turn_to(-58);
+    turn_to(-61);
     index(3);
     fw_spin(443);
 
@@ -66,7 +66,7 @@ void ml_half_awp()
     intakeP.set(false);
     intake_vel();
     drive(400);
-    turn_to(-68);
+    turn_to(-70);
     drive(-150);
     index(3);
 }
