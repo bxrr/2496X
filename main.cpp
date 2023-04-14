@@ -34,16 +34,11 @@ void opcontrol()
 
 	while(true)
 	{
-		pid::fw::force_recover = false;
-		pid::fw_recover(true);
-		if(chassis_on)
-			arcade_drive();
-			// tank_drive();
-		else
-			chas.stop();
+		if(chassis_on) arcade_drive();
+		else chas.stop();
+
 		intake_control(flywheel_control(time));
 		angle_control();
-		//hood_control(time);
 		expansion(time);
 		print_info(time, chassis_on);
 
